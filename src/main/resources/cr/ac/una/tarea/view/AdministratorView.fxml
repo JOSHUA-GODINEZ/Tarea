@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.AdministratorController">
+<BorderPane prefHeight="556.0" prefWidth="553.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.AdministratorController">
    <center>
       <VBox prefHeight="589.0" prefWidth="770.0">
          <children>
@@ -47,7 +47,7 @@
             <Region prefHeight="70.0" prefWidth="538.0" HBox.hgrow="ALWAYS" />
             <Accordion maxHeight="1.7976931348623157E308" maxWidth="150.0" prefHeight="92.0" prefWidth="185.0" HBox.hgrow="ALWAYS">
                <panes>
-                <TitledPane alignment="TOP_CENTER" animated="false" maxHeight="1.7976931348623157E308" maxWidth="60.0" minHeight="10.0" prefHeight="92.0" prefWidth="240.0" text="Opciones">
+                <TitledPane alignment="TOP_CENTER" animated="false" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="60.0" minHeight="10.0" prefHeight="92.0" prefWidth="240.0" text="Opciones">
                      <content>
                         <Button alignment="TOP_CENTER" mnemonicParsing="false" onAction="#onActionOption" prefHeight="24.0" prefWidth="131.0" text="Parametros Generales" />
                      </content>

@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.util.List; // <-- agregar este import
+import java.util.List; 
 
 public class App extends Application {
     private static Scene scene;
@@ -14,16 +14,16 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("LoginView"), 800, 600);
+        scene = new Scene(loadFXML("OfficialsView"), 800, 600);
 
-        // <-- NUEVO: leer el parametro
+        
         List<String> params = getParameters().getRaw();
-        String param = params.isEmpty() ? "l" : params.get(0);
+        String param = params.isEmpty() ? "A" : params.get(0);
 
-        if (param.equals("u")) {
-            scene.setRoot(loadFXML("LoginUsersView")); // abre usuarios
+        if (param.equals("F")) {
+            scene.setRoot(loadFXML("OfficialsView")); 
         } else {
-            String vista= l.verificarDatos1(); // tu codigo original
+            String vista= l.verificarDatos1(); 
             scene.setRoot(loadFXML(vista));
         }
 
@@ -43,6 +43,6 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args); // <-- solo se agrega args aquí
+        launch(args); 
     }
 }
