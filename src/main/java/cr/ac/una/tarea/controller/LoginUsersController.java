@@ -1,5 +1,6 @@
 package cr.ac.una.tarea.controller;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,142 +10,377 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-
+import javafx.stage.FileChooser;
+import com.github.sarxos.webcam.Webcam;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import cr.ac.una.tarea.model.UsuarioData;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 public class LoginUsersController implements Initializable {
     @FXML
     private VBox rootUsers;
-   private List<HBox> data= new ArrayList<>();
-     private HBox seleccionado = null;
+
     @FXML
-    private TextField buscar;
+    private TextField searchField;
     
+    private List<HBox> usersData= new ArrayList<>();
+    private HBox selectedUser = null;
     @FXML
     private void onActionAdd(ActionEvent event) {
-       HBox h = new HBox();       
-        TextField t = new TextField();
-        TextField t1 = new TextField();
-        TextField t2 = new TextField();
-        DatePicker date = new DatePicker();
-        ImageView image =new ImageView("file:/C:/Joshua/Tarea1-Logos/Inicial.png");
-        image.setFitHeight(50);
-        image.setFitWidth(50);
-        
-    t.setAlignment(Pos.CENTER_LEFT);
-      
-       t.setMaxWidth(Double.MAX_VALUE);
-      t1.setMaxWidth(Double.MAX_VALUE);
-      t2.setMaxWidth(Double.MAX_VALUE);
-      date.setMaxWidth(Double.MAX_VALUE);
+  HBox usersInfo = new HBox();       
+TextField name = new TextField();
+TextField id = new TextField();
+TextField numberPhone = new TextField();
+DatePicker dateOfBirth = new DatePicker();
+ImageView userFoto = new ImageView("file:/C:/Joshua/Tarea1-Logos/Inicial.png");
+VBox contain = new VBox();
+Button foto = new Button("Foto");
+Button image = new Button("Imagen");
 
-        HBox.setHgrow(t, Priority.ALWAYS);
-         HBox.setHgrow(t1, Priority.ALWAYS);
-          HBox.setHgrow(t2, Priority.ALWAYS);
-           HBox.setHgrow(date, Priority.ALWAYS);
-            HBox.setHgrow(image, Priority.ALWAYS);
+userFoto.setFitHeight(70);
+userFoto.setFitWidth(70);
 
-        h.setPadding(new Insets(0,40,0,20));
-        h.setSpacing(60);
-        h.setMaxHeight(70);
-        h.getChildren().add(t);
-        h.getChildren().add(t1);
-        h.getChildren().add(t2);
-        h.getChildren().add(date);
-         h.getChildren().add(image);
-         h.setStyle("-fx-border-color: blue;");
-         h.setAlignment(Pos.CENTER);
-        data.add(h);
-         rootUsers.setSpacing(20);
-        rootUsers.getChildren().add(h);
- 
-        h.setOnMouseClicked(e->{
-        seleccionado=h;
-        });   
+usersInfo.setAlignment(Pos.CENTER_LEFT);
+
+name.setMaxWidth(Double.MAX_VALUE);
+id.setMaxWidth(Double.MAX_VALUE);
+numberPhone.setMaxWidth(Double.MAX_VALUE);
+dateOfBirth.setMaxWidth(Double.MAX_VALUE);
+foto.setMaxWidth(Double.MAX_VALUE);
+image.setMaxWidth(Double.MAX_VALUE);
+
+HBox.setHgrow(name, Priority.ALWAYS);
+HBox.setHgrow(id, Priority.ALWAYS);
+HBox.setHgrow(numberPhone, Priority.ALWAYS);
+HBox.setHgrow(dateOfBirth, Priority.ALWAYS);
+HBox.setHgrow(userFoto, Priority.ALWAYS);
+VBox.setVgrow(usersInfo, Priority.ALWAYS);
+
+usersInfo.setPadding(new Insets(0, 0, 0, 20));
+usersInfo.setSpacing(40);
+usersInfo.setMaxHeight(Double.MAX_VALUE);
+usersInfo.setMinHeight(70);
+
+usersInfo.getChildren().add(name);
+usersInfo.getChildren().add(id);
+usersInfo.getChildren().add(numberPhone);
+usersInfo.getChildren().add(dateOfBirth);
+usersInfo.getChildren().add(userFoto);
+
+contain.setAlignment(Pos.CENTER);
+contain.getChildren().add(foto);
+contain.getChildren().add(image);
+contain.setPadding(new Insets(0, 0, 0, -40));
+usersInfo.getChildren().add(contain);
+
+usersInfo.setStyle("-fx-border-color: blue;");
+usersInfo.setAlignment(Pos.CENTER);
+
+usersData.add(usersInfo);
+rootUsers.setSpacing(20);
+rootUsers.getChildren().add(usersInfo);
+
+usersInfo.setOnMouseClicked(e -> {
+    selectedUser = usersInfo;
+}); 
+
+    image.setOnMouseClicked(e -> {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Selecciona una imagen");
+    FileChooser.ExtensionFilter filter =
+            new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg");
+    fileChooser.getExtensionFilters().add(filter);
+    File selectedFile = fileChooser.showOpenDialog(userFoto.getScene().getWindow());
+    if (selectedFile != null) {
+        Image selectedImage = new Image(selectedFile.toURI().toString());
+        userFoto.setImage(selectedImage);
     }
+});
+
+foto.setOnMouseClicked(e -> {
+    Webcam webcam = Webcam.getDefault();
+    if (webcam == null) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+            javafx.scene.control.Alert.AlertType.ERROR
+        );
+        alert.setContentText("No se encontró cámara.");
+        alert.showAndWait();
+        return;
+    }
+    webcam.open();
+
+    ImageView preview = new ImageView();
+    preview.setFitWidth(480);
+    preview.setFitHeight(360);
+
+    Button captureBtn = new Button("Capturar");
+    Button cancelBtn = new Button("Cancelar");
+
+    HBox buttonsBox = new HBox(12, captureBtn, cancelBtn);
+    buttonsBox.setAlignment(Pos.CENTER);
+    buttonsBox.setPadding(new Insets(10));
+
+    BorderPane cameraRoot = new BorderPane(preview);
+    cameraRoot.setBottom(buttonsBox);
+
+    Stage cameraStage = new Stage();
+    cameraStage.initModality(Modality.APPLICATION_MODAL);
+    cameraStage.setTitle("Tomar foto");
+    cameraStage.setScene(new Scene(cameraRoot, 500, 430));
+
+    Thread streamThread = new Thread(() -> {
+        while (cameraStage.isShowing()) {
+            try {
+                java.awt.image.BufferedImage frame = webcam.getImage();
+                if (frame != null) {
+                    javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(frame, null);
+                    javafx.application.Platform.runLater(() -> preview.setImage(fxImage));
+                }
+                Thread.sleep(66);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    });
+    streamThread.setDaemon(true);
+
+    captureBtn.setOnAction(ev -> {
+        java.awt.image.BufferedImage capturedFrame = webcam.getImage();
+        if (capturedFrame != null) {
+            javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(capturedFrame, null);
+            String photoPath = saveImageFromCamera(fxImage);
+            userFoto.setImage(fxImage);
+            userFoto.setUserData(photoPath);
+        }
+        webcam.close();
+        streamThread.interrupt();
+        cameraStage.close();
+    });
+
+    cancelBtn.setOnAction(ev -> {
+        webcam.close();
+        streamThread.interrupt();
+        cameraStage.close();
+    });
+
+    cameraStage.setOnCloseRequest(ev -> {
+        webcam.close();
+        streamThread.interrupt();
+    });
+
+    cameraStage.show();
+    streamThread.start();
+});
+    }
+
+
+
+private String saveImageFromCamera(javafx.scene.image.Image image) {
+    try {
+        String folderPath = System.getProperty("user.dir") + "/fotos/";
+        java.io.File dir = new java.io.File(folderPath);
+        if (!dir.exists()) dir.mkdirs();
+
+        String fileName = folderPath + "foto_" +
+            java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+            + ".png";
+
+        java.io.File outputFile = new java.io.File(fileName);
+        javax.imageio.ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
+        return outputFile.toURI().toString();
+
+    } catch (IOException ex) {
+        return "";
+    }
+}
+
+
+
 
     @FXML
-    private void onActiondelete(ActionEvent event) {
-        if(seleccionado!=null){
-         rootUsers.getChildren().remove(seleccionado);
-            data.remove(seleccionado);
-            seleccionado=null;
-        }
+    private void onActionDelete(ActionEvent event) {
+    if (selectedUser != null) {
+        rootUsers.getChildren().remove(selectedUser);
+        usersData.remove(selectedUser);
+        selectedUser = null;
     }
+}
 
     @FXML
-    private void onActionmofic(ActionEvent event) {
-       if(seleccionado!=null){ 
-               TextField nombre = (TextField) seleccionado.getChildren().get(0);
-       TextField cedula = (TextField) seleccionado.getChildren().get(1);
-       TextField numero = (TextField) seleccionado.getChildren().get(2);
-       DatePicker d = (DatePicker) seleccionado.getChildren().get(3);
-       ImageView ima = (ImageView) seleccionado.getChildren().get(4);
-       
-           nombre.setDisable(false);
-          cedula.setDisable(false);
-          numero.setDisable(false);
-          numero.setDisable(false);
-          d.setDisable(false);
-          ima.setDisable(false); 
-          
-       seleccionado=null;
-        } 
+    private void onActionEdit(ActionEvent event) {
+    if (selectedUser != null) {
+        TextField name = (TextField) selectedUser.getChildren().get(0);
+        TextField id = (TextField) selectedUser.getChildren().get(1);
+        TextField numberPhone = (TextField) selectedUser.getChildren().get(2);
+        DatePicker dateOfBirth = (DatePicker) selectedUser.getChildren().get(3);
+        ImageView userPhoto = (ImageView) selectedUser.getChildren().get(4);
+
+        name.setDisable(false);
+        id.setDisable(false);
+        numberPhone.setDisable(false);
+        dateOfBirth.setDisable(false);
+        userPhoto.setDisable(false);
+
+        selectedUser = null;
     }
+}
 
-    @FXML
-    private void onActionSave(ActionEvent event) {
-         for (int i = data.size() - 1; i >= 0; i--) {
-        HBox h = data.get(i);   
-       TextField nombre = (TextField) h.getChildren().get(0);
-       TextField cedula = (TextField) h.getChildren().get(1);
-       TextField numero = (TextField) h.getChildren().get(2);
-       DatePicker d = (DatePicker) h.getChildren().get(3);
-       ImageView ima = (ImageView) h.getChildren().get(4);
+@FXML
+private void onActionSave(ActionEvent event) {
+    for (int i = usersData.size() - 1; i >= 0; i--) {
+        HBox row = usersData.get(i);
+        TextField name = (TextField) row.getChildren().get(0);
+        TextField id = (TextField) row.getChildren().get(1);
+        TextField numberPhone = (TextField) row.getChildren().get(2);
+        DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
+        ImageView userPhoto = (ImageView) row.getChildren().get(4);
 
-        if (!nombre.getText().isBlank() &&!cedula.getText().isBlank() && d.getValue() != null &&  !ima.getImage().getUrl().equals("file:/Joshua/Tarea1-Logos/Inicial.png")) {
-          nombre.setDisable(true);
-          cedula.setDisable(true);
-          numero.setDisable(true);
-          numero.setDisable(true);
-          d.setDisable(true);
-          ima.setDisable(true);        
+        boolean hasImage = userPhoto.getImage() != null &&
+            (userPhoto.getImage().getUrl() != null || userPhoto.getUserData() != null);
+
+        if (!name.getText().isBlank() && !id.getText().isBlank()
+                && dateOfBirth.getValue() != null && hasImage) {
+            name.setDisable(true);
+            id.setDisable(true);
+            numberPhone.setDisable(true);
+            dateOfBirth.setDisable(true);
+            userPhoto.setDisable(true);
+        } else {
+            rootUsers.getChildren().remove(row);
+            usersData.remove(i);
         }
-        else{
-         rootUsers.getChildren().remove(h);
-            data.remove(i);
-        }
-         }
-         seleccionado=null;
     }
+    selectedUser = null;
 
-    private void buscar(String texto){
-    int y = 10;
-    for(int i = 0; i < data.size(); i++){
+    try {
+        List<UsuarioData> userList = new ArrayList<>();
 
-        HBox h = data.get(i);
-        TextField campo = (TextField) h.getChildren().get(0);
-        TextField campo1 = (TextField) h.getChildren().get(1);
-        if(campo.getText().toLowerCase().contains(texto.toLowerCase())||campo1.getText().toLowerCase().contains(texto.toLowerCase())){
-            h.setVisible(true);
-            h.setManaged(true);
-            h.setLayoutY(y);
-            y += 40;
-        }else{
-            h.setVisible(false);
-            h.setManaged(false);
+        for (HBox row : usersData) {
+            TextField name = (TextField) row.getChildren().get(0);
+            TextField id = (TextField) row.getChildren().get(1);
+            TextField numberPhone = (TextField) row.getChildren().get(2);
+            DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
+            ImageView userPhoto = (ImageView) row.getChildren().get(4);
+
+            UsuarioData ud = new UsuarioData();
+            ud.nombre = name.getText();
+            ud.cedula = id.getText();
+            ud.numero = numberPhone.getText();
+            ud.fecha = dateOfBirth.getValue() != null ? dateOfBirth.getValue().toString() : "";
+
+            String imageUrl = "";
+            if (userPhoto.getUserData() != null) {
+                imageUrl = userPhoto.getUserData().toString();
+            } else if (userPhoto.getImage() != null && userPhoto.getImage().getUrl() != null) {
+                imageUrl = userPhoto.getImage().getUrl();
+            }
+            ud.imagen = imageUrl;
+            userList.add(ud);
+        }
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Files.writeString(Paths.get("Jsons/usuarios.json"), gson.toJson(userList));
+        System.out.println("Datos guardados");
+
+    } catch (IOException ex) {
+        System.out.println("Error al guardar: " + ex.getMessage());
+    }
+}
+
+private void search(String text) {
+    for (int i = 0; i < usersData.size(); i++) {
+        HBox row = usersData.get(i);
+        TextField name = (TextField) row.getChildren().get(0);
+        TextField id = (TextField) row.getChildren().get(1);
+
+        if (name.getText().toLowerCase().contains(text.toLowerCase()) ||
+            id.getText().toLowerCase().contains(text.toLowerCase())) {
+            row.setVisible(true);
+            row.setManaged(true);
+        } else {
+            row.setVisible(false);
+            row.setManaged(false);
         }
     }
 }
-        @Override
-    public void initialize(URL url, ResourceBundle rb) {
-       buscar.textProperty().addListener((obs, viejo, nuevo) -> {
-        buscar(nuevo);
+
+private void loadUsers() {
+    try {
+        Path usersFile = Paths.get("Jsons/usuarios.json");
+        if (!Files.exists(usersFile)) return;
+        String json = Files.readString(usersFile);
+        if (json.isBlank()) return;
+
+        Gson gson = new Gson();
+        UsuarioData[] users = gson.fromJson(json, UsuarioData[].class);
+
+        for (UsuarioData ud : users) {
+            onActionAdd(null);
+            HBox row = usersData.get(usersData.size() - 1);
+
+            TextField name = (TextField) row.getChildren().get(0);
+            TextField id = (TextField) row.getChildren().get(1);
+            TextField numberPhone = (TextField) row.getChildren().get(2);
+            DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
+            ImageView userPhoto = (ImageView) row.getChildren().get(4);
+
+            name.setText(ud.nombre);
+            id.setText(ud.cedula);
+            numberPhone.setText(ud.numero);
+            dateOfBirth.setValue(ud.fecha != null && !ud.fecha.isBlank()
+                    ? java.time.LocalDate.parse(ud.fecha)
+                    : null);
+
+            if (ud.imagen != null && !ud.imagen.isBlank()) {
+                try {
+                    String imagePath = ud.imagen;
+                    if (imagePath.startsWith("file:/") && !imagePath.startsWith("file:///")) {
+                        imagePath = imagePath.replace("file:/", "file:///");
+                    }
+                    Image loadedImage = new Image(imagePath);
+                    userPhoto.setImage(loadedImage);
+                    userPhoto.setUserData(imagePath);
+                } catch (Exception ex) {
+                    System.out.println("Error al cargar imagen: " + ex.getMessage());
+                }
+            }
+
+            name.setDisable(true);
+            id.setDisable(true);
+            numberPhone.setDisable(true);
+            dateOfBirth.setDisable(true);
+            userPhoto.setDisable(true);
+        }
+
+    } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
+    }
+}
+
+@Override
+public void initialize(URL url, ResourceBundle rb) {
+    loadUsers();
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+        search(newVal);
     });
-    } 
-    
+}
+
 }

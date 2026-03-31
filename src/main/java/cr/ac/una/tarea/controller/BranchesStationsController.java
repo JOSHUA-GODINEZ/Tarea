@@ -1,8 +1,14 @@
 package cr.ac.una.tarea.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
-import cr.ac.una.tarea.util.JsonUtil;
+import cr.ac.una.tarea.model.EstacionData;
+import cr.ac.una.tarea.model.SucursalData;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,299 +35,380 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class BranchesStationsController implements Initializable {
+
+    ///////////////// FXML
     @FXML
     private VBox rootBranches;
-     private VBox selec = null;
-     private HBox selec1 = null;
-    
-     private List<VBox> data= new ArrayList<>();
     @FXML
-    private VBox rootPresures;
-
+    private VBox rootProcedures;
     @FXML
-    private TextField Buscador1;
-
+    private TextField searchField;
     @FXML
-    private VBox rootEstacion;
-    private List<VBox> vHijos = new ArrayList<>();
+    private VBox rootStation;
 
-private VBox vHijoActual = null;
- @FXML
-private void onActionSucursal(ActionEvent event) {
-    TextField t = new TextField();
-    Accordion box = new Accordion();
-    TitledPane p1 = new TitledPane();
+    ///////////////// VARIABLES
+    private VBox selectedBranch = null;
+    private HBox selectedStation = null;
+    private VBox currentStationContent = null;
+    private List<VBox> branches = new ArrayList<>();
+    private List<HBox> stations = new ArrayList<>();
+    private List<VBox> stationContents = new ArrayList<>();
+    private final Path branchesFile = Path.of("Jsons/BranchesData.json");
 
-    VBox v = new VBox();
-    VBox vox = new VBox();
-    vox.setStyle("-fx-border-color: blue;");
-    Button b = new Button("Agregar Estacion");
-   
-    p1.setText("Estaciones");
-      v.getChildren().add(b);
-     v.setSpacing(10);
-    p1.setContent(v);
-    box.getPanes().add(p1);
-    vox.getChildren().add(t);
-    vox.getChildren().add(box);
-    vox.setPadding(new Insets(30,20,30,20));
-      Label le = new Label("");
-    rootEstacion.getChildren().add(le);
-    rootBranches.getChildren().add(vox);
-   data.add(vox);
 
-    b.setOnAction(new EventHandler<ActionEvent>() {
-    @Override
-    public void handle(ActionEvent e) {
-        TextField ta = new TextField();
-        HBox h = new HBox();
-        CheckBox check = new CheckBox();
-        VBox vHijo = new VBox(); // <-- se crea una sola vez aqui
+    ///////////////// ACTIONS
+    @FXML
+      private void onActionAddBranch(ActionEvent event) {
+        TextField branchName = new TextField();
+        Accordion accordion = new Accordion();
+        TitledPane pane = new TitledPane();
+        VBox buttonContainer = new VBox();
+        VBox branch = new VBox();
+        Button addStationBtn = new Button("Agregar Estacion");
 
-        h.getChildren().add(ta);
-        h.getChildren().add(check);
-        h.setSpacing(30);
-        h.setAlignment(Pos.CENTER);
-        h.setStyle("-fx-border-color: blue;");
-        h.setMinHeight(70);
+        branch.setStyle("-fx-border-color: blue;");
+        pane.setText("Estaciones");
+        buttonContainer.getChildren().add(addStationBtn);
+        buttonContainer.setSpacing(10);
+        pane.setContent(buttonContainer);
+        accordion.getPanes().add(pane);
+        branch.getChildren().add(branchName);
+        branch.getChildren().add(accordion);
+        branch.setPadding(new Insets(30, 20, 30, 20));
 
-        h.setOnMouseClicked(ev -> {
-            selec1 = h;
-            vHijoActual = vHijo;
-                cargarDatos();
-           vHijos.add(vHijo);
-            VBox hCopia = new VBox();
-            Label taCopia = new Label();
+        rootStation.getChildren().add(new Label(""));
+        rootBranches.getChildren().add(branch);
+        branches.add(branch);
 
-            taCopia.setText(ta.getText());
+        ///////////////// ADD STATION
+        addStationBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                TextField stationName = new TextField();
+                HBox stationRow = new HBox();
+                CheckBox preferentialCheck = new CheckBox();
+                VBox stationContent = new VBox();
 
-            vHijo.setStyle("-fx-border-color: blue;");
-            vHijo.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            VBox.setVgrow(vHijo, Priority.ALWAYS);
+                stations.add(stationRow);
+                stationContents.add(stationContent);
 
-            hCopia.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            VBox.setVgrow(hCopia, Priority.ALWAYS);
+                stationRow.getChildren().addAll(stationName, preferentialCheck);
+                stationRow.setSpacing(30);
+                stationRow.setAlignment(Pos.CENTER);
+                stationRow.setStyle("-fx-border-color: blue;");
+                stationRow.setMinHeight(70);
 
-            hCopia.getChildren().add(taCopia);
-            hCopia.getChildren().add(vHijo); // <-- siempre el mismo vHijo con sus labels
-            hCopia.setSpacing(30);
-            hCopia.setAlignment(Pos.CENTER);
-            hCopia.setStyle("-fx-border-color: blue;");
-            hCopia.setMinHeight(70);
+                stationRow.setOnMouseClicked(ev -> {
+                    selectedStation = stationRow;
+                    currentStationContent = stationContent;
+                    loadProcedures();
 
-            rootEstacion.getChildren().clear();
-            rootEstacion.getChildren().add(hCopia);
+                    ///////////////// PREVIEW
+                    VBox preview = new VBox();
+                    Label nameLabel = new Label(stationName.getText());
 
-            System.out.println("Seleccionado");
+                    stationContent.setStyle("-fx-border-color: blue;");
+                    stationContent.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    VBox.setVgrow(stationContent, Priority.ALWAYS);
+
+                    preview.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    VBox.setVgrow(preview, Priority.ALWAYS);
+
+                    preview.getChildren().addAll(nameLabel, stationContent);
+                    preview.setSpacing(30);
+                    preview.setAlignment(Pos.CENTER);
+                    preview.setStyle("-fx-border-color: blue;");
+                    preview.setMinHeight(70);
+
+                    rootStation.getChildren().clear();
+                    rootStation.getChildren().add(preview);
+                });
+
+                buttonContainer.getChildren().add(stationRow);
+            }
         });
-        v.getChildren().add(h);
-    }
-});
-    vox.setOnMouseClicked(e->{
-         selec=vox;
-      });   
-}
-     @FXML
-    private void onActionEliminate(ActionEvent event) {  
-        if(selec != null){    
-      rootBranches.getChildren().remove(selec); 
-        }
-       if (selec1 != null) {
-    ((Pane) selec1.getParent()).getChildren().remove(selec1);
-          
-} 
-        selec = null;
-        selec1=null;
+
+        branch.setOnMouseClicked(e -> {
+            selectedBranch = branch;
+        });
     }
 
-     @FXML
-   private void onActionModific(ActionEvent event) {
-    if (selec != null) {
-        selec.setDisable(false);
-  
-        for (Node n : selec.getChildren()) {
-            n.setDisable(false);
-        }
-        Accordion acc = (Accordion) selec.getChildren().get(1);
-        TitledPane pane = acc.getPanes().get(0);
-        VBox v = (VBox) pane.getContent();
+    @FXML
+    private void onActionDelete(ActionEvent event) {
+        if (selectedBranch != null) {
+            Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
+            TitledPane pane = accordion.getPanes().get(0);
+            VBox buttonContainer = (VBox) pane.getContent();
 
-        v.setDisable(false);
-
-        for (Node n : v.getChildren()) {
-            n.setDisable(false);
+            for (Node n : buttonContainer.getChildren()) {
+                if (n instanceof HBox hb) {
+                    int index = stations.indexOf(hb);
+                    if (index != -1) {
+                        stations.remove(index);
+                        stationContents.remove(index);
+                    }
+                }
+            }
+            rootBranches.getChildren().remove(selectedBranch);
+            branches.remove(selectedBranch);
         }
-        selec = null;
+
+        if (selectedStation != null) {
+            int index = stations.indexOf(selectedStation);
+            if (index != -1) {
+                stations.remove(index);
+                stationContents.remove(index);
+            }
+            ((Pane) selectedStation.getParent()).getChildren().remove(selectedStation);
+        }
+
+        selectedBranch = null;
+        selectedStation = null;
     }
-}
-    
-    
-    
-    
-    
-    
-@FXML
-private void onActionSave(ActionEvent event) {
-        
-    for (int i = data.size() - 1; i >= 0; i--) {
-        VBox vox = data.get(i);
-        TextField nombreField = (TextField) vox.getChildren().get(0);
-        Accordion acc = (Accordion) vox.getChildren().get(1);
-        TitledPane pane = acc.getPanes().get(0);
-        VBox v = (VBox) pane.getContent();
 
-        if (!nombreField.getText().isBlank()) {
-            nombreField.setDisable(true);
-            v.getChildren().removeIf(n ->
-                (n instanceof HBox hb) &&
-                (hb.getChildren().get(0) instanceof TextField ta) &&
-                ta.getText().isBlank()
-            );
-            v.setDisable(true);
-        } else {
-            rootBranches.getChildren().remove(vox);
-            data.remove(i);
-        }
-    }
-    selec = null;
-}
- 
-private void buscar(String texto){
-    int y = 10;
-    for(int i = 0; i < data.size(); i++){
-        VBox h = data.get(i);
-        TextField campo = (TextField) h.getChildren().get(0);
+    @FXML
+    private void onActionEdit(ActionEvent event) {
+        if (selectedBranch != null) {
+            selectedBranch.setDisable(false);
 
-        if(campo.getText().toLowerCase().contains(texto.toLowerCase())){
-            h.setVisible(true);
-            h.setManaged(true);
-            h.setLayoutY(y);
-            y += 40;
+            for (Node n : selectedBranch.getChildren()) {
+                n.setDisable(false);
+            }
 
-        }else{
-            h.setVisible(false);
-            h.setManaged(false);
+            Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
+            TitledPane pane = accordion.getPanes().get(0);
+            VBox buttonContainer = (VBox) pane.getContent();
+
+            buttonContainer.setDisable(false);
+            for (Node n : buttonContainer.getChildren()) {
+                n.setDisable(false);
+            }
+            selectedBranch = null;
         }
     }
-}
 
-public void cargarDatos() {
-    rootPresures.getChildren().clear(); 
-    List<DataProcedure> lista = JsonUtil.leerJson(Paths.get("ProcedureData.json"));
-    for (DataProcedure dp : lista) {
-        if (vHijoActual != null && existeEnVBox(vHijoActual, dp.getName())) {
-            continue;
+    @FXML
+    private void onActionSave(ActionEvent event) throws IOException {
+        ///////////////// VALIDATE AND DISABLE
+        for (int i = branches.size() - 1; i >= 0; i--) {
+            VBox branch = branches.get(i);
+            TextField branchName = (TextField) branch.getChildren().get(0);
+            Accordion accordion = (Accordion) branch.getChildren().get(1);
+            TitledPane pane = accordion.getPanes().get(0);
+            VBox buttonContainer = (VBox) pane.getContent();
+
+            if (!branchName.getText().isBlank()) {
+                branchName.setDisable(true);
+                buttonContainer.getChildren().removeIf(n ->
+                    (n instanceof HBox hb) &&
+                    (hb.getChildren().get(0) instanceof TextField ta) &&
+                    ta.getText().isBlank()
+                );
+                buttonContainer.setDisable(true);
+            } else {
+                rootBranches.getChildren().remove(branch);
+                branches.remove(i);
+            }
         }
-        Label lbl = crearLabel(dp.getName());
-        lbl.setOnDragDetected(event -> {
-            Dragboard db = lbl.startDragAndDrop(TransferMode.MOVE);
+
+        ///////////////// SAVE TO JSON
+        List<SucursalData> branchList = new ArrayList<>();
+        for (VBox branch : branches) {
+            TextField branchName = (TextField) branch.getChildren().get(0);
+            Accordion accordion = (Accordion) branch.getChildren().get(1);
+            TitledPane pane = accordion.getPanes().get(0);
+            VBox buttonContainer = (VBox) pane.getContent();
+
+            SucursalData sd = new SucursalData();
+            sd.nombre = branchName.getText();
+            sd.estaciones = new ArrayList<>();
+
+            for (Node n : buttonContainer.getChildren()) {
+                if (n instanceof HBox h) {
+                    TextField stationName = (TextField) h.getChildren().get(0);
+                    CheckBox preferentialCheck = (CheckBox) h.getChildren().get(1);
+                    int index = stations.indexOf(h);
+                    VBox stationContent = stationContents.get(index);
+
+                    EstacionData ed = new EstacionData();
+                    ed.nombre = stationName.getText();
+                    ed.preferencial = preferentialCheck.isSelected();
+                    ed.tramites = new ArrayList<>();
+
+                    for (Node lbl : stationContent.getChildren()) {
+                        if (lbl instanceof Label l) {
+                            ed.tramites.add(l.getText());
+                        }
+                    }
+                    sd.estaciones.add(ed);
+                }
+            }
+            branchList.add(sd);
+        }
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Files.writeString(branchesFile, gson.toJson(branchList));
+        System.out.println("Datos guardados");
+        selectedBranch = null;
+    }
+
+    @FXML
+    private void onActionRefresh(ActionEvent event) {
+        loadProcedures();
+    }
+
+    ///////////////// SEARCH
+    private void search(String text) {
+        for (VBox branch : branches) {
+            TextField branchName = (TextField) branch.getChildren().get(0);
+            boolean matches = branchName.getText().toLowerCase().contains(text.toLowerCase());
+            branch.setVisible(matches);
+            branch.setManaged(matches);
+        }
+    }
+
+    ///////////////// LOAD
+    public void loadBranches() {
+        try {
+            if (!Files.exists(branchesFile)) return;
+            String json = Files.readString(branchesFile);
+            if (json.isBlank()) return;
+
+            Gson gson = new Gson();
+            SucursalData[] branchArray = gson.fromJson(json, SucursalData[].class);
+
+            for (SucursalData sd : branchArray) {
+                onActionAddBranch(null);
+                VBox branch = branches.get(branches.size() - 1);
+                TextField branchName = (TextField) branch.getChildren().get(0);
+                branchName.setText(sd.nombre);
+
+                Accordion accordion = (Accordion) branch.getChildren().get(1);
+                TitledPane pane = accordion.getPanes().get(0);
+                VBox buttonContainer = (VBox) pane.getContent();
+                Button addStationBtn = (Button) buttonContainer.getChildren().get(0);
+
+                for (EstacionData ed : sd.estaciones) {
+                    addStationBtn.fire();
+                    HBox stationRow = (HBox) buttonContainer.getChildren().get(buttonContainer.getChildren().size() - 1);
+                    TextField stationName = (TextField) stationRow.getChildren().get(0);
+                    CheckBox preferentialCheck = (CheckBox) stationRow.getChildren().get(1);
+                    stationName.setText(ed.nombre);
+                    preferentialCheck.setSelected(ed.preferencial);
+
+                    int index = stations.indexOf(stationRow);
+                    VBox stationContent = stationContents.get(index);
+                    for (String procedure : ed.tramites) {
+                        stationContent.getChildren().add(createLabel(procedure));
+                    }
+                }
+
+                branchName.setDisable(true);
+                buttonContainer.setDisable(true);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al cargar: " + e.getMessage());
+        }
+    }
+
+    public void loadProcedures() {
+        rootProcedures.getChildren().clear();
+        try {
+            Path proceduresFile = Paths.get("Jsons/ProcedureData.json");
+            if (!Files.exists(proceduresFile)) return;
+            String json = Files.readString(proceduresFile);
+            if (json.isBlank()) return;
+
+            Gson gson = new Gson();
+            DataProcedure[] procedureList = gson.fromJson(json, DataProcedure[].class);
+
+            for (DataProcedure dp : procedureList) {
+                if (currentStationContent != null && existsInVBox(currentStationContent, dp.getName())) {
+                    continue;
+                }
+                rootProcedures.getChildren().add(createLabel(dp.getName()));
+            }
+        } catch (IOException e) {
+            System.out.println("Error al cargar procedimientos: " + e.getMessage());
+        }
+    }
+
+    ///////////////// HELPERS
+    private Label createLabel(String text) {
+        Label label = new Label(text);
+
+        label.setOnDragDetected(event -> {
+            Dragboard db = label.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
-            content.putString(lbl.getText()); 
+            content.putString(label.getText());
             db.setContent(content);
             event.consume();
         });
-        lbl.setOnDragDone(event -> {
+
+        label.setOnDragDone(event -> {
             if (event.getTransferMode() == TransferMode.MOVE) {
-                ((VBox) lbl.getParent()).getChildren().remove(lbl);
+                ((VBox) label.getParent()).getChildren().remove(label);
             }
             event.consume();
-        });   
-        rootPresures.getChildren().add(lbl);
+        });
+        return label;
     }
-}
-@Override
-    public void initialize(URL url, ResourceBundle rb) {
-    cargarDatos();
-        rootEstacion.setOnDragOver(event -> {
-    if (event.getGestureSource() != rootEstacion && event.getDragboard().hasString()) {
-        event.acceptTransferModes(TransferMode.MOVE);
-    }
-    event.consume();
-});
 
-rootEstacion.setOnDragDropped(event -> {
-    Dragboard db = event.getDragboard();
-    boolean success = false;
-
-    if (db.hasString() && vHijoActual != null) {
-        if (!existeEnVBox(vHijoActual, db.getString())) {
-            Label nuevo = crearLabel(db.getString());
-            vHijoActual.getChildren().add(nuevo);
-        }
-        success = true;
-    }
-    event.setDropCompleted(success);
-    event.consume();
-});
-  rootPresures.setOnDragOver(event -> {
-    if (event.getGestureSource() != rootPresures && event.getDragboard().hasString()) {
-        event.acceptTransferModes(TransferMode.MOVE);
-    }
-    event.consume();
-});
-
-rootPresures.setOnDragDropped(event -> {
-    Dragboard db = event.getDragboard();
-    boolean success = false;
-
-    if (db.hasString()) {
-        Label nuevo = crearLabel(db.getString());
-        rootPresures.getChildren().add(nuevo);
-        success = true;
-    }
-    event.setDropCompleted(success);
-    event.consume();
-});
-
-      Buscador1.textProperty().addListener((obs, viejo, nuevo) -> {
-        buscar(nuevo);
-    });
-    }    
-
-    @FXML
-    private void onActionActualiza(ActionEvent event) {
-        cargarDatos();
-    }
- private Label crearLabel(String texto) {
-    Label lbl = new Label(texto);
-
-    lbl.setOnDragDetected(event -> {
-        Dragboard db = lbl.startDragAndDrop(TransferMode.MOVE);
-
-        ClipboardContent content = new ClipboardContent();
-        content.putString(lbl.getText());
-
-        db.setContent(content);
-
-        event.consume();
-    });
-
-    lbl.setOnDragDone(event -> {
-        if (event.getTransferMode() == TransferMode.MOVE) {
-            ((VBox) lbl.getParent()).getChildren().remove(lbl);
-        }
-        event.consume();
-    });
-    return lbl;
-}
-
- private boolean existeEnVBox(VBox vbox, String texto) {
-    for (Node node : vbox.getChildren()) {
-        if (node instanceof Label lbl) {
-            if (lbl.getText().equals(texto)) {
+    private boolean existsInVBox(VBox vbox, String text) {
+        for (Node node : vbox.getChildren()) {
+            if (node instanceof Label lbl && lbl.getText().equals(text)) {
                 return true;
             }
         }
+        return false;
     }
-    return false;
-}
- private boolean existeEnAlgunVHijo(String texto) {
-    for (VBox vh : vHijos) {
-        if (existeEnVBox(vh, texto)) {
-            return true;
-        }
+
+    ///////////////// INITIALIZE
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        loadProcedures();
+        loadBranches();
+
+        rootStation.setOnDragOver(event -> {
+            if (event.getGestureSource() != rootStation && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+        rootStation.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasString() && currentStationContent != null) {
+                if (!existsInVBox(currentStationContent, db.getString())) {
+                    currentStationContent.getChildren().add(createLabel(db.getString()));
+                }
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        rootProcedures.setOnDragOver(event -> {
+            if (event.getGestureSource() != rootProcedures && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.MOVE);
+            }
+            event.consume();
+        });
+
+        rootProcedures.setOnDragDropped(event -> {
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasString()) {
+                rootProcedures.getChildren().add(createLabel(db.getString()));
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            search(newVal);
+        });
     }
-    return false;
-}
- 
 }

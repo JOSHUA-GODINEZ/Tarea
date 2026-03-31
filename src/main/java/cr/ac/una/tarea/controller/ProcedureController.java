@@ -1,13 +1,19 @@
 package cr.ac.una.tarea.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -17,193 +23,152 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
-public class ProcedureController {
-
-    private List<HBox> data= new ArrayList<>();
-    private HBox seleccionado = null;
-
+public class ProcedureController implements Initializable {
     @FXML
     private TextField buscador;
     @FXML
-    private VBox Vbox;
+    private VBox rootProcedure;
+    
+    private List<HBox> ProcedureData = new ArrayList<>();
+    
+    private HBox selectedProcedure = null;
 
-     private final Path archivo = Path.of("ProcedureData.json");
+    private final Path archivo = Path.of("Jsons/ProcedureData.json");
      
     @FXML
    public void Add() {
 
     if(buscador.getText().equals("")){
+        HBox procedure = new HBox();
+        TextField nameProcedure = new TextField();
+        TextField costProcedure = new TextField();
+        TextArea detailProcedure = new TextArea();
+        CheckBox stateProcedure = new CheckBox();
+///////////////////////////////////////////////////      CSS
+        procedure.setStyle("-fx-border-color: blue;");
+        procedure.setAlignment(Pos.CENTER);
+        procedure.setSpacing(20);
+        procedure.setPadding(new Insets(0,200,0,20));
 
-        HBox h = new HBox();
-        TextField label = new TextField();
-        TextField label1 = new TextField();
-        TextArea label2 = new TextArea();
-        CheckBox check = new CheckBox();
+procedure.setMaxWidth(Double.MAX_VALUE);
+procedure.setPrefHeight(40);
+procedure.setMinHeight(80);
+HBox.setHgrow(nameProcedure, Priority.ALWAYS);
+HBox.setHgrow(costProcedure, Priority.ALWAYS);
+HBox.setHgrow(detailProcedure, Priority.ALWAYS);
 
-h.setMaxWidth(Vbox.getMaxWidth());
-h.setPrefHeight(40);
+nameProcedure.setPrefWidth(100);
+nameProcedure.setMaxWidth(300);
+costProcedure.setPrefWidth(50);
+costProcedure.setMaxWidth(100);
+detailProcedure.setPrefWidth(200);
 
-        h.setStyle("-fx-border-color: blue;");
-        h.setAlignment(Pos.CENTER);
-        h.setSpacing(20);
-        h.setPadding(new Insets(0,200,0,20));
+nameProcedure.setMinWidth(50);
+costProcedure.setMinWidth(50);
+detailProcedure.setMinWidth(80);
+        stateProcedure.setSelected(true);
 
-h.setMaxWidth(Double.MAX_VALUE);
-h.setPrefHeight(40);
-h.setMinHeight(80);
-HBox.setHgrow(label, Priority.ALWAYS);
-HBox.setHgrow(label1, Priority.ALWAYS);
-HBox.setHgrow(label2, Priority.ALWAYS);
+        HBox.setHgrow(detailProcedure, Priority.ALWAYS);
+        detailProcedure.setMaxWidth(600);
+VBox.setVgrow(procedure, Priority.ALWAYS);
+/////////////////////////////////////////////////
 
-label.setPrefWidth(100);
-label.setMaxWidth(300);
-label1.setPrefWidth(50);
-label1.setMaxWidth(100);
-label2.setPrefWidth(200);
+procedure.getChildren().addAll(nameProcedure,costProcedure,detailProcedure,stateProcedure);
+ProcedureData.add(procedure);
+        rootProcedure.getChildren().add(procedure);
 
-label.setMinWidth(50);
-label1.setMinWidth(50);
-label2.setMinWidth(80);
-        check.setSelected(true);
+        
 
-        HBox.setHgrow(label2, Priority.ALWAYS);
-        label2.setMaxWidth(600);
-VBox.setVgrow(h, Priority.ALWAYS);
+        
 
-        Vbox.getChildren().add(h);
-
-        h.getChildren().addAll(label,label1,label2,check);
-
-        data.add(h);
-
-        h.setOnMouseClicked(e -> {
-            seleccionado = h;
+        procedure.setOnMouseClicked(e -> {
+            selectedProcedure = procedure;
         });
 
-        label.requestFocus();
+
     }
 }
-
     @FXML
     private void delete(ActionEvent event) {
 
-        if (seleccionado != null) {
-            Vbox.getChildren().remove(seleccionado);
-             data.remove(seleccionado);
-            seleccionado = null;
+        if (selectedProcedure != null) {
+            rootProcedure.getChildren().remove(selectedProcedure);
+             ProcedureData.remove(selectedProcedure);
+            selectedProcedure= null;
         }
     }
-
    @FXML
   public void modific() {
+    if (selectedProcedure != null) {
 
-    if (seleccionado != null) {
+        TextField nameProcedure = (TextField) selectedProcedure.getChildren().get(0);
+        TextField costProcedure = (TextField) selectedProcedure.getChildren().get(1);
+        TextArea detailProcedure = (TextArea) selectedProcedure.getChildren().get(2);
+        CheckBox stateProcedure = (CheckBox) selectedProcedure.getChildren().get(3);
 
-        TextField nombreField = (TextField) seleccionado.getChildren().get(0);
-        TextField montoField = (TextField) seleccionado.getChildren().get(1);
-        TextArea detalleField = (TextArea) seleccionado.getChildren().get(2);
-        CheckBox check = (CheckBox) seleccionado.getChildren().get(3);
+        nameProcedure.setDisable(false);
+        costProcedure.setDisable(false);
+        detailProcedure.setDisable(false);
+        stateProcedure.setDisable(false);
 
-        nombreField.setDisable(false);
-        montoField.setDisable(false);
-        detalleField.setDisable(false);
-        check.setDisable(false);
-
-        seleccionado = null;
+        selectedProcedure = null;
     }
 }
-
-
 @FXML
 public void Save() {
 
-    for (int i = data.size() - 1; i >= 0; i--) {
+    for (int i = ProcedureData.size() - 1; i >= 0; i--) {
 
-        HBox h = data.get(i);
+        HBox h = ProcedureData.get(i);
 
-        TextField nombreField = (TextField) h.getChildren().get(0);
-        TextField montoField = (TextField) h.getChildren().get(1);
-        TextArea detalleField = (TextArea) h.getChildren().get(2);
-        CheckBox check = (CheckBox) h.getChildren().get(3);
+        TextField nameProcedure = (TextField) h.getChildren().get(0);
+        TextField costProcedure = (TextField) h.getChildren().get(1);
+        TextArea detailProcedure = (TextArea) h.getChildren().get(2);
+        CheckBox stateProcedure = (CheckBox) h.getChildren().get(3);
 
-        if (!nombreField.getText().isBlank()) {
+        if (!nameProcedure.getText().isBlank()) {
 
-            String nombre = nombreField.getText();
-            String monto = montoField.getText();
-            String detalle = detalleField.getText();
-            boolean activo = check.isSelected();
-
-            System.out.println("Nombre: " + nombre);
-            System.out.println("Monto: " + monto);
-            System.out.println("Detalle: " + detalle);
-            System.out.println("Estado: " + activo);
-
-            // bloquear campos
-            nombreField.setDisable(true);
-            montoField.setDisable(true);
-            detalleField.setDisable(true);
-            check.setDisable(true);
-
+            nameProcedure.setDisable(true);
+            costProcedure.setDisable(true);
+            detailProcedure.setDisable(true);
+            stateProcedure.setDisable(true);
         } else {
 
-            Vbox.getChildren().remove(h);
-            data.remove(i);
-
+            rootProcedure.getChildren().remove(h);
+            ProcedureData.remove(i);
         }
     }
-    seleccionado = null;
+    selectedProcedure = null;
 
-   try {
-
-    String json = "[\n"; 
-
-    for (int i = 0; i < data.size(); i++) {
-
-        HBox h = data.get(i);
-
-        TextField nombre = (TextField) h.getChildren().get(0);
-        TextField monto = (TextField) h.getChildren().get(1);
-        TextArea detalle = (TextArea) h.getChildren().get(2);
-        CheckBox check = (CheckBox) h.getChildren().get(3);
-
-        DataProcedure user = new DataProcedure();
-
-        user.setName(nombre.getText());
-        user.setprice(monto.getText());
-        user.setDetail(detalle.getText());
-        user.setState(check.isSelected());
-
-        json += "{\n" +
-                "  \"name\": \"" + user.getName() + "\",\n" +   
-                "  \"price\": \"" + user.getPrice() + "\",\n" +
-                "  \"detail\": \"" + user.getDetail() + "\",\n" +
-                "  \"state\": \"" + user.getState() + "\"\n" +
-                "}";
-
+  try {
+    List<DataProcedure> lista = new ArrayList<>();
+    for (HBox h : ProcedureData) {
+        TextField nameProcedure = (TextField) h.getChildren().get(0);
+        TextField costProcedure = (TextField) h.getChildren().get(1);
+        TextArea detailProcedure = (TextArea) h.getChildren().get(2);
+        CheckBox stateProcedure = (CheckBox) h.getChildren().get(3);
         
-        if (i < data.size() - 1) {
-            json += ",\n";
-        }
+        DataProcedure user = new DataProcedure();
+        user.setName(nameProcedure.getText());
+        user.setprice(costProcedure.getText());
+        user.setDetail(detailProcedure.getText());
+        user.setState(stateProcedure.isSelected());
+        lista.add(user);
     }
-
-    json += "\n]"; 
-
-    Files.writeString(archivo, json);
-
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Files.writeString(archivo, gson.toJson(lista));
     System.out.println("Datos guardados");
-
 } catch (IOException e) {
+    System.out.println("Error al guardar: " + e.getMessage());
 }
   
 }
 
 private void buscar(String texto){
-
     int y = 10;
+    for(int i = 0; i < ProcedureData.size(); i++){
 
-    for(int i = 0; i < data.size(); i++){
-
-        HBox h = data.get(i);
+        HBox h = ProcedureData.get(i);
         TextField campo = (TextField) h.getChildren().get(0);
 
         if(campo.getText().toLowerCase().contains(texto.toLowerCase())){
@@ -214,108 +179,49 @@ private void buscar(String texto){
             h.setLayoutY(y);
 
             y += 40;
-
         }else{
-
             h.setVisible(false);
             h.setManaged(false);
-
         }
     }
 }
-    
 
 public void cargar() {
-
     try {
         if (!Files.exists(archivo)) return;
-
         String json = Files.readString(archivo);
+        if (json.isBlank()) return;
 
-        if (json.equals("[\n\n]")) return;
+        Gson gson = new Gson();
+        DataProcedure[] lista = gson.fromJson(json, DataProcedure[].class);
 
-       
-        json = json.replace("[", "").replace("]", "");
-
-       
-        String[] objetos = json.split("\\},");
-
-        for (String obj : objetos) {
-            obj = obj.replace("{", "").replace("}", "").trim();
-
-           
-            String name = obj.split("\"name\"\\s*:\\s*\"")[1].split("\"")[0];
-            String price = obj.split("\"price\"\\s*:\\s*\"")[1].split("\"")[0];
-            String detail = obj.split("\"detail\"\\s*:\\s*\"")[1].split("\"")[0];
-            String state = obj.split("\"state\"\\s*:\\s*\"")[1].split("\"")[0];
-
+        for (DataProcedure dp : lista) {
             Add();
-
-            HBox h = data.get(data.size() - 1); 
-
+            HBox h = ProcedureData.get(ProcedureData.size() - 1);
             TextField nombreField = (TextField) h.getChildren().get(0);
             TextField monto = (TextField) h.getChildren().get(1);
             TextArea detalleField = (TextArea) h.getChildren().get(2);
             CheckBox check = (CheckBox) h.getChildren().get(3);
+            nombreField.setText(dp.getName());
+            monto.setText(dp.getPrice());
+            detalleField.setText(dp.getDetail());
+            check.setSelected(dp.getState());
 
-            nombreField.setText(name);
-            monto.setText(price);
-            detalleField.setText(detail);
-            check.setSelected(Boolean.parseBoolean(state));
-            
-             nombreField.setDisable(true);
+            nombreField.setDisable(true);
             monto.setDisable(true);
             detalleField.setDisable(true);
             check.setDisable(true);
-       
         }
-
     } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
     }
 }
-
-public void initialize(){
-cargar();
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        cargar();
    
     buscador.textProperty().addListener((obs, viejo, nuevo) -> {
         buscar(nuevo);
     });
-
-}
-
-public List<DataProcedure> leerJson() {
-    List<DataProcedure> lista = new ArrayList<>();
-
-    try {
-        if (!Files.exists(archivo)) return lista;
-
-        String json = Files.readString(archivo);
-
-        if (json.equals("[\n\n]")) return lista;
-
-        json = json.replace("[", "").replace("]", "");
-        String[] objetos = json.split("\\},");
-
-        for (String obj : objetos) {
-            obj = obj.replace("{", "").replace("}", "").trim();
-
-            String name = obj.split("\"name\"\\s*:\\s*\"")[1].split("\"")[0];
-            String price = obj.split("\"price\"\\s*:\\s*\"")[1].split("\"")[0];
-            String detail = obj.split("\"detail\"\\s*:\\s*\"")[1].split("\"")[0];
-            String state = obj.split("\"state\"\\s*:\\s*\"")[1].split("\"")[0];
-
-            DataProcedure dp = new DataProcedure();
-            dp.setName(name);
-            dp.setprice(price);
-            dp.setDetail(detail);
-            dp.setState(Boolean.valueOf(state));
-
-            lista.add(dp);
-        }
-
-    } catch (IOException e) {
     }
-
-    return lista;
-}
 }

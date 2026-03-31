@@ -3,10 +3,11 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -16,48 +17,61 @@
 
 <BorderPane prefHeight="556.0" prefWidth="553.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.AdministratorController">
    <center>
-      <VBox prefHeight="589.0" prefWidth="770.0">
-         <children>
-            <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="565.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="40.0" tabMaxWidth="200.0" tabMinHeight="40.0" tabMinWidth="100.0" VBox.vgrow="ALWAYS">
-              <tabs>
-                <Tab fx:id="tab1" text="Tramites" />
-                <Tab fx:id="tab2" text="Sucursales y Estaciones" />
-                  <Tab fx:id="tab3" text="Registro usuarios" />
-                  <Tab fx:id="tab4" text="Frecuencia de Usuarios">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-              </tabs>
-            </TabPane>
-         </children>
-      </VBox>
+      <SplitPane dividerPositions="0.5" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="82.0" prefWidth="554.0" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane maxHeight="100.0" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="553.0">
+               <children>
+                  <HBox fx:id="rootH" alignment="CENTER_RIGHT" maxHeight="400.0" maxWidth="1.7976931348623157E308" minHeight="20.0" prefHeight="70.0" prefWidth="770.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fx:id="LogoAdim" fitHeight="86.0" fitWidth="83.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <Label fx:id="LName" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="85.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </Label>
+                        <Region prefHeight="100.0" prefWidth="196.0" HBox.hgrow="ALWAYS" />
+                        <Accordion maxHeight="1.7976931348623157E308" maxWidth="150.0" prefHeight="100.0" prefWidth="98.0" HBox.hgrow="ALWAYS">
+                           <panes>
+                            <TitledPane alignment="TOP_CENTER" animated="false" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="81.0" minHeight="10.0" prefHeight="100.0" prefWidth="81.0" text="Opciones">
+                                 <content>
+                                    <VBox prefHeight="22.0" prefWidth="100.0">
+                                       <children>
+                                          <Button alignment="TOP_CENTER" mnemonicParsing="false" onAction="#onActionOption" prefHeight="24.0" prefWidth="131.0" text="Parametros Generales" />
+                                          <Button mnemonicParsing="false" onAction="#onActionAuxs" text="Parametros" />
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </TitledPane>
+                           </panes>
+                        </Accordion>
+                     </children>
+                  </HBox>
+               </children>
+            </AnchorPane>
+            <VBox prefHeight="447.0" prefWidth="552.0">
+               <children>
+                  <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="565.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="40.0" tabMaxWidth="200.0" tabMinHeight="40.0" tabMinWidth="100.0" VBox.vgrow="ALWAYS">
+                    <tabs>
+                      <Tab fx:id="tab1" text="Tramites" />
+                      <Tab fx:id="tab2" text="Sucursales y Estaciones" />
+                        <Tab fx:id="tab3" text="Registro usuarios" />
+                        <Tab fx:id="tab4" text="Frecuencia de Usuarios">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </VBox>
+        </items>
+      </SplitPane>
    </center>
-   <top>
-      <HBox alignment="CENTER_RIGHT" maxHeight="400.0" maxWidth="1.7976931348623157E308" minHeight="20.0" prefHeight="70.0" prefWidth="770.0" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="65.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
-               <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </HBox.margin>
-               <image>
-                  <Image url="@../../../../../../../../../Tarea1-Logos/Apple.png" />
-               </image>
-            </ImageView>
-            <Region prefHeight="70.0" prefWidth="538.0" HBox.hgrow="ALWAYS" />
-            <Accordion maxHeight="1.7976931348623157E308" maxWidth="150.0" prefHeight="92.0" prefWidth="185.0" HBox.hgrow="ALWAYS">
-               <panes>
-                <TitledPane alignment="TOP_CENTER" animated="false" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="60.0" minHeight="10.0" prefHeight="92.0" prefWidth="240.0" text="Opciones">
-                     <content>
-                        <Button alignment="TOP_CENTER" mnemonicParsing="false" onAction="#onActionOption" prefHeight="24.0" prefWidth="131.0" text="Parametros Generales" />
-                     </content>
-                  </TitledPane>
-               </panes>
-            </Accordion>
-         </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </HBox>
-   </top>
 </BorderPane>

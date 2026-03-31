@@ -1,5 +1,7 @@
 package cr.ac.una.tarea.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
 import javafx.stage.FileChooser;
@@ -13,15 +15,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 public class LoginController {
-private String Name;
-private String Pin;
-private String Info;
-private Boolean Image=false;
 
 @FXML
     private TextField Tname;
@@ -41,54 +41,57 @@ private Boolean Image=false;
     private Label Logo;
     @FXML
     private Label PIn;
+
+     private final Path archivo = Path.of("Jsons/GenenarlData.json");
     @FXML
-    private VBox vbox;
-    
-     private final Path archivo = Path.of("GenenarlData.json");
+    private VBox root;
+    @FXML
+    private Label LblMensaje;
     
 @FXML
-    private void Save(){
-        TPin.getParent().requestFocus();
-         Tname.getParent().requestFocus();
-        TInfo.getParent().requestFocus();
+   private void Save() {
+    TPin.getParent().requestFocus();
+    Tname.getParent().requestFocus();
+    TInfo.getParent().requestFocus();
 
-     
-      if(!Tname.getText().isEmpty() && !TInfo.getText().isEmpty()&& !TPin.getText().isEmpty()&& !ImageLogo.getImage().getUrl().equals("file:/Joshua/Tarea1-Logos/Inicial.png") ){
-      BNext.setOpacity(1.0);
-      BNext.setDisable(false);
-      }
-       verificarDatos();
-     
-     try {
+   if (Tname.getText() != null && !Tname.getText().isBlank() && 
+    TInfo.getText() != null && !TInfo.getText().isBlank() && 
+    TPin.getText() != null && TPin.getText().length() == 4 && 
+    ImageLogo.getImage() != null && !ImageLogo.getImage().getUrl().equals("../resources/cr/ac/una/tarea/resource/Inicial.png")) {
+    BNext.setOpacity(1.0);
+    BNext.setDisable(false);
+}
+    verifyData();
+
+    try {
         DataParametres user = new DataParametres();
         user.setName(Tname.getText());
-        user.setInfo(TInfo.getText());
+        if (TInfo.getText().isBlank()) {
+    user.setInfo("");
+       TInfo.setText("");
+} else {
+    user.setInfo(TInfo.getText());
+}
+        if (TPin.getText() != null && TPin.getText().length() == 4) {
         user.setPin(TPin.getText());
-        if(ImageLogo.getImage().getUrl().equals("file:/Joshua/Tarea1-Logos/Inicial.png")==false){
-        user.setImageUrl(ImageLogo.getImage().getUrl());}
+    } else {
+        user.setPin("");
+        TPin.setText("");
+        mostrarMensaje("Informacion Invalida");
+    }
+        if (ImageLogo.getImage() != null &&
+    ImageLogo.getImage().getUrl() != null &&
+    !ImageLogo.getImage().getUrl().contains("Inicial.png")) {
 
-        String json = "{\n" +
-                      "  \"name\": \"" + user.getName() + "\"\n" +
-                "  \"Informacion\": \"" + user.getInfo() + "\"\n" +
-                "  \"Pin\": \"" + user.getPin() + "\"\n" +
-                 "  \"image\": \"" + user.getImageUrl() + "\"\n" +
-                      "}";
-
-        Files.writeString(archivo, json);
-
+    user.setImageUrl(ImageLogo.getImage().getUrl());
+}
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Files.writeString(archivo, gson.toJson(user));
     } catch (IOException e) {
-
+        System.out.println("Error al guardar: " + e.getMessage());
     }
-      
-      
-      
-    }
-    
-    
-    
-    
-    
-    
+}
+   
 @FXML
      private void Insert1(){
          FileChooser fileChooser = new FileChooser();
@@ -105,7 +108,6 @@ private Boolean Image=false;
     if (archivo1 != null) {
         Image imagen = new Image(archivo1.toURI().toString());
         ImageLogo.setImage(imagen);
-        //Image=true;
     }
      }
     
@@ -113,12 +115,20 @@ private Boolean Image=false;
      
     public void initialize() throws IOException {
         cargar();
-        verificarDatos();
+        verifyData();
       
+        TPin.textProperty().addListener((obs, oldVal, newVal) -> {
+    if (!newVal.matches("\\d*")) {
+        TPin.setText(newVal.replaceAll("[^\\d]", ""));
+    }
+});
+        
+        
+        
           Title.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             Title.styleProperty().bind(
-                newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );
             Information.styleProperty().bind(
                 newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
@@ -129,10 +139,19 @@ private Boolean Image=false;
             PIn.styleProperty().bind(
                 newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );
+                 Tname.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
+        TInfo.styleProperty().bind(
+            newScene.widthProperty().multiply(0.014).asString("-fx-font-size: %.2fpx;")
+        );
+         TPin.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
         }
     });
    
-   vbox.sceneProperty().addListener((obs, oldScene, newScene) -> {
+  /* root.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             newScene.widthProperty().addListener((o, oldVal, newVal) -> {
                 double spacing = newVal.doubleValue() / 40;
@@ -140,64 +159,83 @@ private Boolean Image=false;
                 if (spacing < 20) spacing = 20;
                 if (spacing > 50) spacing = 50;
 
-                vbox.setSpacing(spacing);
+                root.setSpacing(spacing);
 
             });
         }
     });
-    }
+    */}
     
-    private void cargar() {
-        try {
-            if (!Files.exists(archivo)) return;
+private void cargar() {
+    try {
+        if (!Files.exists(archivo)) return;
+        String json = Files.readString(archivo);
+        if (json.isBlank()) return;
 
-            String json = Files.readString(archivo);
+        Gson gson = new Gson();
+        DataParametres user = gson.fromJson(json, DataParametres.class);
 
-            String name = json.split("\"name\"\\s*:\\s*\"")[1].split("\"")[0];
-             String info = json.split("\"Informacion\"\\s*:\\s*\"")[1].split("\"")[0];
-              String pin = json.split("\"Pin\"\\s*:\\s*\"")[1].split("\"")[0];
-               String imageUrl = json.split("\"image\"\\s*:\\s*\"")[1].split("\"")[0];
-              
-            Tname.setText(name);
-            TInfo.setText(info);
-            TPin.setText(pin);
-            
-             if (imageUrl != null && !imageUrl.isBlank()) {
-            ImageLogo.setImage(new Image(imageUrl));
+        Tname.setText(user.getName());
+        TInfo.setText(user.getInfo());
+        TPin.setText(user.getPin());
+
+        if (user.getImageUrl() != null && !user.getImageUrl().isBlank()) {
+            ImageLogo.setImage(new Image(user.getImageUrl()));
         }
-          
-        } catch (IOException e) {
-    
-        } 
+    } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
     }
+}
 
-private void verificarDatos() {
-    if (!Tname.getText().isEmpty() && !TInfo.getText().isEmpty() && !TPin.getText().isEmpty()&& !ImageLogo.getImage().getUrl().equals("file:/Joshua/Tarea1-Logos/Inicial.png")) {
+private void verifyData() {
+    if (Tname.getText() != null && !Tname.getText().isBlank() &&
+        TInfo.getText() != null && !TInfo.getText().isBlank() &&
+        TPin.getText() != null && TPin.getText().length() == 4 &&
+        ImageLogo.getImage() != null &&
+        ImageLogo.getImage().getUrl() != null &&
+        !ImageLogo.getImage().getUrl().contains("Inicial.png")) {
+
         BNext.setOpacity(1.0);
         BNext.setDisable(false);
-       
     } else {
-        BNext.setOpacity(0.5);
+        BNext.setOpacity(0.2);
         BNext.setDisable(true);
     }
 }
        
        
-       public String verificarDatos1() throws IOException{
-            String json = Files.readString(archivo);
+      public String FullParameters() throws IOException {
+    if (!Files.exists(archivo)) return "LoginView";
+    String json = Files.readString(archivo);
+    if (json.isBlank()) return "LoginView";
 
-            String name = json.split("\"name\"\\s*:\\s*\"")[1].split("\"")[0];
-             String info = json.split("\"Informacion\"\\s*:\\s*\"")[1].split("\"")[0];
-              String pin = json.split("\"Pin\"\\s*:\\s*\"")[1].split("\"")[0];
-               String imageUrl = json.split("\"image\"\\s*:\\s*\"")[1].split("\"")[0];
-              
-         if(!name.equals("")){return "AdministratorView";}
-         else{return "LoginView";}
-       
+    Gson gson = new Gson();
+    DataParametres user = gson.fromJson(json, DataParametres.class);
+
+   if (user.getName() == null || user.getName().isBlank() || 
+    user.getInfo() == null || user.getInfo().isBlank() || 
+    user.getPin() == null || user.getPin().isBlank() ||
+    user.getImageUrl() == null || 
+    user.getImageUrl().contains("Inicio.png")) {
+        return "LoginView";
+   }else {
+        return "AdministratorView";
+    }
 }
 
     @FXML
     private void onActionChangeView(ActionEvent event) throws IOException {
          App.setRoot("AdministratorView");
     }
+    
+    
+    private void mostrarMensaje(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
+    
 }

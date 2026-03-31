@@ -75,6 +75,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <includeSystemScope>true</includeSystemScope>
               <transformers>
                 <transformer>
                   <mainClass>cr.ac.una.tarea.App</mainClass>
@@ -97,6 +98,22 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.sarxos</groupId>
+      <artifactId>webcam-capture</artifactId>
+      <version>0.3.12</version>
+      <scope>system</scope>
+      <systemPath>C:\Joshua\Tarea\libs\webcam-capture-0.3.12.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.nativelibs4java</groupId>
+      <artifactId>bridj</artifactId>
+      <version>0.7.0</version>
+      <scope>system</scope>
+      <systemPath>C:\Joshua\Tarea\libs\bridj-0.7.0.jar</systemPath>
+    </dependency>
+  </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>25</maven.compiler.target>

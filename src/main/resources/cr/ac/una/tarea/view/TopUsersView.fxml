@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 
 <VBox prefHeight="725.0" prefWidth="753.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.TopUsersController">
    <children>
@@ -20,26 +19,41 @@
          <children>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="659.0" prefWidth="337.0" HBox.hgrow="ALWAYS">
                <children>
-                  <ScrollPane prefHeight="564.0" prefWidth="369.0" VBox.vgrow="ALWAYS">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-                    </content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="564.0" prefWidth="369.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox fx:id="rootTop" prefHeight="200.0" prefWidth="100.0" />
+                     </content>
                   </ScrollPane>
                </children>
             </VBox>
-            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="659.0" prefWidth="354.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="659.0" prefWidth="354.0" HBox.hgrow="ALWAYS">
                <children>
-                  <HBox alignment="CENTER" maxHeight="100.0" prefHeight="37.0" prefWidth="385.0" spacing="20.0" VBox.vgrow="ALWAYS">
+                  <Button mnemonicParsing="false" onAction="#onActionSinParametros" text="Sin Parametros" />
+                  <HBox alignment="CENTER" maxHeight="100.0" prefHeight="37.0" prefWidth="385.0" spacing="10.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <DatePicker promptText="Desde" />
-                        <DatePicker promptText="Hasta" />
+                        <DatePicker fx:id="FDesde" promptText="Desde" />
+                        <DatePicker fx:id="FHasta" promptText="Hasta" />
+                        <Button mnemonicParsing="false" onAction="#onActionBuscar" text="Buscar" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <HBox alignment="TOP_CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label text="Sucursales y Estaciones" />
-                     </children>
-                  </HBox>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <VBox maxHeight="1.7976931348623157E308" minHeight="100.0">
+                           <children>
+                              <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="383.0" spacing="20.0">
+                                 <children>
+                                    <Label text="Sucursal:" />
+                                    <Label fx:id="LSucursal" text="Sin Sucursal" />
+                                    <Label text="Estacion:" />
+                                    <Label fx:id="LEstacion" text="Sin Estacion" />
+                                 </children>
+                              </HBox>
+                              <HBox fx:id="rootEsciones" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
+                  <VBox fx:id="rootGrafics" prefHeight="346.0" prefWidth="385.0" />
                </children>
             </VBox>
          </children>

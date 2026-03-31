@@ -2,22 +2,39 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.ManagementTokensController">
    <children>
+      <HBox alignment="CENTER" maxHeight="70.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sucursal:" HBox.hgrow="ALWAYS" />
+            <Label fx:id="LSucursal" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin sucursal" HBox.hgrow="ALWAYS" />
+            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Estacion:" HBox.hgrow="ALWAYS" />
+            <Label fx:id="LEstacion" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin Estacion" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <ScrollPane prefHeight="134.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+         <content>
+            <HBox fx:id="rootSucursal" prefHeight="114.0" prefWidth="600.0" />
+         </content>
+      </ScrollPane>
       <HBox maxHeight="50.0" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
          <children>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="LLamar a:" HBox.hgrow="ALWAYS" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Siguiente" HBox.hgrow="ALWAYS" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Repetir" HBox.hgrow="ALWAYS" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Especifico" HBox.hgrow="ALWAYS" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Preferencial" HBox.hgrow="ALWAYS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionNext" text="Siguiente" HBox.hgrow="ALWAYS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionRepit" text="Repetir" HBox.hgrow="ALWAYS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionEspecific" text="Especifico" HBox.hgrow="ALWAYS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionPreferential" text="Preferencial" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="81.0" prefWidth="600.0" VBox.vgrow="ALWAYS" />
-      <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="254.0" prefWidth="600.0" VBox.vgrow="ALWAYS" />
+      <HBox fx:id="rootAtencion" alignment="CENTER" maxHeight="100.0" maxWidth="1.7976931348623157E308" prefHeight="122.0" prefWidth="600.0" VBox.vgrow="ALWAYS" />
+      <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
+         <content>
+            <VBox fx:id="rootTramits" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" />
+         </content>
+      </ScrollPane>
    </children>
 </VBox>

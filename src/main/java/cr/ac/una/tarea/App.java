@@ -10,23 +10,20 @@ import java.util.List;
 
 public class App extends Application {
     private static Scene scene;
-    LoginController l= new LoginController();
+    LoginController l = new LoginController();
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("OfficialsView"), 800, 600);
-
-        
         List<String> params = getParameters().getRaw();
-        String param = params.isEmpty() ? "A" : params.get(0);
+        String param = params.isEmpty() ? "login" : params.get(0);
 
-        if (param.equals("F")) {
-            scene.setRoot(loadFXML("OfficialsView")); 
-        } else {
-            String vista= l.verificarDatos1(); 
-            scene.setRoot(loadFXML(vista));
-        }
+        String vista = switch (param) {
+            case "officials" -> "OfficialsView";
+            case "topusers"  -> "TopUsersView";
+            default          -> l.FullParameters(); // flujo normal
+        };
 
+        scene = new Scene(loadFXML(vista), 800, 600);
         stage.setScene(scene);
         stage.show();
     }
@@ -43,6 +40,6 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args); 
+        launch(args);
     }
 }
