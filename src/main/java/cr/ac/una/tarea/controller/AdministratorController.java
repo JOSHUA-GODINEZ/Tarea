@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,6 +20,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class AdministratorController implements Initializable {
 
@@ -58,7 +60,11 @@ public class AdministratorController implements Initializable {
     }
 }
     
-    
+      @FXML
+    private void onActionSalir(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -67,7 +73,7 @@ public class AdministratorController implements Initializable {
             FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/ProcedureView.fxml"));
             Parent root1 = loader1.load();
             tab1.setContent(root1);
-
+            
             FXMLLoader loader2 = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/BranchesStationsView.fxml"));
             Parent root2 = loader2.load();
             tab2.setContent(root2);

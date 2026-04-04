@@ -10,15 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
@@ -27,8 +26,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -52,6 +50,10 @@ private EstacionData estacionSeleccionada = null;
     private DatePicker FHasta;
     @FXML
     private VBox rootGrafics;
+@FXML
+private BarChart<String, Number> GraficLines;
+@FXML
+private PieChart GraficPie;
    
     
     private void cargarTop(){
@@ -85,8 +87,6 @@ private EstacionData estacionSeleccionada = null;
 if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion.getText())) {
     continue;
 }
- 
- 
     HBox h = new HBox();
     Label lblNombre = new Label(tu.nombre);
     Label lblCedula = new Label(tu.cedula);
@@ -98,7 +98,8 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     IMFoto.setFitWidth(60);
     h.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto, lblCantidad);
     h.setSpacing(10);
-    h.setAlignment(Pos.CENTER_LEFT);
+    h.setAlignment(Pos.CENTER);
+    h.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
     h.setPadding(new Insets(5));
     rootTop.getChildren().add(h);
 }
@@ -136,7 +137,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
              
             VBox vEstaciones = new VBox();
             vEstaciones.setSpacing(5);
-
+            vEstaciones.getStyleClass().add("mi-rectangulo");
             for (EstacionData ed : sd.estaciones) {
                 HBox hEst = new HBox();
                 Label lblNombre = new Label(ed.nombre);
@@ -146,7 +147,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
                 hEst.getChildren().addAll(lblNombre, check);
                 hEst.setSpacing(10);
                 hEst.setAlignment(Pos.CENTER_LEFT);
-                hEst.setStyle("-fx-border-color: blue;");
+               // hEst.setStyle("-fx-border-color: blue;");
                 hEst.setPadding(new Insets(5));
 
                 hEst.setOnMouseClicked(ev -> {
@@ -199,54 +200,58 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     
     
     
-        private void cargarGraficos() {
+private void cargarGraficos() {
     try {
         Path archivoTop = Paths.get("Jsons/TopUsers.json");
         if (!Files.exists(archivoTop)) return;
         String json = Files.readString(archivoTop);
         if (json.isBlank()) return;
-
         Gson gson = new Gson();
         TopUsersData[] topUsers = gson.fromJson(json, TopUsersData[].class);
 
-        // Agrupar por sucursal
-        Map<String, Integer> porSucursal = new HashMap<>();
-        Map<String, Integer> porEstacion = new HashMap<>();
+        List<String> sucursalNames = new ArrayList<>();
+        List<Integer> sucursalCounts = new ArrayList<>();
+        List<String> estacionNames = new ArrayList<>();
+        List<Integer> estacionCounts = new ArrayList<>();
+
         for (TopUsersData tu : topUsers) {
-            porSucursal.merge(tu.sucursal, tu.cantidad, Integer::sum);
-            porEstacion.merge(tu.estacion, tu.cantidad, Integer::sum);
+            int idxSuc = sucursalNames.indexOf(tu.sucursal);
+            if (idxSuc == -1) {
+                sucursalNames.add(tu.sucursal);
+                sucursalCounts.add(tu.cantidad);
+            } else {
+                sucursalCounts.set(idxSuc, sucursalCounts.get(idxSuc) + tu.cantidad);
+            }
+
+            int idxEst = estacionNames.indexOf(tu.estacion);
+            if (idxEst == -1) {
+                estacionNames.add(tu.estacion);
+                estacionCounts.add(tu.cantidad);
+            } else {
+                estacionCounts.set(idxEst, estacionCounts.get(idxEst) + tu.cantidad);
+            }
         }
 
-        // Grafico de barras por sucursal
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle("Atenciones por Sucursal");
-        xAxis.setLabel("Sucursal");
-        yAxis.setLabel("Cantidad");
+     GraficLines.setTitle("Atenciones por Sucursal");
+     ((CategoryAxis) GraficLines.getXAxis()).setLabel("Sucursal");
+     ((NumberAxis) GraficLines.getYAxis()).setLabel("Cantidad");
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        for (Map.Entry<String, Integer> entry : porSucursal.entrySet()) {
-            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-        }
-        barChart.getData().add(series);
-        barChart.setLegendVisible(false);
+        for (int i = 0; i < sucursalNames.size(); i++) {
+    series.getData().add(new XYChart.Data<>(sucursalNames.get(i), sucursalCounts.get(i)));
+     }
+        GraficLines.getData().clear();
+          GraficLines.getData().add(series);
+         GraficLines.setLegendVisible(false);
 
-        // Grafico pie por estacion
-        PieChart pieChart = new PieChart();
-        pieChart.setTitle("Atenciones por Estacion");
-        for (Map.Entry<String, Integer> entry : porEstacion.entrySet()) {
-            pieChart.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
-        }
-
-        rootGrafics.getChildren().clear();
-        rootGrafics.getChildren().addAll(barChart, pieChart);
+        // Cargar PieChart
+        GraficPie.setTitle("Atenciones por Estacion");
+        GraficPie.getData().clear();
+        for (int i = 0; i < estacionNames.size(); i++) {
+        GraficPie.getData().add(new PieChart.Data(estacionNames.get(i), estacionCounts.get(i)));    
+       }
 
     } catch (IOException e) {
         System.out.println("Error al cargar graficos: " + e.getMessage());
     }
 }
-    
-    
-    
-    
 }

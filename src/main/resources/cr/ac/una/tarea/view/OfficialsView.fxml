@@ -1,44 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.OfficialsController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.OfficialsController">
    <center>
       <SplitPane dividerPositions="0.1987951807228916" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
         <items>
           <AnchorPane maxHeight="100.0" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <HBox fx:id="rootH" minHeight="0.0" prefHeight="100.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <HBox fx:id="rootH" alignment="TOP_CENTER" minHeight="0.0" prefHeight="100.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <ImageView fx:id="LogoOfficial" fitHeight="80.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
-                        <Label fx:id="LName" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="76.0" prefWidth="130.0" text="Label" HBox.hgrow="ALWAYS">
+                        <Button mnemonicParsing="false" prefHeight="56.0" prefWidth="62.0" styleClass="mi-BtnSalir" />
+                        <Button mnemonicParsing="false" onAction="#onActionSwitchP" text="Paranetros Generales" />
+                        <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="76.0" prefWidth="239.0" HBox.hgrow="ALWAYS">
                            <padding>
                               <Insets left="20.0" />
                            </padding>
                         </Label>
-                        <Region prefHeight="76.0" prefWidth="219.0" HBox.hgrow="ALWAYS" />
-                        <Accordion maxWidth="300.0" HBox.hgrow="ALWAYS">
-                           <panes>
-                              <TitledPane animated="false" focusTraversable="false" text="untitled 1">
-                                 <content>
-                                    <Button mnemonicParsing="false" onAction="#onActionSwitchP" text="Paranetros Generales" />
-                                 </content>
-                              </TitledPane>
-                           </panes>
-                        </Accordion>
+                        <ImageView fx:id="LogoOfficial" fitHeight="80.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                </children>

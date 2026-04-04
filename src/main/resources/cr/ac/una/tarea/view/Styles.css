@@ -1,5 +1,5 @@
 .mi-botonAdd {
--fx-background-image: url("../resource/Agregar.png");
+-fx-background-image: url("../resource/Agregar1.png");
     -fx-background-size: stretch;   /* estira la imagen */
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -32,32 +32,53 @@
     -fx-background-radius: 50px;
 }
 .mi-botonSave {
--fx-background-image: url("../resource/Guardar2.png");
+-fx-background-image: url("../resource/Guardar.png");
     -fx-background-size: stretch;   /* estira la imagen */
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-pref-width: 100;
-    -fx-pref-height: 100;
-     -fx-max-width: 150;
-     -fx-max-height: 100;
-    -fx-padding: 0;
+        -fx-pref-width: 80;
+    -fx-pref-height: 30;
+     -fx-max-width: 300;
     -fx-background-radius: 50px;
 }
 
 .mi-botonGo {
--fx-background-image: url("../resource/Avanzar2.png");
+-fx-background-image: url("../resource/Avanzar.png");
     -fx-background-size: stretch;   /* estira la imagen */
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
--fx-min-width: 10;
--fx-min-height: 10;
--fx-pref-width: 50;
--fx-pref-height: 100;
--fx-max-width: 150;
--fx-max-height: 40;
+    -fx-pref-width: 80;
+    -fx-pref-height: 30;
+     -fx-max-width: 300;
     -fx-padding: 0;
     -fx-background-radius: 50px;
 }
+
+
+.mi-botonWithoutParameters {
+-fx-background-image: url("../resource/SinParametros.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+    
+    -fx-background-radius: 50px;
+}
+
+
+
+
+
+.mi-botonSearch {
+-fx-background-image: url("../resource/Buscar.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+    -fx-background-radius: 50px;
+}
+
+
 
 
 .mi-panel-fondo{
@@ -77,6 +98,78 @@
 
 
 
+.mi-botonImage{
+    
+    -fx-background-image: url("../resource/Imagen.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+    
+}
+
+.mi-botonFoto{
+    
+    -fx-background-image: url("../resource/Camara.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+    
+}
+
+
+
+.mi-BtnSalir{
+    -fx-background-image: url("../resource/Salir.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+}
+
+.mi-BtnActualizar{
+    -fx-background-image: url("../resource/Actualizar1.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+
+}
+.mi-BtnNext{
+    -fx-background-image: url("../resource/siguiente.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+
+}
+.mi-BtnRepit{
+    -fx-background-image: url("../resource/repetir.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+
+}
+.mi-BtnEspecific{
+    -fx-background-image: url("../resource/Especifico.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+
+}
+.mi-BtnPreferencial{
+    -fx-background-image: url("../resource/Preferencial.png");
+    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-color:#ffffff;
+
+}
+
+
 
 
 .mi-botonSave:pressed,.mi-botonAdd:pressed,.mi-botonDelete:pressed,.mi-botonEdit:pressed,.mi-botonGo:pressed{
@@ -87,4 +180,75 @@
 }
 .mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover {
     -fx-cursor: hand;
+}
+.mi-Label{
+    
+    -fx-border-color: #66ccff;
+    -fx-border-width: 5;
+}
+
+
+.mi-rectangulo{
+    -fx-border-color: #66ccff;
+    -fx-border-width: 5;
+      -fx-background-color:#006699;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+
+
+.mi-Titulos {
+    -fx-background-color: #006699;
+}
+
+.mi-Titulos .label {
+    -fx-text-fill: white;
+}
+.seleccionado {
+    -fx-border-color: #00ffcc;
+    -fx-border-width: 7;
+}
+.tab-pane {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.tab-pane .tab-header-background, .tab, .tab:selected{
+    -fx-border-radius: 40;
+     -fx-background-color: #006699;
+    -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-text-fill: white;
+}
+.tab-pane .headers-region {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.tab{
+    -fx-background-color: #3399ff;
+    -fx-text-fill: #ffffff;
+      -fx-font-size:15px;
+}
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+
+.tab:selected{   
+    -fx-border-color: #00ffcc;
+    -fx-border-width: 6;          
+             }
+             .headers-region {
+    -fx-background-color: red;
+}
+
+.tab-header-background {
+    -fx-background-color: yellow;
+}.mi-rectangulo1{
+      -fx-background-color:#006699;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }

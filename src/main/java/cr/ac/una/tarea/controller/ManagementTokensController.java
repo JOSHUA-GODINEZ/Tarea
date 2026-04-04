@@ -59,12 +59,14 @@ private EstacionData estacionSeleccionada = null;
 
         for (SucursalData sd : sucursales) {
             Accordion acc = new Accordion();
+         //  acc.getStyleClass().add("mi-rectangulo");
             TitledPane pane = new TitledPane();
             pane.setText(sd.nombre);
-
+         //   pane.getStyleClass().add("mi-rectangulo");
             VBox vEstaciones = new VBox();
             vEstaciones.setSpacing(5);
-
+            vEstaciones.getStyleClass().add("mi-rectangulo");
+            
             for (EstacionData ed : sd.estaciones) {
                 HBox hEst = new HBox();
                 Label lblNombre = new Label(ed.nombre);
@@ -74,9 +76,9 @@ private EstacionData estacionSeleccionada = null;
                 hEst.getChildren().addAll(lblNombre, check);
                 hEst.setSpacing(10);
                 hEst.setAlignment(Pos.CENTER_LEFT);
-                hEst.setStyle("-fx-border-color: blue;");
+               // hEst.setStyle("-fx-border-color: blue;");
                 hEst.setPadding(new Insets(5));
-
+    
                 hEst.setOnMouseClicked(ev -> {
                     sucursalSeleccionada = sd;
                     estacionSeleccionada = ed;
@@ -85,7 +87,7 @@ private EstacionData estacionSeleccionada = null;
                     System.out.println("Sucursal: " + sd.nombre + " Estacion: " + ed.nombre);
                      cargarTramites();
                 });
-
+                 hEst.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
                 vEstaciones.getChildren().add(hEst);
             }
 
@@ -97,10 +99,7 @@ private EstacionData estacionSeleccionada = null;
         System.out.println("Error al cargar: " + e.getMessage());
     }
 }
-    
-    
-    
-    
+
     
     
     
@@ -146,7 +145,8 @@ public void cargarTramites() {
                     h.setSpacing(10);
                     h.setAlignment(Pos.CENTER);
                     h.setPadding(new Insets(5));
-                    h.setStyle("-fx-border-color: blue;");
+                  //  h.setStyle("-fx-border-color: blue;");
+                  h.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
             h.setOnMouseClicked(ev -> {
     selectedTramit = h;
 });
@@ -213,7 +213,8 @@ private void onActionNext(ActionEvent event) {
                         IMFoto.setFitHeight(100);
                         IMFoto.setFitWidth(100);       
                         hUsuario.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto);
-                        hUsuario.setStyle("-fx-border-color: blue;");
+                     //   hUsuario.setStyle("-fx-border-color: blue;");
+                    
                         encontrado = true;
                         
                         // Guardar en TopUsers.json
@@ -264,7 +265,7 @@ private void onActionNext(ActionEvent event) {
             hUsuario.setSpacing(10);
             hUsuario.setAlignment(Pos.CENTER_LEFT);
             hUsuario.setPadding(new Insets(5));
-            
+             hUsuario.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
             rootTramits.getChildren().remove(hTramite);
             rootAtencion.getChildren().add(hUsuario);
             rootAtencion.getChildren().add(hTramite);
@@ -326,7 +327,7 @@ private void onActionEspecific(ActionEvent event) {
                         IMFoto.setFitHeight(100);
                         IMFoto.setFitWidth(100);
                         hUsuario.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto);
-                        hUsuario.setStyle("-fx-border-color: blue;");
+                      
                         encontrado = true;
 
                         List<TopUsersData> topUsers = new ArrayList<>();
@@ -373,7 +374,7 @@ private void onActionEspecific(ActionEvent event) {
             hUsuario.setSpacing(10);
             hUsuario.setAlignment(Pos.CENTER_LEFT);
             hUsuario.setPadding(new Insets(5));
-
+            hUsuario.getStyleClass().addAll("mi-rectangulo","mi-Titulos"); 
             rootTramits.getChildren().remove(selectedTramit);
             rootAtencion.getChildren().clear();
             rootAtencion.getChildren().add(hUsuario);
@@ -395,6 +396,7 @@ private void onActionPreferential(ActionEvent event) {
                 rootTramits.getChildren().remove(h);
                 // reusar logica de especific
                 selectedTramit = h;
+                 h.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
                 onActionEspecific(null);
                 break;
             }

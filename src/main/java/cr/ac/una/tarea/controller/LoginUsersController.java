@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
 public class LoginUsersController implements Initializable {
     @FXML
     private VBox rootUsers;
@@ -39,66 +42,104 @@ public class LoginUsersController implements Initializable {
     @FXML
     private TextField searchField;
     
-    private List<HBox> usersData= new ArrayList<>();
-    private HBox selectedUser = null;
+    private List<VBox> usersData= new ArrayList<>();
+    private VBox selectedUser = null;
+    @FXML
+    private Label LblMensaje;
     @FXML
     private void onActionAdd(ActionEvent event) {
-  HBox usersInfo = new HBox();       
+HBox usersInfo = new HBox();       
 TextField name = new TextField();
 TextField id = new TextField();
 TextField numberPhone = new TextField();
 DatePicker dateOfBirth = new DatePicker();
-ImageView userFoto = new ImageView("file:/C:/Joshua/Tarea1-Logos/Inicial.png");
+ImageView userFoto = new ImageView("file:C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/Base.png");
 VBox contain = new VBox();
-Button foto = new Button("Foto");
-Button image = new Button("Imagen");
+Button foto = new Button();
+Button image = new Button();
+VBox upLine = new VBox();
+HBox titles = new HBox();
+Label lblName = new Label("Nombre");
+Label lblId = new Label("Cedula");
+Label lblPhone = new Label("Telefono");
+Label lblDate = new Label("Fecha");
+Label lblPhoto = new Label("       Foto");
 
+///////////////// LABELS CSS
+lblName.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+lblId.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+lblPhone.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+lblDate.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+lblPhoto.setMaxSize(150, Double.MAX_VALUE);
+HBox.setHgrow(lblName, Priority.ALWAYS);
+HBox.setHgrow(lblId, Priority.ALWAYS);
+HBox.setHgrow(lblPhone, Priority.ALWAYS);
+HBox.setHgrow(lblDate, Priority.ALWAYS);
+HBox.setHgrow(lblPhoto, Priority.ALWAYS);
+
+lblName.setAlignment(Pos.CENTER);
+lblId.setAlignment(Pos.CENTER);
+lblPhone.setAlignment(Pos.CENTER);
+lblDate.setAlignment(Pos.CENTER);
+lblPhoto.setAlignment(Pos.CENTER);
+
+///////////////// CSS
 userFoto.setFitHeight(70);
 userFoto.setFitWidth(70);
+upLine.getStyleClass().add("mi-rectangulo");
+upLine.setSpacing(5);
+upLine.setMaxSize(Double.MAX_VALUE, 70);
+titles.setPadding(new Insets(0, 20, 0, 20));
+titles.setAlignment(Pos.CENTER_LEFT);
+titles.getStyleClass().add("mi-Titulos");
+titles.setMaxWidth(Double.MAX_VALUE);
+HBox.setHgrow(titles, Priority.ALWAYS);
+VBox.setVgrow(upLine, Priority.ALWAYS);
 
-usersInfo.setAlignment(Pos.CENTER_LEFT);
+usersInfo.setAlignment(Pos.CENTER);
+usersInfo.setSpacing(40);
+usersInfo.setPadding(new Insets(0, 0, 0, 20));
+usersInfo.setMaxHeight(Double.MAX_VALUE);
+usersInfo.setMinHeight(70);
+usersInfo.setMaxWidth(Double.MAX_VALUE);
 
 name.setMaxWidth(Double.MAX_VALUE);
 id.setMaxWidth(Double.MAX_VALUE);
 numberPhone.setMaxWidth(Double.MAX_VALUE);
 dateOfBirth.setMaxWidth(Double.MAX_VALUE);
-foto.setMaxWidth(Double.MAX_VALUE);
-image.setMaxWidth(Double.MAX_VALUE);
-
+foto.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+image.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+image.getStyleClass().add("mi-botonImage");
+foto.getStyleClass().add("mi-botonFoto");
 HBox.setHgrow(name, Priority.ALWAYS);
 HBox.setHgrow(id, Priority.ALWAYS);
 HBox.setHgrow(numberPhone, Priority.ALWAYS);
 HBox.setHgrow(dateOfBirth, Priority.ALWAYS);
 HBox.setHgrow(userFoto, Priority.ALWAYS);
-VBox.setVgrow(usersInfo, Priority.ALWAYS);
-
-usersInfo.setPadding(new Insets(0, 0, 0, 20));
-usersInfo.setSpacing(40);
-usersInfo.setMaxHeight(Double.MAX_VALUE);
-usersInfo.setMinHeight(70);
-
-usersInfo.getChildren().add(name);
-usersInfo.getChildren().add(id);
-usersInfo.getChildren().add(numberPhone);
-usersInfo.getChildren().add(dateOfBirth);
-usersInfo.getChildren().add(userFoto);
+VBox.setVgrow(foto, Priority.ALWAYS);
+VBox.setVgrow(image, Priority.ALWAYS);
+///////////////// STRUCTURE
+titles.getChildren().addAll(lblName, lblId, lblPhone, lblDate, lblPhoto);
+usersInfo.getChildren().addAll(name, id, numberPhone, dateOfBirth, userFoto);
 
 contain.setAlignment(Pos.CENTER);
-contain.getChildren().add(foto);
-contain.getChildren().add(image);
+contain.getChildren().addAll(foto, image);
 contain.setPadding(new Insets(0, 0, 0, -40));
 usersInfo.getChildren().add(contain);
 
-usersInfo.setStyle("-fx-border-color: blue;");
-usersInfo.setAlignment(Pos.CENTER);
+upLine.getChildren().addAll(titles, usersInfo);
 
-usersData.add(usersInfo);
+usersData.add(upLine);
 rootUsers.setSpacing(20);
-rootUsers.getChildren().add(usersInfo);
+rootUsers.getChildren().add(upLine);
 
-usersInfo.setOnMouseClicked(e -> {
-    selectedUser = usersInfo;
-}); 
+upLine.setOnMouseClicked(e -> {
+    if (selectedUser != null) {
+        selectedUser.getStyleClass().remove("seleccionado");
+    }
+    selectedUser = upLine;
+    upLine.getStyleClass().add("seleccionado");
+});
 
     image.setOnMouseClicked(e -> {
     FileChooser fileChooser = new FileChooser();
@@ -220,6 +261,7 @@ private String saveImageFromCamera(javafx.scene.image.Image image) {
     if (selectedUser != null) {
         rootUsers.getChildren().remove(selectedUser);
         usersData.remove(selectedUser);
+            selectedUser.getStyleClass().remove("seleccionado");
         selectedUser = null;
     }
 }
@@ -227,18 +269,20 @@ private String saveImageFromCamera(javafx.scene.image.Image image) {
     @FXML
     private void onActionEdit(ActionEvent event) {
     if (selectedUser != null) {
-        TextField name = (TextField) selectedUser.getChildren().get(0);
-        TextField id = (TextField) selectedUser.getChildren().get(1);
-        TextField numberPhone = (TextField) selectedUser.getChildren().get(2);
-        DatePicker dateOfBirth = (DatePicker) selectedUser.getChildren().get(3);
-        ImageView userPhoto = (ImageView) selectedUser.getChildren().get(4);
+         HBox information = (HBox) selectedUser.getChildren().get(1);
+        TextField name = (TextField) information.getChildren().get(0);
+        TextField id = (TextField) information.getChildren().get(1);
+        TextField numberPhone = (TextField) information.getChildren().get(2);
+        DatePicker dateOfBirth = (DatePicker) information.getChildren().get(3);
+        ImageView userPhoto = (ImageView) information.getChildren().get(4);
 
-        name.setDisable(false);
-        id.setDisable(false);
-        numberPhone.setDisable(false);
-        dateOfBirth.setDisable(false);
+        name.setEditable(true);
+        id.setEditable(true);
+        numberPhone.setEditable(true);
+        dateOfBirth.setEditable(true);
         userPhoto.setDisable(false);
-
+        information.setOpacity(1.0);
+ selectedUser.getStyleClass().remove("seleccionado");
         selectedUser = null;
     }
 }
@@ -246,7 +290,8 @@ private String saveImageFromCamera(javafx.scene.image.Image image) {
 @FXML
 private void onActionSave(ActionEvent event) {
     for (int i = usersData.size() - 1; i >= 0; i--) {
-        HBox row = usersData.get(i);
+        VBox v = usersData.get(i);
+        HBox row = (HBox) v.getChildren().get(1);
         TextField name = (TextField) row.getChildren().get(0);
         TextField id = (TextField) row.getChildren().get(1);
         TextField numberPhone = (TextField) row.getChildren().get(2);
@@ -254,26 +299,33 @@ private void onActionSave(ActionEvent event) {
         ImageView userPhoto = (ImageView) row.getChildren().get(4);
 
         boolean hasImage = userPhoto.getImage() != null &&
-            (userPhoto.getImage().getUrl() != null || userPhoto.getUserData() != null);
+        userPhoto.getImage().getUrl() != null &&
+        userPhoto.getImage().getUrl().contains("Base.png");
 
         if (!name.getText().isBlank() && !id.getText().isBlank()
-                && dateOfBirth.getValue() != null && hasImage) {
-            name.setDisable(true);
-            id.setDisable(true);
-            numberPhone.setDisable(true);
-            dateOfBirth.setDisable(true);
+                && dateOfBirth.getValue() != null && !hasImage) {
+            name.setEditable(false);
+            id.setEditable(false);
+            numberPhone.setEditable(false);
+            dateOfBirth.setEditable(false);
             userPhoto.setDisable(true);
+            row.setOpacity(0.8);
+                    mostrarMensajeCorrecto("Informacion Guardada");
         } else {
-            rootUsers.getChildren().remove(row);
+               mostrarMensajeError("Informacion Insuficiente");
+            rootUsers.getChildren().remove(v);
             usersData.remove(i);
         }
     }
+    if( selectedUser!=null)
+    selectedUser.getStyleClass().remove("seleccionado");
     selectedUser = null;
 
     try {
         List<UsuarioData> userList = new ArrayList<>();
 
-        for (HBox row : usersData) {
+        for (VBox v : usersData) {
+            HBox row = (HBox) v.getChildren().get(1);
             TextField name = (TextField) row.getChildren().get(0);
             TextField id = (TextField) row.getChildren().get(1);
             TextField numberPhone = (TextField) row.getChildren().get(2);
@@ -307,7 +359,8 @@ private void onActionSave(ActionEvent event) {
 
 private void search(String text) {
     for (int i = 0; i < usersData.size(); i++) {
-        HBox row = usersData.get(i);
+        VBox v = usersData.get(i);
+        HBox row = (HBox) v.getChildren().get(1);
         TextField name = (TextField) row.getChildren().get(0);
         TextField id = (TextField) row.getChildren().get(1);
 
@@ -334,7 +387,8 @@ private void loadUsers() {
 
         for (UsuarioData ud : users) {
             onActionAdd(null);
-            HBox row = usersData.get(usersData.size() - 1);
+            VBox v = usersData.get(usersData.size() - 1);
+            HBox row = (HBox)  v.getChildren().get(1);
 
             TextField name = (TextField) row.getChildren().get(0);
             TextField id = (TextField) row.getChildren().get(1);
@@ -363,18 +417,36 @@ private void loadUsers() {
                 }
             }
 
-            name.setDisable(true);
-            id.setDisable(true);
-            numberPhone.setDisable(true);
-            dateOfBirth.setDisable(true);
+            name.setEditable(false);
+            id.setEditable(false);
+            numberPhone.setEditable(false);
+            dateOfBirth.setEditable(false);
             userPhoto.setDisable(true);
+            row.setOpacity(0.8);
         }
 
     } catch (IOException e) {
         System.out.println("Error al cargar: " + e.getMessage());
     }
 }
-
+    private void mostrarMensajeError(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+    LblMensaje.setStyle("-fx-text-fill: red;");
+    
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
+     private void mostrarMensajeCorrecto(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+    LblMensaje.setStyle("-fx-text-fill: green;");
+    
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
 @Override
 public void initialize(URL url, ResourceBundle rb) {
     loadUsers();

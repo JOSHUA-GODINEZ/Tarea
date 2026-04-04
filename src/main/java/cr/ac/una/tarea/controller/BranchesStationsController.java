@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -33,6 +34,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class BranchesStationsController implements Initializable {
 
@@ -54,6 +56,8 @@ public class BranchesStationsController implements Initializable {
     private List<HBox> stations = new ArrayList<>();
     private List<VBox> stationContents = new ArrayList<>();
     private final Path branchesFile = Path.of("Jsons/BranchesData.json");
+    @FXML
+    private Label LblMensaje;
 
 
     ///////////////// ACTIONS
@@ -64,18 +68,26 @@ public class BranchesStationsController implements Initializable {
         TitledPane pane = new TitledPane();
         VBox buttonContainer = new VBox();
         VBox branch = new VBox();
-        Button addStationBtn = new Button("Agregar Estacion");
-
-        branch.setStyle("-fx-border-color: blue;");
+        Button addStationBtn = new Button();
+        
+       
+        addStationBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        VBox.setVgrow(addStationBtn, Priority.ALWAYS);
+       // branch.setStyle("-fx-border-color: blue;");
         pane.setText("Estaciones");
+        addStationBtn.getStyleClass().add("mi-botonAdd");
         buttonContainer.getChildren().add(addStationBtn);
         buttonContainer.setSpacing(10);
-        pane.setContent(buttonContainer);
+        buttonContainer.getStyleClass().add("mi-rectangulo");
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        pane.setContent(buttonContainer);     
         accordion.getPanes().add(pane);
+        //accordion.getStyleClass().add("mi-rectangulo");
         branch.getChildren().add(branchName);
         branch.getChildren().add(accordion);
         branch.setPadding(new Insets(30, 20, 30, 20));
-
+        branch.getStyleClass().addAll("mi-rectangulo");
         rootStation.getChildren().add(new Label(""));
         rootBranches.getChildren().add(branch);
         branches.add(branch);
@@ -95,9 +107,9 @@ public class BranchesStationsController implements Initializable {
                 stationRow.getChildren().addAll(stationName, preferentialCheck);
                 stationRow.setSpacing(30);
                 stationRow.setAlignment(Pos.CENTER);
-                stationRow.setStyle("-fx-border-color: blue;");
+                stationRow.getStyleClass().add("mi-rectangulo");
                 stationRow.setMinHeight(70);
-
+               
                 stationRow.setOnMouseClicked(ev -> {
                     selectedStation = stationRow;
                     currentStationContent = stationContent;
@@ -105,21 +117,23 @@ public class BranchesStationsController implements Initializable {
 
                     ///////////////// PREVIEW
                     VBox preview = new VBox();
-                    Label nameLabel = new Label(stationName.getText());
+                   Label nameLabel = new Label(stationName.getText());
 
-                    stationContent.setStyle("-fx-border-color: blue;");
+                         
+                   // stationContent.setStyle("-fx-border-color: blue;");
+                   stationContent.setSpacing(10);
                     stationContent.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     VBox.setVgrow(stationContent, Priority.ALWAYS);
-
+                    stationContent.setAlignment(Pos.TOP_CENTER);
                     preview.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     VBox.setVgrow(preview, Priority.ALWAYS);
 
                     preview.getChildren().addAll(nameLabel, stationContent);
-                    preview.setSpacing(30);
+                    preview.setSpacing(10);
                     preview.setAlignment(Pos.CENTER);
-                    preview.setStyle("-fx-border-color: blue;");
+                 //   preview.setStyle("-fx-border-color: blue;");
                     preview.setMinHeight(70);
-
+                   // preview.getStyleClass().add("mi-panel-fondo");
                     rootStation.getChildren().clear();
                     rootStation.getChildren().add(preview);
                 });
@@ -168,48 +182,89 @@ public class BranchesStationsController implements Initializable {
 
     @FXML
     private void onActionEdit(ActionEvent event) {
-        if (selectedBranch != null) {
-            selectedBranch.setDisable(false);
+       if (selectedBranch != null) {
 
-            for (Node n : selectedBranch.getChildren()) {
-                n.setDisable(false);
+    TextField branchName = (TextField) selectedBranch.getChildren().get(0);
+    branchName.setEditable(true);
+    branchName.setOpacity(1);
+
+    Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
+    TitledPane pane = accordion.getPanes().get(0);
+    VBox buttonContainer = (VBox) pane.getContent();
+
+    for (Node n : buttonContainer.getChildren()) {
+        if (n instanceof HBox) {
+            HBox hb = (HBox) n;
+
+            for (Node child : hb.getChildren()) {
+
+                if (child instanceof TextField) {
+                    ((TextField) child).setEditable(true);
+                    child.setOpacity(1);
+                }
+
+                if (child instanceof CheckBox) {
+                    ((CheckBox) child).setDisable(false);
+                    child.setOpacity(1);
+                }
             }
-
-            Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
-            TitledPane pane = accordion.getPanes().get(0);
-            VBox buttonContainer = (VBox) pane.getContent();
-
-            buttonContainer.setDisable(false);
-            for (Node n : buttonContainer.getChildren()) {
-                n.setDisable(false);
-            }
-            selectedBranch = null;
         }
+    }
+
+    selectedBranch = null;
+}
     }
 
     @FXML
     private void onActionSave(ActionEvent event) throws IOException {
         ///////////////// VALIDATE AND DISABLE
-        for (int i = branches.size() - 1; i >= 0; i--) {
-            VBox branch = branches.get(i);
-            TextField branchName = (TextField) branch.getChildren().get(0);
-            Accordion accordion = (Accordion) branch.getChildren().get(1);
-            TitledPane pane = accordion.getPanes().get(0);
-            VBox buttonContainer = (VBox) pane.getContent();
+      for (int i = branches.size() - 1; i >= 0; i--) {
+    VBox branch = branches.get(i);
+    TextField branchName = (TextField) branch.getChildren().get(0);
+    Accordion accordion = (Accordion) branch.getChildren().get(1);
+    TitledPane pane = accordion.getPanes().get(0);
+    VBox buttonContainer = (VBox) pane.getContent();
 
-            if (!branchName.getText().isBlank()) {
-                branchName.setDisable(true);
-                buttonContainer.getChildren().removeIf(n ->
-                    (n instanceof HBox hb) &&
-                    (hb.getChildren().get(0) instanceof TextField ta) &&
-                    ta.getText().isBlank()
-                );
-                buttonContainer.setDisable(true);
-            } else {
-                rootBranches.getChildren().remove(branch);
-                branches.remove(i);
+    if (!branchName.getText().isBlank()) {
+
+        branchName.setEditable(false);
+        branchName.setOpacity(0.8);
+
+        buttonContainer.getChildren().removeIf(n ->
+            (n instanceof HBox hb) &&
+            (hb.getChildren().get(0) instanceof TextField ta) &&
+            ta.getText().isBlank()
+        );
+
+        // 🔥 Aquí reemplazas el disable
+        for (Node n : buttonContainer.getChildren()) {
+    if (n instanceof HBox) {
+        HBox hb = (HBox) n;
+
+        for (Node child : hb.getChildren()) {
+
+            if (child instanceof TextField) {
+                TextField tf = (TextField) child;
+                tf.setEditable(false);
+                tf.setOpacity(0.8); // opcional
+            }
+
+            if (child instanceof CheckBox) {
+                CheckBox cb = (CheckBox) child;
+                cb.setDisable(true);
+                cb.setOpacity(0.8); // opcional visual
             }
         }
+    }
+}
+        mostrarMensajeCorrecto("Informacion Guardada");
+
+    } else {
+        mostrarMensajeError("Informacion Insuficiente");
+        rootBranches.getChildren().remove(branch);
+        branches.remove(i);
+    }
+}
 
         ///////////////// SAVE TO JSON
         List<SucursalData> branchList = new ArrayList<>();
@@ -303,8 +358,28 @@ public class BranchesStationsController implements Initializable {
                     }
                 }
 
-                branchName.setDisable(true);
-                buttonContainer.setDisable(true);
+               branchName.setEditable(false);
+branchName.setOpacity(0.8);
+
+// recorrer estaciones
+for (Node n : buttonContainer.getChildren()) {
+    if (n instanceof HBox) {
+        HBox hb = (HBox) n;
+
+        for (Node child : hb.getChildren()) {
+
+            if (child instanceof TextField) {
+                ((TextField) child).setEditable(false);
+                child.setOpacity(0.8);
+            }
+
+            if (child instanceof CheckBox) {
+                ((CheckBox) child).setDisable(true);
+                child.setOpacity(0.8);
+            }
+        }
+    }
+}
             }
         } catch (IOException e) {
             System.out.println("Error al cargar: " + e.getMessage());
@@ -323,9 +398,10 @@ public class BranchesStationsController implements Initializable {
             DataProcedure[] procedureList = gson.fromJson(json, DataProcedure[].class);
 
             for (DataProcedure dp : procedureList) {
-                if (currentStationContent != null && existsInVBox(currentStationContent, dp.getName())) {
+                if (currentStationContent != null && existsInVBox(currentStationContent, dp.getName()) || dp.getState().equals(false) ) {
                     continue;
                 }
+                
                 rootProcedures.getChildren().add(createLabel(dp.getName()));
             }
         } catch (IOException e) {
@@ -336,7 +412,9 @@ public class BranchesStationsController implements Initializable {
     ///////////////// HELPERS
     private Label createLabel(String text) {
         Label label = new Label(text);
-
+         label.getStyleClass().add("mi-Label");
+         label.setPrefSize(Double.MAX_VALUE, 40);
+         label.setAlignment(Pos.CENTER);
         label.setOnDragDetected(event -> {
             Dragboard db = label.startDragAndDrop(TransferMode.MOVE);
             ClipboardContent content = new ClipboardContent();
@@ -363,6 +441,31 @@ public class BranchesStationsController implements Initializable {
         return false;
     }
 
+    
+        private void mostrarMensajeError(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+    LblMensaje.setStyle("-fx-text-fill: red;");
+    
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
+     private void mostrarMensajeCorrecto(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+    LblMensaje.setStyle("-fx-text-fill: green;");
+    
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
+    
+    
+    
+    
+    
+    
     ///////////////// INITIALIZE
     @Override
     public void initialize(URL url, ResourceBundle rb) {

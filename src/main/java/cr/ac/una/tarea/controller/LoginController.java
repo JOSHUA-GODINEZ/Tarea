@@ -20,6 +20,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.animation.PauseTransition;
+import javafx.scene.Node;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 public class LoginController {
 
@@ -57,7 +59,7 @@ public class LoginController {
    if (Tname.getText() != null && !Tname.getText().isBlank() && 
     TInfo.getText() != null && !TInfo.getText().isBlank() && 
     TPin.getText() != null && TPin.getText().length() == 4 && 
-    ImageLogo.getImage() != null && !ImageLogo.getImage().getUrl().equals("../resources/cr/ac/una/tarea/resource/Inicial.png")) {
+    ImageLogo.getImage() != null && !ImageLogo.getImage().getUrl().equals("../resources/cr/ac/una/tarea/resource/Base.png")) {
     BNext.setOpacity(1.0);
     BNext.setDisable(false);
 }
@@ -77,16 +79,24 @@ public class LoginController {
     } else {
         user.setPin("");
         TPin.setText("");
-        mostrarMensaje("Informacion Invalida");
+        mostrarMensajeError("Informacion Invalida");
     }
         if (ImageLogo.getImage() != null &&
     ImageLogo.getImage().getUrl() != null &&
-    !ImageLogo.getImage().getUrl().contains("Inicial.png")) {
+    !ImageLogo.getImage().getUrl().contains("Base.png")) {
 
     user.setImageUrl(ImageLogo.getImage().getUrl());
 }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Files.writeString(archivo, gson.toJson(user));
+        if (Tname.getText() != null && !Tname.getText().isBlank() &&
+        TInfo.getText() != null && !TInfo.getText().isBlank() &&
+        TPin.getText() != null && TPin.getText().length() == 4 &&
+        ImageLogo.getImage() != null &&
+        ImageLogo.getImage().getUrl() != null &&
+        !ImageLogo.getImage().getUrl().contains("Base.png")) {
+mostrarMensajeCorrecto("Informacion Correcta");
+    }else{mostrarMensajeError("Informacion Correcta");}
     } catch (IOException e) {
         System.out.println("Error al guardar: " + e.getMessage());
     }
@@ -193,7 +203,7 @@ private void verifyData() {
         TPin.getText() != null && TPin.getText().length() == 4 &&
         ImageLogo.getImage() != null &&
         ImageLogo.getImage().getUrl() != null &&
-        !ImageLogo.getImage().getUrl().contains("Inicial.png")) {
+        !ImageLogo.getImage().getUrl().contains("Base.png")) {
 
         BNext.setOpacity(1.0);
         BNext.setDisable(false);
@@ -216,7 +226,7 @@ private void verifyData() {
     user.getInfo() == null || user.getInfo().isBlank() || 
     user.getPin() == null || user.getPin().isBlank() ||
     user.getImageUrl() == null || 
-    user.getImageUrl().contains("Inicio.png")) {
+    user.getImageUrl().contains("Base.png")) {
         return "LoginView";
    }else {
         return "AdministratorView";
@@ -229,13 +239,28 @@ private void verifyData() {
     }
     
     
-    private void mostrarMensaje(String mensaje) {
+    private void mostrarMensajeError(String mensaje) {
     LblMensaje.setText(mensaje);
     LblMensaje.setVisible(true);
-
+    LblMensaje.setStyle("-fx-text-fill: red;");
+    
     PauseTransition pause = new PauseTransition(Duration.seconds(2));
     pause.setOnFinished(e -> LblMensaje.setVisible(false));
     pause.play();
 }
+     private void mostrarMensajeCorrecto(String mensaje) {
+    LblMensaje.setText(mensaje);
+    LblMensaje.setVisible(true);
+    LblMensaje.setStyle("-fx-text-fill: green;");
     
+    PauseTransition pause = new PauseTransition(Duration.seconds(2));
+    pause.setOnFinished(e -> LblMensaje.setVisible(false));
+    pause.play();
+}
+
+    @FXML
+    private void onActionSalir(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
 }
