@@ -160,21 +160,7 @@ mostrarMensajeCorrecto("Informacion Correcta");
         );
         }
     });
-   
-  /* root.sceneProperty().addListener((obs, oldScene, newScene) -> {
-        if (newScene != null) {
-            newScene.widthProperty().addListener((o, oldVal, newVal) -> {
-                double spacing = newVal.doubleValue() / 40;
-
-                if (spacing < 20) spacing = 20;
-                if (spacing > 50) spacing = 50;
-
-                root.setSpacing(spacing);
-
-            });
-        }
-    });
-    */}
+}
     
 private void cargar() {
     try {

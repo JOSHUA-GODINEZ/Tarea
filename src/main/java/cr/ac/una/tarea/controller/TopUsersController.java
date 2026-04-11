@@ -27,6 +27,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import java.util.List;
+import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -54,6 +55,10 @@ private EstacionData estacionSeleccionada = null;
 private BarChart<String, Number> GraficLines;
 @FXML
 private PieChart GraficPie;
+    @FXML
+    private Label LblTUser;
+    @FXML
+    private Label LblParametres;
    
     
     private void cargarTop(){
@@ -102,6 +107,47 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     h.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
     h.setPadding(new Insets(5));
     rootTop.getChildren().add(h);
+        Scene scene = rootTop.getScene();
+        
+        if (scene != null) {
+            lblNombre.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblCedula.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblNumero.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblFecha.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+             lblCantidad.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+             
+        } else {
+            // ✅ si se llama desde cargar() antes de que exista la escena
+            rootTop.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                        lblNombre.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblCedula.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblNumero.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            lblFecha.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+             lblCantidad.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                }
+            });
+        }
 }
         
     } catch (IOException e) {
@@ -181,6 +227,18 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     cargarTop();
     cargar();
     cargarGraficos();
+    
+        LblTUser.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            LblTUser.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LblParametres.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                }
+        });
+        
     }    
 
     @FXML
@@ -254,4 +312,5 @@ private void cargarGraficos() {
         System.out.println("Error al cargar graficos: " + e.getMessage());
     }
 }
+
 }

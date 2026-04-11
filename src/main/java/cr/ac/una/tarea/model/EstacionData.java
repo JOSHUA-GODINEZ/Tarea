@@ -7,4 +7,5 @@ public class EstacionData {
     public String nombre;
     public boolean preferencial;
     public List<String> tramites;
+    public String rutaAudio;
 }

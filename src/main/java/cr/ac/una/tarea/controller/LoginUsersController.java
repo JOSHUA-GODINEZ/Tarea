@@ -32,7 +32,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 public class LoginUsersController implements Initializable {
@@ -63,7 +66,18 @@ Label lblName = new Label("Nombre");
 Label lblId = new Label("Cedula");
 Label lblPhone = new Label("Telefono");
 Label lblDate = new Label("Fecha");
-Label lblPhoto = new Label("       Foto");
+Label lblPhoto = new Label("      Foto");
+
+        id.textProperty().addListener((obs, oldValue, newValue) -> {
+    if (!newValue.matches("\\d*")) {
+        id.setText(newValue.replaceAll("[^\\d]", ""));
+    }
+});
+        numberPhone.textProperty().addListener((obs, oldValue, newValue) -> {
+    if (!newValue.matches("\\d*")) {
+        numberPhone.setText(newValue.replaceAll("[^\\d]", ""));
+    }
+});
 
 ///////////////// LABELS CSS
 lblName.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -77,16 +91,16 @@ HBox.setHgrow(lblPhone, Priority.ALWAYS);
 HBox.setHgrow(lblDate, Priority.ALWAYS);
 HBox.setHgrow(lblPhoto, Priority.ALWAYS);
 
-lblName.setAlignment(Pos.CENTER);
-lblId.setAlignment(Pos.CENTER);
-lblPhone.setAlignment(Pos.CENTER);
-lblDate.setAlignment(Pos.CENTER);
+lblName.setAlignment(Pos.CENTER_LEFT);
+lblId.setAlignment(Pos.CENTER_LEFT);
+lblPhone.setAlignment(Pos.CENTER_LEFT);
+lblDate.setAlignment(Pos.CENTER_LEFT);
 lblPhoto.setAlignment(Pos.CENTER);
 
 ///////////////// CSS
 userFoto.setFitHeight(70);
 userFoto.setFitWidth(70);
-upLine.getStyleClass().add("mi-rectangulo");
+upLine.getStyleClass().addAll("mi-rectangulo","mi-boton2");
 upLine.setSpacing(5);
 upLine.setMaxSize(Double.MAX_VALUE, 70);
 titles.setPadding(new Insets(0, 20, 0, 20));
@@ -140,6 +154,80 @@ upLine.setOnMouseClicked(e -> {
     selectedUser = upLine;
     upLine.getStyleClass().add("seleccionado");
 });
+
+    Scene scene = rootUsers.getScene();
+        
+        if (scene != null) {
+            name.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            id.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            numberPhone.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            dateOfBirth.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+             lblName.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              lblId.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+               lblPhone.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                lblDate.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                 lblPhoto.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+        } else {
+            // ✅ si se llama desde cargar() antes de que exista la escena
+            rootUsers.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                      name.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            id.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            numberPhone.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            dateOfBirth.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );  
+            
+     lblName.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              lblId.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              lblPhone.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                lblDate.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                 lblPhoto.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+        }
+            });
+        }
+
+
+
+
+
+
+
+
 
     image.setOnMouseClicked(e -> {
     FileChooser fileChooser = new FileChooser();
@@ -355,6 +443,7 @@ private void onActionSave(ActionEvent event) {
     } catch (IOException ex) {
         System.out.println("Error al guardar: " + ex.getMessage());
     }
+  //  initialize(null,null);
 }
 
 private void search(String text) {
@@ -376,6 +465,7 @@ private void search(String text) {
 }
 
 private void loadUsers() {
+    rootUsers.getChildren().clear();
     try {
         Path usersFile = Paths.get("Jsons/usuarios.json");
         if (!Files.exists(usersFile)) return;
@@ -453,6 +543,7 @@ public void initialize(URL url, ResourceBundle rb) {
     searchField.textProperty().addListener((obs, oldVal, newVal) -> {
         search(newVal);
     });
-}
+ 
 
+}
 }

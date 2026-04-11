@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -43,7 +44,7 @@ public class ProcedureController implements Initializable {
     @FXML
    public void Add() {
 
-    if(buscador.getText().equals("")){
+  //  if(buscador.getText().equals("")){
         HBox procedure = new HBox();
         TextField nameProcedure = new TextField();
         TextField costProcedure = new TextField();
@@ -52,9 +53,9 @@ public class ProcedureController implements Initializable {
         VBox UpLine =new VBox();
         HBox Titles = new HBox();
         Label name = new Label("Nombre");
-        Label price = new Label("Precio (Opcional)");
+        Label price = new Label("      Precio (Opcional)");
         Label detail = new Label("Detalle (Opcional)");
-        Label state = new Label("Estado       ");
+        Label state = new Label("Estado");
         name.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
          price.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
          detail.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -68,7 +69,11 @@ public class ProcedureController implements Initializable {
         detail.setAlignment(Pos.CENTER);
         state.setAlignment(Pos.CENTER);
         
-        
+        costProcedure.textProperty().addListener((obs, oldValue, newValue) -> {
+    if (!newValue.matches("\\d*")) {
+        costProcedure.setText(newValue.replaceAll("[^\\d]", ""));
+    }
+});
 ///////////////////////////////////////////////////      CSS
         UpLine.getStyleClass().add("mi-rectangulo");
         procedure.setAlignment(Pos.CENTER);
@@ -104,7 +109,7 @@ nameProcedure.setPrefWidth(150);
 costProcedure.setPrefWidth(150);
 detailProcedure.setPrefWidth(150);
       
-   
+   stateProcedure.setSelected(true);
 
 /////////////////////////////////////////////////
 
@@ -127,11 +132,69 @@ ProcedureData.add(UpLine);
 
     // Seleccionar nuevo
     selectedProcedure = UpLine;
-    UpLine.getStyleClass().add("seleccionado");
+    UpLine.getStyleClass().addAll("seleccionado","mi-boton2");
 });
 
 
-    }
+ //   }
+    Scene scene = rootProcedure.getScene();
+        
+        if (scene != null) {
+            name.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            price.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            detail.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            state.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+             nameProcedure.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              detailProcedure.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+               costProcedure.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+               stateProcedure.styleProperty().bind(
+                scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );  
+        } else {
+            // ✅ si se llama desde cargar() antes de que exista la escena
+            rootProcedure.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    name.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                    price.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                    detail.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                    state.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                      nameProcedure.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              detailProcedure.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+               costProcedure.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+                  stateProcedure.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );  
+                }
+            });
+        }
 }
     @FXML
     private void delete(ActionEvent event) {
@@ -308,5 +371,9 @@ check.setSelected(dp.getState());
     buscador.textProperty().addListener((obs, viejo, nuevo) -> {
         buscar(nuevo);
     });
+    
+  
+
+    
     }
 }

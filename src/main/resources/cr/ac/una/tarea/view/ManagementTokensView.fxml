@@ -27,7 +27,7 @@
             <HBox fx:id="rootSucursal" prefHeight="114.0" prefWidth="600.0" styleClass="mi-panel-fondo1" />
          </content>
       </ScrollPane>
-      <HBox maxHeight="50.0" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+      <HBox maxHeight="50.0" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="600.0" styleClass="mi-boton" VBox.vgrow="ALWAYS">
          <children>
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="mi-panel-fondo1" text="LLamar a:" HBox.hgrow="ALWAYS" />
             <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionNext" styleClass="mi-BtnNext" HBox.hgrow="ALWAYS" />

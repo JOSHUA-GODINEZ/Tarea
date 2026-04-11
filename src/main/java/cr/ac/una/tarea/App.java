@@ -19,8 +19,8 @@ public class App extends Application {
 
         String vista = switch (param) {
             case "officials" -> "OfficialsView";
-            case "topusers"  -> "TopUsersView";
-            default          -> l.FullParameters(); // flujo normal
+            case "administrador"  -> "AdministratorView";
+            default          -> l.FullParameters();
         };
 
         scene = new Scene(loadFXML(vista), 800, 600);

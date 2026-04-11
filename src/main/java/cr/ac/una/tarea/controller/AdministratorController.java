@@ -86,6 +86,32 @@ public class AdministratorController implements Initializable {
             Parent root4 = loader4.load();
             tab4.setContent(root4);
 
+            
+              LName.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            LName.styleProperty().bind(
+                newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
+            );
+             tab1.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+              tab2.styleProperty().bind(
+                newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
+            );
+               tab3.styleProperty().bind(
+                newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
+            );
+                tab4.styleProperty().bind(
+                newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
+            );
+            
+             }  
+              });
+                      
+            
+            
+            
+            
         } catch (IOException e) {
          
             

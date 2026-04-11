@@ -77,7 +77,9 @@
 
     -fx-background-radius: 50px;
 }
-
+.mi-IMagepreferencial{
+     -fx-image: url("../resource/PrefetencialImage.png");
+}
 
 
 
@@ -172,13 +174,48 @@
 
 
 
-.mi-botonSave:pressed,.mi-botonAdd:pressed,.mi-botonDelete:pressed,.mi-botonEdit:pressed,.mi-botonGo:pressed{
+
+.mi-boton2:hover {
+    -fx-cursor: hand;
+}
+
+.mi-boton2:pressed {
+    -fx-scale-x: 0.99;
+    -fx-scale-y: 0.99;
+}
+
+
+
+.mi-boton .button {
+    /* estilo normal */
+}
+
+.mi-boton .button:hover {
+    -fx-cursor: hand;
+}
+
+.mi-boton .button:pressed {
+    -fx-opacity: 0.6;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.tab-pane .tab:hover {
+    -fx-cursor: hand;
+}
+
+.tab-pane .tab:pressed {
+    -fx-scale-x: 0.97;
+    -fx-scale-y: 0.97;
+}
+
+.mi-botonSave:pressed,.mi-botonAdd:pressed,.mi-botonDelete:pressed,.mi-botonEdit:pressed,.mi-botonGo:pressed, .mi-BtnSalir:pressed{
     -fx-opacity: 0.6;
     -fx-cursor: hand;
     -fx-scale-x: 0.95;
     -fx-scale-y: 0.95;
 }
-.mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover {
+.mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover, .mi-BtnSalir:hover {
     -fx-cursor: hand;
 }
 .mi-Label{
@@ -204,6 +241,9 @@
 }
 
 .mi-Titulos .label {
+    -fx-text-fill: white;
+}
+.mi-label1 {
     -fx-text-fill: white;
 }
 .seleccionado {

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
 import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.SucursalData;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -21,12 +22,15 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -34,6 +38,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class BranchesStationsController implements Initializable {
@@ -47,6 +53,7 @@ public class BranchesStationsController implements Initializable {
     private TextField searchField;
     @FXML
     private VBox rootStation;
+private String rutaAudio = null;
 
     ///////////////// VARIABLES
     private VBox selectedBranch = null;
@@ -58,19 +65,27 @@ public class BranchesStationsController implements Initializable {
     private final Path branchesFile = Path.of("Jsons/BranchesData.json");
     @FXML
     private Label LblMensaje;
+    private Button btnAudio;
+    @FXML
+    private Label LblSyE;
+    @FXML
+    private Label LblTramite;
+    @FXML
+    private Label LblStation;
 
 
     ///////////////// ACTIONS
     @FXML
       private void onActionAddBranch(ActionEvent event) {
         TextField branchName = new TextField();
+        TextArea branchInformation = new TextArea();
         Accordion accordion = new Accordion();
         TitledPane pane = new TitledPane();
         VBox buttonContainer = new VBox();
         VBox branch = new VBox();
         Button addStationBtn = new Button();
         
-       
+       branchInformation.setMaxSize(Double.MAX_VALUE, 50);
         addStationBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         VBox.setVgrow(addStationBtn, Priority.ALWAYS);
        // branch.setStyle("-fx-border-color: blue;");
@@ -85,9 +100,10 @@ public class BranchesStationsController implements Initializable {
         accordion.getPanes().add(pane);
         //accordion.getStyleClass().add("mi-rectangulo");
         branch.getChildren().add(branchName);
+        branch.getChildren().add(branchInformation);
         branch.getChildren().add(accordion);
         branch.setPadding(new Insets(30, 20, 30, 20));
-        branch.getStyleClass().addAll("mi-rectangulo");
+        branch.getStyleClass().add("mi-rectangulo");
         rootStation.getChildren().add(new Label(""));
         rootBranches.getChildren().add(branch);
         branches.add(branch);
@@ -100,25 +116,46 @@ public class BranchesStationsController implements Initializable {
                 HBox stationRow = new HBox();
                 CheckBox preferentialCheck = new CheckBox();
                 VBox stationContent = new VBox();
-
+                ImageView PreferIMag = new ImageView();
+                 String[] ruta = {""};
                 stations.add(stationRow);
                 stationContents.add(stationContent);
-
-                stationRow.getChildren().addAll(stationName, preferentialCheck);
-                stationRow.setSpacing(30);
+            PreferIMag.setFitHeight(40);
+            PreferIMag.setFitWidth(40);
+           
+            PreferIMag.getStyleClass().add("mi-IMagepreferencial");
+                stationRow.getChildren().addAll(stationName, preferentialCheck, PreferIMag);
+                stationRow.setSpacing(10);
                 stationRow.setAlignment(Pos.CENTER);
-                stationRow.getStyleClass().add("mi-rectangulo");
+                
+                stationRow.getStyleClass().addAll("mi-rectangulo","mi-boton2");
                 stationRow.setMinHeight(70);
                
-                stationRow.setOnMouseClicked(ev -> {
+                stationRow.setOnMouseClicked(station -> {
+                    if (selectedStation != null) {
+         selectedStation.getStyleClass().remove("seleccionado");
+    }
+                    stationRow.getStyleClass().add("seleccionado");
                     selectedStation = stationRow;
                     currentStationContent = stationContent;
                     loadProcedures();
-
+                     
+                  
+                 
                     ///////////////// PREVIEW
                     VBox preview = new VBox();
+                    Button audio = new Button();
+                    Button playAudio = new Button();
+                    Button deleteAudio = new Button();
+                    HBox audios = new HBox();
                    Label nameLabel = new Label(stationName.getText());
-
+ Scene scene = rootStation.getScene();
+    if (scene != null) {
+        nameLabel.styleProperty().bind(
+            scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
+      
+    }
                          
                    // stationContent.setStyle("-fx-border-color: blue;");
                    stationContent.setSpacing(10);
@@ -128,29 +165,120 @@ public class BranchesStationsController implements Initializable {
                     preview.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     VBox.setVgrow(preview, Priority.ALWAYS);
 
-                    preview.getChildren().addAll(nameLabel, stationContent);
+                   
                     preview.setSpacing(10);
                     preview.setAlignment(Pos.CENTER);
                  //   preview.setStyle("-fx-border-color: blue;");
                     preview.setMinHeight(70);
                    // preview.getStyleClass().add("mi-panel-fondo");
-                    rootStation.getChildren().clear();
-                    rootStation.getChildren().add(preview);
+                   
+                   
+                   
+                   
+                   
+                   
+                  Label rutaLabel = new Label("Sin audio");
+                      if (stationRow.getUserData() != null) {
+        rutaLabel.setText(new File(stationRow.getUserData().toString()).getName());
+    } else {
+        rutaLabel.setText("Sin audio");
+    }
+                 audio.setOnMouseClicked(clickAudio -> {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Seleccionar audio");
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
+    );
+    Stage stage = (Stage) stationRow.getScene().getWindow();
+    File archivo = fileChooser.showOpenDialog(stage);
+    if (archivo != null) {
+       stationRow.setUserData(archivo.getAbsolutePath());
+         rutaLabel.setText(archivo.getName());
+    }
+   
+});
+
+              playAudio.setOnMouseClicked(clickPlay -> {
+    String rutaAudio = stationRow.getUserData() != null ? stationRow.getUserData().toString() : "";
+    
+    if (rutaAudio.isEmpty()) {
+        System.out.println("No has seleccionado un audio");
+        return;
+    }
+    
+    String ruta1 = new File(rutaAudio).toURI().toString();
+    javafx.scene.media.Media media = new javafx.scene.media.Media(ruta1);
+    javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
+    player.setOnReady(() -> player.play());
+});
+
+              deleteAudio.setOnMouseClicked(clickDelete -> {
+    stationRow.setUserData(null);
+    rutaLabel.setText("Sin audio");// ✅ elimina la ruta
+    System.out.println("Audio eliminado");
+});
+ 
+                
+                
+         audios.getChildren().addAll(audio,rutaLabel,playAudio ,deleteAudio); // ✅ ambos botones, sintaxis correcta
+       preview.getChildren().addAll( audios ,nameLabel, stationContent); // ✅ audios incluido
+    rootStation.getChildren().clear();
+          rootStation.getChildren().add(preview);
                 });
 
                 buttonContainer.getChildren().add(stationRow);
+                stationRow.sceneProperty().addListener((obs, oldScene, newScene) -> {
+    if (newScene != null) {
+        stationName.styleProperty().bind(
+            newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
+        );
+     /*   nameLabel.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
+        rutaLabel.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );*/
+    }
+});
             }
         });
 
         branch.setOnMouseClicked(e -> {
             selectedBranch = branch;
         });
+        
+        
+        // ✅ después de crear branchName y branchInformation
+Scene scene = rootBranches.getScene();
+
+if (scene != null) {
+    branchName.styleProperty().bind(
+        scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+    );
+    branchInformation.styleProperty().bind(
+        scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+    );
+} else {
+    rootBranches.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            branchName.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            branchInformation.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+        }
+    });
+}
+       
+            
+        
     }
 
     @FXML
     private void onActionDelete(ActionEvent event) {
         if (selectedBranch != null) {
-            Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
+          /*  Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
             TitledPane pane = accordion.getPanes().get(0);
             VBox buttonContainer = (VBox) pane.getContent();
 
@@ -162,7 +290,7 @@ public class BranchesStationsController implements Initializable {
                         stationContents.remove(index);
                     }
                 }
-            }
+            }*/
             rootBranches.getChildren().remove(selectedBranch);
             branches.remove(selectedBranch);
         }
@@ -187,8 +315,13 @@ public class BranchesStationsController implements Initializable {
     TextField branchName = (TextField) selectedBranch.getChildren().get(0);
     branchName.setEditable(true);
     branchName.setOpacity(1);
+    
+        TextArea branchInformation = (TextArea) selectedBranch.getChildren().get(1);
+    branchInformation.setEditable(true);
+    branchInformation.setOpacity(1);
+    
 
-    Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
+    Accordion accordion = (Accordion) selectedBranch.getChildren().get(2);
     TitledPane pane = accordion.getPanes().get(0);
     VBox buttonContainer = (VBox) pane.getContent();
 
@@ -221,15 +354,19 @@ public class BranchesStationsController implements Initializable {
       for (int i = branches.size() - 1; i >= 0; i--) {
     VBox branch = branches.get(i);
     TextField branchName = (TextField) branch.getChildren().get(0);
-    Accordion accordion = (Accordion) branch.getChildren().get(1);
+     TextArea branchInformation = (TextArea) branch.getChildren().get(1);
+    Accordion accordion = (Accordion) branch.getChildren().get(2);
     TitledPane pane = accordion.getPanes().get(0);
     VBox buttonContainer = (VBox) pane.getContent();
 
-    if (!branchName.getText().isBlank()) {
+    if (!branchName.getText().isBlank() && !branchInformation.getText().isBlank() ) {
 
         branchName.setEditable(false);
         branchName.setOpacity(0.8);
-
+       
+        branchInformation.setEditable(false);
+        branchInformation.setOpacity(0.8);
+        
         buttonContainer.getChildren().removeIf(n ->
             (n instanceof HBox hb) &&
             (hb.getChildren().get(0) instanceof TextField ta) &&
@@ -270,12 +407,14 @@ public class BranchesStationsController implements Initializable {
         List<SucursalData> branchList = new ArrayList<>();
         for (VBox branch : branches) {
             TextField branchName = (TextField) branch.getChildren().get(0);
-            Accordion accordion = (Accordion) branch.getChildren().get(1);
+             TextArea branchInformation = (TextArea) branch.getChildren().get(1);
+            Accordion accordion = (Accordion) branch.getChildren().get(2);
             TitledPane pane = accordion.getPanes().get(0);
             VBox buttonContainer = (VBox) pane.getContent();
 
             SucursalData sd = new SucursalData();
             sd.nombre = branchName.getText();
+            sd.BranchInfo = branchInformation.getText();
             sd.estaciones = new ArrayList<>();
 
             for (Node n : buttonContainer.getChildren()) {
@@ -289,7 +428,7 @@ public class BranchesStationsController implements Initializable {
                     ed.nombre = stationName.getText();
                     ed.preferencial = preferentialCheck.isSelected();
                     ed.tramites = new ArrayList<>();
-
+                     ed.rutaAudio = h.getUserData() != null ? h.getUserData().toString() : "";
                     for (Node lbl : stationContent.getChildren()) {
                         if (lbl instanceof Label l) {
                             ed.tramites.add(l.getText());
@@ -337,29 +476,40 @@ public class BranchesStationsController implements Initializable {
                 VBox branch = branches.get(branches.size() - 1);
                 TextField branchName = (TextField) branch.getChildren().get(0);
                 branchName.setText(sd.nombre);
+                 TextArea branchInfo = (TextArea) branch.getChildren().get(1);
+                branchInfo.setText(sd.BranchInfo);
 
-                Accordion accordion = (Accordion) branch.getChildren().get(1);
+                Accordion accordion = (Accordion) branch.getChildren().get(2);
                 TitledPane pane = accordion.getPanes().get(0);
                 VBox buttonContainer = (VBox) pane.getContent();
                 Button addStationBtn = (Button) buttonContainer.getChildren().get(0);
 
-                for (EstacionData ed : sd.estaciones) {
-                    addStationBtn.fire();
-                    HBox stationRow = (HBox) buttonContainer.getChildren().get(buttonContainer.getChildren().size() - 1);
-                    TextField stationName = (TextField) stationRow.getChildren().get(0);
-                    CheckBox preferentialCheck = (CheckBox) stationRow.getChildren().get(1);
-                    stationName.setText(ed.nombre);
-                    preferentialCheck.setSelected(ed.preferencial);
-
-                    int index = stations.indexOf(stationRow);
-                    VBox stationContent = stationContents.get(index);
-                    for (String procedure : ed.tramites) {
-                        stationContent.getChildren().add(createLabel(procedure));
-                    }
-                }
+           for (EstacionData ed : sd.estaciones) {
+    addStationBtn.fire();
+    HBox stationRow = (HBox) buttonContainer.getChildren().get(buttonContainer.getChildren().size() - 1);
+    TextField stationName = (TextField) stationRow.getChildren().get(0);
+    CheckBox preferentialCheck = (CheckBox) stationRow.getChildren().get(1);
+    stationName.setText(ed.nombre);
+    preferentialCheck.setSelected(ed.preferencial);
+    
+    // ✅ cargar ruta de audio
+    if (ed.rutaAudio != null && !ed.rutaAudio.isEmpty()) {
+        stationRow.setUserData(ed.rutaAudio);           // ✅ guarda la ruta en el HBox
+        // actualizar el label — buscar rutaLabel en el preview no es fácil,
+        // el label se actualizará cuando el usuario haga click en la estación
+    }
+    
+    int index = stations.indexOf(stationRow);
+    VBox stationContent = stationContents.get(index);
+    for (String procedure : ed.tramites) {
+        stationContent.getChildren().add(createLabel(procedure));
+    }
+}
 
                branchName.setEditable(false);
-branchName.setOpacity(0.8);
+                branchName.setOpacity(0.8);
+                branchInfo.setEditable(false);
+                branchInfo.setOpacity(0.8);
 
 // recorrer estaciones
 for (Node n : buttonContainer.getChildren()) {
@@ -415,13 +565,24 @@ for (Node n : buttonContainer.getChildren()) {
          label.getStyleClass().add("mi-Label");
          label.setPrefSize(Double.MAX_VALUE, 40);
          label.setAlignment(Pos.CENTER);
-        label.setOnDragDetected(event -> {
-            Dragboard db = label.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
-            content.putString(label.getText());
-            db.setContent(content);
-            event.consume();
-        });
+          Scene scene = rootProcedures.getScene();
+          if (scene != null) {
+                label.styleProperty().bind(
+                    scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                );
+            }
+      label.setOnDragDetected(event -> {
+    Dragboard db = label.startDragAndDrop(TransferMode.MOVE);
+
+    ClipboardContent content = new ClipboardContent();
+    content.putString(label.getText());
+    db.setContent(content);
+
+    // 🔥 Esto muestra el label mientras lo arrastras
+    db.setDragView(label.snapshot(null, null));
+
+    event.consume();
+});
 
         label.setOnDragDone(event -> {
             if (event.getTransferMode() == TransferMode.MOVE) {
@@ -445,7 +606,7 @@ for (Node n : buttonContainer.getChildren()) {
         private void mostrarMensajeError(String mensaje) {
     LblMensaje.setText(mensaje);
     LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: red;");
+ //   LblMensaje.setStyle("-fx-text-fill: red;");
     
     PauseTransition pause = new PauseTransition(Duration.seconds(2));
     pause.setOnFinished(e -> LblMensaje.setVisible(false));
@@ -454,7 +615,7 @@ for (Node n : buttonContainer.getChildren()) {
      private void mostrarMensajeCorrecto(String mensaje) {
     LblMensaje.setText(mensaje);
     LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: green;");
+    //LblMensaje.setStyle("-fx-text-fill: green;");
     
     PauseTransition pause = new PauseTransition(Duration.seconds(2));
     pause.setOnFinished(e -> LblMensaje.setVisible(false));
@@ -513,5 +674,56 @@ for (Node n : buttonContainer.getChildren()) {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             search(newVal);
         });
+        
+        
+        
+         LblStation.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            LblMensaje.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LblStation.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LblSyE.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LblTramite.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+               
+        }
+           });
+        
+        
+        
+    }
+
+    private void onActionAudio(ActionEvent event) {
+          FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Seleccionar audio");
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
+    );
+    
+    Stage stage = (Stage) btnAudio.getScene().getWindow();
+    File archivo = fileChooser.showOpenDialog(stage);
+    
+    if (archivo != null) {
+        rutaAudio = archivo.getAbsolutePath(); 
+        System.out.println("Seleccionaste: " + rutaAudio);
+    }
+    }
+
+    private void onActionReproducir(ActionEvent event) {
+        if (rutaAudio == null) {
+        System.out.println("No has seleccionado un audio");
+        return;
+    }
+    
+    String ruta = new File(rutaAudio).toURI().toString();
+    javafx.scene.media.Media media = new javafx.scene.media.Media(ruta);
+    javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
+    player.setOnReady(() -> player.play());
     }
 }

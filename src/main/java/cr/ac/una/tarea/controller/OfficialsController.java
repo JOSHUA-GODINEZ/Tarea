@@ -9,10 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,6 +24,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class OfficialsController implements Initializable {
 
@@ -69,15 +75,21 @@ public class OfficialsController implements Initializable {
             
 
         } catch (IOException e) {
-         
-            
-        }
-        
+   
+        } 
+  
     }    
 
     @FXML
     private void onActionSwitchP(ActionEvent event) throws IOException {
          App.setRoot("AdministratorView");
+    }
+
+    @FXML
+    private void onACtionSalir(ActionEvent event) throws IOException {
+        /* Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();*/
+           App.setRoot("AuxiliarProyectionView");
     }
     
 }
