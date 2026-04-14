@@ -24,7 +24,7 @@
             <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionSave" styleClass="mi-botonSave" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <HBox alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="810.0" VBox.vgrow="ALWAYS">
+      <HBox fx:id="rootMensaje" alignment="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" prefHeight="20.0" prefWidth="810.0" VBox.vgrow="ALWAYS">
          <children>
             <Label fx:id="LblMensaje" alignment="CENTER" maxWidth="400.0" HBox.hgrow="ALWAYS">
                <HBox.margin>

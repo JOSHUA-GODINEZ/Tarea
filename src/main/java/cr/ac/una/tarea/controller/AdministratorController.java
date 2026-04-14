@@ -1,7 +1,9 @@
 package cr.ac.una.tarea.controller;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
+import cr.ac.una.tarea.model.Teme;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -17,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -40,6 +43,8 @@ public class AdministratorController implements Initializable {
     private Label LName;
     @FXML
     private HBox rootH;
+    @FXML
+    private TabPane roottab;
 
     private void cargar() {
     try {
@@ -107,9 +112,22 @@ public class AdministratorController implements Initializable {
             
              }  
               });
-                      
-            
-            
+                       String json = Files.readString(Path.of("Jsons/theme.json"));
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+    if (t.temeDark) {
+                      rootH.getStyleClass().remove("mi-panel-fondo2");
+            rootH.getStyleClass().add("mi-panel-fondo1");
+            roottab.getStyleClass().add("tab-pane");
+              LName.getStyleClass().add("titulososcu");
+        } else {
+          rootH.getStyleClass().remove("mi-panel-fondo1");
+            rootH.getStyleClass().add("mi-panel-fondo2");
+
+            roottab.getStyleClass().remove("tab-pane-oscuro");
+            LName.getStyleClass().add("titulosclar");
+        }
+           
             
             
         } catch (IOException e) {
@@ -127,4 +145,40 @@ public class AdministratorController implements Initializable {
     private void onActionAuxs(ActionEvent event) throws IOException {
         App.setRoot("LoginView");
     }
+
+ @FXML
+private void onActionClaro(ActionEvent event) {
+   rootH.getStyleClass().clear();
+    rootH.getStyleClass().add("mi-panel-fondo2");
+   
+    LName.getStyleClass().clear();
+     LName.getStyleClass().add("titulosclar");
+ roottab.getStyleClass().clear(); // siempre debe estar
+roottab.getStyleClass().add("tab-pane");
+    Teme t = new Teme();
+    t.temeDark = false;
+    try {
+        Files.writeString(Path.of("Jsons/theme.json"), new Gson().toJson(t));
+    } catch (IOException e) {
+        System.out.println("Error: " + e.getMessage());
+    }
+}
+
+@FXML
+private void onActionOscuro(ActionEvent event) {
+       rootH.getStyleClass().clear();
+    rootH.getStyleClass().add("mi-panel-fondo1");
+    LName.getStyleClass().clear();
+    LName.getStyleClass().add("titulososcu");
+ roottab.getStyleClass().clear();
+roottab.getStyleClass().add("tab-pane-oscuro");
+    Teme t = new Teme();
+    t.temeDark = true;
+    try {
+        Files.writeString(Path.of("Jsons/theme.json"), new Gson().toJson(t));
+    } catch (IOException e) {
+        System.out.println("Error: " + e.getMessage());
+    }
+}
+    
 }

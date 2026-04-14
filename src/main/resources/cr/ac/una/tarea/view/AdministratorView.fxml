@@ -32,6 +32,8 @@
                                        <children>
                                           <Button alignment="TOP_CENTER" mnemonicParsing="false" onAction="#onActionOption" prefHeight="24.0" prefWidth="131.0" text="Parametros Generales" />
                                           <Button mnemonicParsing="false" onAction="#onActionAuxs" text="Parametros" />
+                                          <Button mnemonicParsing="false" onAction="#onActionClaro" text="tama claro" />
+                                          <Button mnemonicParsing="false" onAction="#onActionOscuro" text="Tema Oscuro" />
                                        </children>
                                     </VBox>
                                  </content>
@@ -61,7 +63,7 @@
             </AnchorPane>
             <VBox prefHeight="447.0" prefWidth="552.0">
                <children>
-                  <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="565.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="40.0" tabMaxWidth="200.0" tabMinHeight="40.0" tabMinWidth="100.0" VBox.vgrow="ALWAYS">
+                  <TabPane fx:id="roottab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="565.0" prefWidth="770.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="40.0" tabMaxWidth="200.0" tabMinHeight="40.0" tabMinWidth="100.0" VBox.vgrow="ALWAYS">
                     <tabs>
                       <Tab fx:id="tab1" text="Tramites" />
                       <Tab fx:id="tab2" text="Sucursales y Estaciones" />

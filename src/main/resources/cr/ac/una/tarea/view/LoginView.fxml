@@ -27,8 +27,8 @@
                </padding>
             </Label>
             <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Button alignment="TOP_RIGHT" focusTraversable="false" maxHeight="130.0" mnemonicParsing="false" onMouseClicked="#Save" prefHeight="27.0" prefWidth="150.0" styleClass="mi-botonSave" textAlignment="CENTER" textFill="TRANSPARENT" HBox.hgrow="ALWAYS" />
-            <Button fx:id="BNext" alignment="CENTER" contentDisplay="BOTTOM" disable="true" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionChangeView" opacity="0.4" styleClass="mi-botonGo" HBox.hgrow="ALWAYS">
+            <Button alignment="TOP_RIGHT" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="200.0" mnemonicParsing="false" onMouseClicked="#Save" prefHeight="27.0" prefWidth="100.0" styleClass="mi-botonSave" textAlignment="CENTER" textFill="TRANSPARENT" HBox.hgrow="ALWAYS" />
+            <Button fx:id="BNext" alignment="CENTER" contentDisplay="BOTTOM" disable="true" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="200.0" mnemonicParsing="false" onAction="#onActionChangeView" opacity="0.4" prefWidth="100.0" styleClass="mi-botonGo" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
@@ -56,7 +56,7 @@
          </VBox.margin>
       </TextArea>
       <Label fx:id="Logo" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="0.0" prefWidth="760.0" text="Logo" textFill="WHITE" VBox.vgrow="ALWAYS" />
-      <ImageView fx:id="ImageLogo" fitHeight="308.0" fitWidth="90.0" onMouseClicked="#Insert1" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="ImageLogo" fitHeight="308.0" fitWidth="90.0" onMouseClicked="#insetLogo" pickOnBounds="true" preserveRatio="true">
          <viewport>
             <Rectangle2D />
          </viewport>

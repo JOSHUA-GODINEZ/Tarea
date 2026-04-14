@@ -10,11 +10,16 @@
 
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.ManagementTokensController">
    <children>
+      <HBox alignment="CENTER" prefHeight="87.0" prefWidth="600.0">
+         <children>
+            <Label fx:id="LblSelec" text="Seleccione Sucursal y Estacion" />
+         </children>
+      </HBox>
       <HBox alignment="CENTER" maxHeight="70.0" maxWidth="1.7976931348623157E308" minHeight="40.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sucursal:" HBox.hgrow="ALWAYS" />
+            <Label fx:id="LblScursal" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sucursal:" HBox.hgrow="ALWAYS" />
             <Label fx:id="LSucursal" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin sucursal" HBox.hgrow="ALWAYS" />
-            <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Estacion:" HBox.hgrow="ALWAYS" />
+            <Label fx:id="LblEstacion" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Estacion:" HBox.hgrow="ALWAYS" />
             <Label fx:id="LEstacion" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin Estacion" HBox.hgrow="ALWAYS" />
          </children>
          <styleClass>
@@ -36,7 +41,18 @@
             <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionPreferential" styleClass="mi-BtnPreferencial" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
+      <HBox alignment="CENTER" maxHeight="50.0" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Atendiendo a:" />
+         </children>
+      </HBox>
       <HBox fx:id="rootAtencion" alignment="CENTER" maxHeight="100.0" maxWidth="1.7976931348623157E308" prefHeight="122.0" prefWidth="600.0" spacing="10.0" styleClass="mi-panel-fondo1" VBox.vgrow="ALWAYS" />
+      <HBox alignment="CENTER_LEFT" maxHeight="50.0" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Clientes en Espera:" />
+            <Label fx:id="usuariosPendientes" text=" Sin Usuarios pendientes" />
+         </children>
+      </HBox>
       <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
          <content>
             <VBox fx:id="rootTramits" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="mi-panel-fondo1">

@@ -19,25 +19,24 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import com.github.sarxos.webcam.Webcam;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.model.UsuarioData;
+import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.CamaraUtil;
+import cr.ac.una.tarea.util.ValidadorNumeros;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+
 public class LoginUsersController implements Initializable {
     @FXML
     private VBox rootUsers;
@@ -49,6 +48,9 @@ public class LoginUsersController implements Initializable {
     private VBox selectedUser = null;
     @FXML
     private Label LblMensaje;
+        private Boolean temaAnterior = null;
+    @FXML
+    private HBox rootMensaje;
     @FXML
     private void onActionAdd(ActionEvent event) {
 HBox usersInfo = new HBox();       
@@ -62,22 +64,14 @@ Button foto = new Button();
 Button image = new Button();
 VBox upLine = new VBox();
 HBox titles = new HBox();
-Label lblName = new Label("Nombre");
-Label lblId = new Label("Cedula");
-Label lblPhone = new Label("Telefono");
-Label lblDate = new Label("Fecha");
-Label lblPhoto = new Label("      Foto");
+Label lblName = new Label("Nombre ");
+Label lblId = new Label("Cedula   ");
+Label lblPhone = new Label("Telefono   ");
+Label lblDate = new Label("Fecha   ");
+Label lblPhoto = new Label("Foto");
 
-        id.textProperty().addListener((obs, oldValue, newValue) -> {
-    if (!newValue.matches("\\d*")) {
-        id.setText(newValue.replaceAll("[^\\d]", ""));
-    }
-});
-        numberPhone.textProperty().addListener((obs, oldValue, newValue) -> {
-    if (!newValue.matches("\\d*")) {
-        numberPhone.setText(newValue.replaceAll("[^\\d]", ""));
-    }
-});
+    ValidadorNumeros.soloNumeros(id);
+      ValidadorNumeros.soloNumeros(numberPhone);
 
 ///////////////// LABELS CSS
 lblName.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -91,28 +85,28 @@ HBox.setHgrow(lblPhone, Priority.ALWAYS);
 HBox.setHgrow(lblDate, Priority.ALWAYS);
 HBox.setHgrow(lblPhoto, Priority.ALWAYS);
 
-lblName.setAlignment(Pos.CENTER_LEFT);
-lblId.setAlignment(Pos.CENTER_LEFT);
-lblPhone.setAlignment(Pos.CENTER_LEFT);
-lblDate.setAlignment(Pos.CENTER_LEFT);
-lblPhoto.setAlignment(Pos.CENTER);
+lblName.getStyleClass().add("label-procedimiento");
+lblId.getStyleClass().add("label-procedimiento");
+lblPhone.getStyleClass().add("label-procedimiento");
+lblDate.getStyleClass().add("label-procedimiento");
+lblPhoto.getStyleClass().add("label-procedimiento");
 
 ///////////////// CSS
 userFoto.setFitHeight(70);
 userFoto.setFitWidth(70);
 upLine.getStyleClass().addAll("mi-rectangulo","mi-boton2");
-upLine.setSpacing(5);
 upLine.setMaxSize(Double.MAX_VALUE, 70);
-titles.setPadding(new Insets(0, 20, 0, 20));
-titles.setAlignment(Pos.CENTER_LEFT);
-titles.getStyleClass().add("mi-Titulos");
+//titles.setPadding(new Insets(0, 20, 0, 20));
+//titles.setAlignment(Pos.CENTER_LEFT);
+titles.getStyleClass().addAll("mi-Titulos","procedimiento");
 titles.setMaxWidth(Double.MAX_VALUE);
 HBox.setHgrow(titles, Priority.ALWAYS);
 VBox.setVgrow(upLine, Priority.ALWAYS);
 
-usersInfo.setAlignment(Pos.CENTER);
-usersInfo.setSpacing(40);
-usersInfo.setPadding(new Insets(0, 0, 0, 20));
+//usersInfo.setAlignment(Pos.CENTER);
+//usersInfo.setSpacing(40);
+//usersInfo.setPadding(new Insets(0, 0, 0, 20));
+usersInfo.getStyleClass().add("procedimiento-fila");
 usersInfo.setMaxHeight(Double.MAX_VALUE);
 usersInfo.setMinHeight(70);
 usersInfo.setMaxWidth(Double.MAX_VALUE);
@@ -136,7 +130,7 @@ VBox.setVgrow(image, Priority.ALWAYS);
 titles.getChildren().addAll(lblName, lblId, lblPhone, lblDate, lblPhoto);
 usersInfo.getChildren().addAll(name, id, numberPhone, dateOfBirth, userFoto);
 
-contain.setAlignment(Pos.CENTER);
+contain.getStyleClass().add("label-procedimiento");
 contain.getChildren().addAll(foto, image);
 contain.setPadding(new Insets(0, 0, 0, -40));
 usersInfo.getChildren().add(contain);
@@ -144,7 +138,6 @@ usersInfo.getChildren().add(contain);
 upLine.getChildren().addAll(titles, usersInfo);
 
 usersData.add(upLine);
-rootUsers.setSpacing(20);
 rootUsers.getChildren().add(upLine);
 
 upLine.setOnMouseClicked(e -> {
@@ -242,103 +235,7 @@ upLine.setOnMouseClicked(e -> {
     }
 });
 
-foto.setOnMouseClicked(e -> {
-    Webcam webcam = Webcam.getDefault();
-    if (webcam == null) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-            javafx.scene.control.Alert.AlertType.ERROR
-        );
-        alert.setContentText("No se encontró cámara.");
-        alert.showAndWait();
-        return;
-    }
-    webcam.open();
-
-    ImageView preview = new ImageView();
-    preview.setFitWidth(480);
-    preview.setFitHeight(360);
-
-    Button captureBtn = new Button("Capturar");
-    Button cancelBtn = new Button("Cancelar");
-
-    HBox buttonsBox = new HBox(12, captureBtn, cancelBtn);
-    buttonsBox.setAlignment(Pos.CENTER);
-    buttonsBox.setPadding(new Insets(10));
-
-    BorderPane cameraRoot = new BorderPane(preview);
-    cameraRoot.setBottom(buttonsBox);
-
-    Stage cameraStage = new Stage();
-    cameraStage.initModality(Modality.APPLICATION_MODAL);
-    cameraStage.setTitle("Tomar foto");
-    cameraStage.setScene(new Scene(cameraRoot, 500, 430));
-
-    Thread streamThread = new Thread(() -> {
-        while (cameraStage.isShowing()) {
-            try {
-                java.awt.image.BufferedImage frame = webcam.getImage();
-                if (frame != null) {
-                    javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(frame, null);
-                    javafx.application.Platform.runLater(() -> preview.setImage(fxImage));
-                }
-                Thread.sleep(66);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-    });
-    streamThread.setDaemon(true);
-
-    captureBtn.setOnAction(ev -> {
-        java.awt.image.BufferedImage capturedFrame = webcam.getImage();
-        if (capturedFrame != null) {
-            javafx.scene.image.Image fxImage = SwingFXUtils.toFXImage(capturedFrame, null);
-            String photoPath = saveImageFromCamera(fxImage);
-            userFoto.setImage(fxImage);
-            userFoto.setUserData(photoPath);
-        }
-        webcam.close();
-        streamThread.interrupt();
-        cameraStage.close();
-    });
-
-    cancelBtn.setOnAction(ev -> {
-        webcam.close();
-        streamThread.interrupt();
-        cameraStage.close();
-    });
-
-    cameraStage.setOnCloseRequest(ev -> {
-        webcam.close();
-        streamThread.interrupt();
-    });
-
-    cameraStage.show();
-    streamThread.start();
-});
-    }
-
-
-
-private String saveImageFromCamera(javafx.scene.image.Image image) {
-    try {
-        String folderPath = System.getProperty("user.dir") + "/fotos/";
-        java.io.File dir = new java.io.File(folderPath);
-        if (!dir.exists()) dir.mkdirs();
-
-        String fileName = folderPath + "foto_" +
-            java.time.LocalDateTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
-            + ".png";
-
-        java.io.File outputFile = new java.io.File(fileName);
-        javax.imageio.ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
-        return outputFile.toURI().toString();
-
-    } catch (IOException ex) {
-        return "";
-    }
+foto.setOnMouseClicked(e -> CamaraUtil.tomarFoto(userFoto));
 }
 
 
@@ -363,14 +260,20 @@ private String saveImageFromCamera(javafx.scene.image.Image image) {
         TextField numberPhone = (TextField) information.getChildren().get(2);
         DatePicker dateOfBirth = (DatePicker) information.getChildren().get(3);
         ImageView userPhoto = (ImageView) information.getChildren().get(4);
-
+          VBox contain = (VBox) information.getChildren().get(5);
+        // Obtener los botones - ajusta los índices según tu estructura
+        Button btnImage = (Button) contain.getChildren().get(0); // índice del botón image
+        Button btnFot = (Button) contain.getChildren().get(1);  
+        
         name.setEditable(true);
         id.setEditable(true);
         numberPhone.setEditable(true);
         dateOfBirth.setEditable(true);
         userPhoto.setDisable(false);
-        information.setOpacity(1.0);
- selectedUser.getStyleClass().remove("seleccionado");
+          btnImage.setDisable(false);
+            btnFot.setDisable(false);
+        information.getStyleClass().add("procedimiento-editando");
+        selectedUser.getStyleClass().remove("seleccionado");
         selectedUser = null;
     }
 }
@@ -385,10 +288,14 @@ private void onActionSave(ActionEvent event) {
         TextField numberPhone = (TextField) row.getChildren().get(2);
         DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
         ImageView userPhoto = (ImageView) row.getChildren().get(4);
+           VBox contain = (VBox) row.getChildren().get(5);
+        // Obtener los botones - ajusta los índices según tu estructura
+        Button btnImage = (Button) contain.getChildren().get(0); // índice del botón image
+        Button btnFot = (Button) contain.getChildren().get(1);   // índice del botón fot
 
         boolean hasImage = userPhoto.getImage() != null &&
-        userPhoto.getImage().getUrl() != null &&
-        userPhoto.getImage().getUrl().contains("Base.png");
+                userPhoto.getImage().getUrl() != null &&
+                userPhoto.getImage().getUrl().contains("Base.png");
 
         if (!name.getText().isBlank() && !id.getText().isBlank()
                 && dateOfBirth.getValue() != null && !hasImage) {
@@ -397,14 +304,21 @@ private void onActionSave(ActionEvent event) {
             numberPhone.setEditable(false);
             dateOfBirth.setEditable(false);
             userPhoto.setDisable(true);
-            row.setOpacity(0.8);
-                    mostrarMensajeCorrecto("Informacion Guardada");
+
+            // Deshabilitar los botones igual que los demás campos
+            btnImage.setDisable(true);
+            btnFot.setDisable(true);
+
+            row.getStyleClass().remove("procedimiento-editando");
+            row.getStyleClass().add("procedimiento-guardado");
+            Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
         } else {
-               mostrarMensajeError("Informacion Insuficiente");
+            Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");
             rootUsers.getChildren().remove(v);
             usersData.remove(i);
         }
     }
+
     if( selectedUser!=null)
     selectedUser.getStyleClass().remove("seleccionado");
     selectedUser = null;
@@ -485,7 +399,11 @@ private void loadUsers() {
             TextField numberPhone = (TextField) row.getChildren().get(2);
             DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
             ImageView userPhoto = (ImageView) row.getChildren().get(4);
-
+         VBox contain = (VBox) row.getChildren().get(5);
+        // Obtener los botones - ajusta los índices según tu estructura
+        Button btnImage = (Button) contain.getChildren().get(0); // índice del botón image
+        Button btnFot = (Button) contain.getChildren().get(1);    
+            
             name.setText(ud.nombre);
             id.setText(ud.cedula);
             numberPhone.setText(ud.numero);
@@ -512,30 +430,15 @@ private void loadUsers() {
             numberPhone.setEditable(false);
             dateOfBirth.setEditable(false);
             userPhoto.setDisable(true);
-            row.setOpacity(0.8);
+             btnImage.setDisable(true);
+            btnFot.setDisable(true);
+             row.getStyleClass().remove("procedimiento-editando");
+            row.getStyleClass().add("procedimiento-guardado");
         }
 
     } catch (IOException e) {
         System.out.println("Error al cargar: " + e.getMessage());
     }
-}
-    private void mostrarMensajeError(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: red;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-     private void mostrarMensajeCorrecto(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: green;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
 }
 @Override
 public void initialize(URL url, ResourceBundle rb) {
@@ -545,5 +448,47 @@ public void initialize(URL url, ResourceBundle rb) {
     });
  
 
+Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+            String json = Files.readString(Path.of("Jsons/theme.json"));
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia el root
+                if (t.temeDark) {
+                    rootUsers.getStyleClass().remove("mi-panel-fondo2");
+                    rootUsers.getStyleClass().add("mi-panel-fondo1");
+                    rootMensaje.getStyleClass().remove("mi-panel-fondo2");
+                    rootMensaje.getStyleClass().add("mi-panel-fondo1");
+                } else {
+                    rootUsers.getStyleClass().remove("mi-panel-fondo1");
+                    rootUsers.getStyleClass().add("mi-panel-fondo2");
+                      rootMensaje.getStyleClass().remove("mi-panel-fondo1");
+                    rootMensaje.getStyleClass().add("mi-panel-fondo2");
+                }
+
+                // Cambia cada UpLine que esta en ProcedureData
+                for (VBox upLine : usersData) {
+                    if (t.temeDark) {
+                        upLine.getStyleClass().remove("mi-rectangulo");
+                        upLine.getStyleClass().add("mi-rectangulooscuro");
+                    } else {
+                        upLine.getStyleClass().remove("mi-rectangulooscuro");
+                        upLine.getStyleClass().add("mi-rectangulo");
+                    }
+                }
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
 }
 }

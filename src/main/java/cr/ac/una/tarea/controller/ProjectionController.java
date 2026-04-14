@@ -419,9 +419,9 @@ try {
                 encontrado = true; // ✅ encontró
                 if (ed.rutaAudio != null && !ed.rutaAudio.isBlank()) {
                     // ✅ solo agrega todos si encontró la estación correcta
-                    nuevosAudios.add("C:/Joshua/Tarea/sonidos/Ficha.wav");
-                    nuevosAudios.add("C:/Joshua/Tarea/sonidos/A1.wav");
-                    nuevosAudios.add("C:/Joshua/Tarea/sonidos/Estacion.wav");
+                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/Ficha.wav");
+                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/A1.wav");
+                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/Estacion.wav");
                     nuevosAudios.add(ed.rutaAudio);
                 }
                 break;

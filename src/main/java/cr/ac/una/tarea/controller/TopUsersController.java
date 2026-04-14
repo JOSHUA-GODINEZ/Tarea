@@ -3,6 +3,7 @@ package cr.ac.una.tarea.controller;
 import com.google.gson.Gson;
 import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.SucursalData;
+import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.model.TopUsersData;
 import java.io.IOException;
 import java.net.URL;
@@ -16,8 +17,6 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
@@ -27,12 +26,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import java.util.List;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.util.Duration;
 public class TopUsersController implements Initializable {
 
     @FXML
@@ -59,6 +63,13 @@ private PieChart GraficPie;
     private Label LblTUser;
     @FXML
     private Label LblParametres;
+private Boolean temaAnterior = null;
+    @FXML
+    private HBox LblTutulos;
+    @FXML
+    private VBox rootUsers;
+    @FXML
+    private VBox rootserch;
    
     
     private void cargarTop(){
@@ -98,14 +109,15 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     Label lblNumero = new Label(tu.numero);
     Label lblFecha = new Label(tu.fecha);
     Label lblCantidad = new Label(String.valueOf(tu.cantidad));
+
     ImageView IMFoto = new ImageView(tu.imagen);
     IMFoto.setFitHeight(60);
     IMFoto.setFitWidth(60);
     h.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto, lblCantidad);
-    h.setSpacing(10);
-    h.setAlignment(Pos.CENTER);
+
+    h.getStyleClass().addAll("item-estacion");
     h.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-    h.setPadding(new Insets(5));
+   
     rootTop.getChildren().add(h);
         Scene scene = rootTop.getScene();
         
@@ -191,11 +203,11 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
                 check.setSelected(ed.preferencial);
                 check.setDisable(true);
                 hEst.getChildren().addAll(lblNombre, check);
-                hEst.setSpacing(10);
-                hEst.setAlignment(Pos.CENTER_LEFT);
-               // hEst.setStyle("-fx-border-color: blue;");
-                hEst.setPadding(new Insets(5));
-
+              //  hEst.setSpacing(10);
+               // hEst.setAlignment(Pos.CENTER_LEFT);
+              // // hEst.setStyle("-fx-border-color: blue;");
+              //  hEst.setPadding(new Insets(5));
+               hEst.getStyleClass().add("item-estacion");
                 hEst.setOnMouseClicked(ev -> {
                     sucursalSeleccionada = sd;
                     estacionSeleccionada = ed;
@@ -224,7 +236,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-    cargarTop();
+    
     cargar();
     cargarGraficos();
     
@@ -238,7 +250,51 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
             );
                 }
         });
-        
+        Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+   cargarTop();
+      
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
+
+
+      Timeline timeline1 = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+            String json = Files.readString(Path.of("Jsons/theme.json"));
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                if (t.temeDark) {
+                      rootUsers.getStyleClass().clear();
+                    rootUsers.getStyleClass().add("mi-rectangulooscuro");
+                    rootserch.getStyleClass().clear();
+                    rootserch.getStyleClass().add("mi-rectangulooscuro");
+                    LblTutulos.getStyleClass().clear();
+                    LblTutulos.getStyleClass().addAll("mi-Titulososcuros","mi-panel-fondo1");
+                   
+                } else {
+                   rootUsers.getStyleClass().clear();
+                    rootUsers.getStyleClass().add("mi-rectangulo");
+                    rootserch.getStyleClass().clear();
+                    rootserch.getStyleClass().add("mi-rectangulo");
+                    LblTutulos.getStyleClass().clear();
+                    LblTutulos.getStyleClass().addAll("mi-Titulos","mi-panel-fondo2");
+                }
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    })
+);
+timeline1.setCycleCount(Timeline.INDEFINITE);
+timeline1.play();
     }    
 
     @FXML

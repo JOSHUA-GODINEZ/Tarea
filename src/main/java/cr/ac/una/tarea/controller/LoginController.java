@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
+import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.ValidadorNumeros;
 import javafx.stage.FileChooser;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -15,17 +17,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.animation.PauseTransition;
 import javafx.scene.Node;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+
 public class LoginController {
 
-@FXML
+    @FXML
     private TextField Tname;
     @FXML
     private ImageView ImageLogo;
@@ -43,67 +43,16 @@ public class LoginController {
     private Label Logo;
     @FXML
     private Label PIn;
-
-     private final Path archivo = Path.of("Jsons/GenenarlData.json");
+    
     @FXML
     private VBox root;
     @FXML
     private Label LblMensaje;
     
-@FXML
-   private void Save() {
-    TPin.getParent().requestFocus();
-    Tname.getParent().requestFocus();
-    TInfo.getParent().requestFocus();
-
-   if (Tname.getText() != null && !Tname.getText().isBlank() && 
-    TInfo.getText() != null && !TInfo.getText().isBlank() && 
-    TPin.getText() != null && TPin.getText().length() == 4 && 
-    ImageLogo.getImage() != null && !ImageLogo.getImage().getUrl().equals("../resources/cr/ac/una/tarea/resource/Base.png")) {
-    BNext.setOpacity(1.0);
-    BNext.setDisable(false);
-}
-    verifyData();
-
-    try {
-        DataParametres user = new DataParametres();
-        user.setName(Tname.getText());
-        if (TInfo.getText().isBlank()) {
-    user.setInfo("");
-       TInfo.setText("");
-} else {
-    user.setInfo(TInfo.getText());
-}
-        if (TPin.getText() != null && TPin.getText().length() == 4) {
-        user.setPin(TPin.getText());
-    } else {
-        user.setPin("");
-        TPin.setText("");
-        mostrarMensajeError("Informacion Invalida");
-    }
-        if (ImageLogo.getImage() != null &&
-    ImageLogo.getImage().getUrl() != null &&
-    !ImageLogo.getImage().getUrl().contains("Base.png")) {
-
-    user.setImageUrl(ImageLogo.getImage().getUrl());
-}
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Files.writeString(archivo, gson.toJson(user));
-        if (Tname.getText() != null && !Tname.getText().isBlank() &&
-        TInfo.getText() != null && !TInfo.getText().isBlank() &&
-        TPin.getText() != null && TPin.getText().length() == 4 &&
-        ImageLogo.getImage() != null &&
-        ImageLogo.getImage().getUrl() != null &&
-        !ImageLogo.getImage().getUrl().contains("Base.png")) {
-mostrarMensajeCorrecto("Informacion Correcta");
-    }else{mostrarMensajeError("Informacion Correcta");}
-    } catch (IOException e) {
-        System.out.println("Error al guardar: " + e.getMessage());
-    }
-}
+ private final Path archivo = Path.of("Jsons/GenenarlData.json");
    
 @FXML
-     private void Insert1(){
+     private void insetLogo(){
          FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Selecciona una imagen");
  FileChooser.ExtensionFilter filtro =
@@ -120,18 +69,130 @@ mostrarMensajeCorrecto("Informacion Correcta");
         ImageLogo.setImage(imagen);
     }
      }
-    
+ 
+    @FXML
+    private void onActionChangeView(ActionEvent event) throws IOException {
+         App.setRoot("AdministratorView");
+    }
 
-     
-    public void initialize() throws IOException {
+
+    @FXML
+    private void onActionSalir(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
+    @FXML
+   private void Save() {
+    TPin.getParent().requestFocus();
+    Tname.getParent().requestFocus();
+    TInfo.getParent().requestFocus();
+
+   if (Tname.getText() != null && !Tname.getText().isBlank() && 
+    TInfo.getText() != null && !TInfo.getText().isBlank() && 
+    TPin.getText() != null && TPin.getText().length() == 4 && 
+    ImageLogo.getImage() != null && !ImageLogo.getImage().getUrl().equals("../resources/cr/ac/una/tarea/resource/Base.png")) {
+    BNext.setDisable(false);
+    BNext.getStyleClass().add("BNext");
+} 
+    verifyData();
+
+    try {
+        DataParametres user = new DataParametres();
+        user.setName(Tname.getText());
+        if (TInfo.getText().isBlank()) {
+    user.setInfo("");
+       TInfo.setText("");
+} else {
+    user.setInfo(TInfo.getText());
+}
+        if (TPin.getText() != null && TPin.getText().length() == 4) {
+        user.setPin(TPin.getText());
+    } else {
+        user.setPin("");
+        TPin.setText("");
+       Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");
+    }
+        if (ImageLogo.getImage() != null &&
+    ImageLogo.getImage().getUrl() != null &&
+    !ImageLogo.getImage().getUrl().contains("Base.png")) {
+
+    user.setImageUrl(ImageLogo.getImage().getUrl());
+}
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Files.writeString(archivo, gson.toJson(user));
+        if (Tname.getText() != null && !Tname.getText().isBlank() &&
+        TInfo.getText() != null && !TInfo.getText().isBlank() &&
+        TPin.getText() != null && TPin.getText().length() == 4 &&
+        ImageLogo.getImage() != null &&
+        ImageLogo.getImage().getUrl() != null &&
+        !ImageLogo.getImage().getUrl().contains("Base.png")) {
+       Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
+    }else{Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");}
+    } catch (IOException e) {
+        System.out.println("Error al guardar: " + e.getMessage());
+    }
+}
+    private void cargar() {
+    try {
+        if (!Files.exists(archivo)) return;
+        String json = Files.readString(archivo);
+        if (json.isBlank()) return;
+
+        Gson gson = new Gson();
+        DataParametres user = gson.fromJson(json, DataParametres.class);
+
+        Tname.setText(user.getName());
+        TInfo.setText(user.getInfo());
+        TPin.setText(user.getPin());
+
+        if (user.getImageUrl() != null && !user.getImageUrl().isBlank()) {
+            ImageLogo.setImage(new Image(user.getImageUrl()));
+        }
+    } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
+    }
+}
+    private void verifyData() {
+    if (Tname.getText() != null && !Tname.getText().isBlank() &&
+        TInfo.getText() != null && !TInfo.getText().isBlank() &&
+        TPin.getText() != null && TPin.getText().length() == 4 &&
+        ImageLogo.getImage() != null &&
+        ImageLogo.getImage().getUrl() != null &&
+        !ImageLogo.getImage().getUrl().contains("Base.png")) {
+        BNext.setDisable(false);
+        BNext.getStyleClass().add("BNext");
+       
+    } else {
+        BNext.setDisable(true);
+        BNext.getStyleClass().add("BNext");
+        
+    }
+}
+    
+     public String FullParameters() throws IOException {
+    if (!Files.exists(archivo)) return "LoginView";
+    String json = Files.readString(archivo);
+    if (json.isBlank()) return "LoginView";
+
+    Gson gson = new Gson();
+    DataParametres user = gson.fromJson(json, DataParametres.class);
+
+   if (user.getName() == null || user.getName().isBlank() || 
+    user.getInfo() == null || user.getInfo().isBlank() || 
+    user.getPin() == null || user.getPin().isBlank() ||
+    user.getImageUrl() == null || 
+    user.getImageUrl().contains("Base.png")) {
+        return "LoginView";
+   }else {
+        return "AdministratorView";
+    }
+}
+    
+        public void initialize() throws IOException {
         cargar();
         verifyData();
       
-        TPin.textProperty().addListener((obs, oldVal, newVal) -> {
-    if (!newVal.matches("\\d*")) {
-        TPin.setText(newVal.replaceAll("[^\\d]", ""));
-    }
-});
+     ValidadorNumeros.soloNumeros(TPin);
         
         
         
@@ -161,92 +222,4 @@ mostrarMensajeCorrecto("Informacion Correcta");
         }
     });
 }
-    
-private void cargar() {
-    try {
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
-        if (json.isBlank()) return;
-
-        Gson gson = new Gson();
-        DataParametres user = gson.fromJson(json, DataParametres.class);
-
-        Tname.setText(user.getName());
-        TInfo.setText(user.getInfo());
-        TPin.setText(user.getPin());
-
-        if (user.getImageUrl() != null && !user.getImageUrl().isBlank()) {
-            ImageLogo.setImage(new Image(user.getImageUrl()));
-        }
-    } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
-    }
-}
-
-private void verifyData() {
-    if (Tname.getText() != null && !Tname.getText().isBlank() &&
-        TInfo.getText() != null && !TInfo.getText().isBlank() &&
-        TPin.getText() != null && TPin.getText().length() == 4 &&
-        ImageLogo.getImage() != null &&
-        ImageLogo.getImage().getUrl() != null &&
-        !ImageLogo.getImage().getUrl().contains("Base.png")) {
-
-        BNext.setOpacity(1.0);
-        BNext.setDisable(false);
-    } else {
-        BNext.setOpacity(0.2);
-        BNext.setDisable(true);
-    }
-}
-       
-       
-      public String FullParameters() throws IOException {
-    if (!Files.exists(archivo)) return "LoginView";
-    String json = Files.readString(archivo);
-    if (json.isBlank()) return "LoginView";
-
-    Gson gson = new Gson();
-    DataParametres user = gson.fromJson(json, DataParametres.class);
-
-   if (user.getName() == null || user.getName().isBlank() || 
-    user.getInfo() == null || user.getInfo().isBlank() || 
-    user.getPin() == null || user.getPin().isBlank() ||
-    user.getImageUrl() == null || 
-    user.getImageUrl().contains("Base.png")) {
-        return "LoginView";
-   }else {
-        return "AdministratorView";
-    }
-}
-
-    @FXML
-    private void onActionChangeView(ActionEvent event) throws IOException {
-         App.setRoot("AdministratorView");
-    }
-    
-    
-    private void mostrarMensajeError(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: red;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-     private void mostrarMensajeCorrecto(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: green;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-
-    @FXML
-    private void onActionSalir(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
-    }
 }

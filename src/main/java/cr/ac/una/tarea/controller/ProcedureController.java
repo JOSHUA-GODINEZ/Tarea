@@ -3,20 +3,23 @@ package cr.ac.una.tarea.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
+import cr.ac.una.tarea.model.Teme;
+import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.ValidadorNumeros;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.animation.PauseTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -40,11 +43,13 @@ public class ProcedureController implements Initializable {
     private final Path archivo = Path.of("Jsons/ProcedureData.json");
     @FXML
     private Label LblMensaje;
-     
+     private Boolean temaAnterior = null;
+    @FXML
+    private HBox rootMensaje;
     @FXML
    public void Add() {
 
-  //  if(buscador.getText().equals("")){
+
         HBox procedure = new HBox();
         TextField nameProcedure = new TextField();
         TextField costProcedure = new TextField();
@@ -53,35 +58,39 @@ public class ProcedureController implements Initializable {
         VBox UpLine =new VBox();
         HBox Titles = new HBox();
         Label name = new Label("Nombre");
-        Label price = new Label("      Precio (Opcional)");
+        Label price = new Label("         Precio (Opcional)");
         Label detail = new Label("Detalle (Opcional)");
         Label state = new Label("Estado");
         name.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
          price.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
          detail.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-       //  state.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         HBox.setHgrow(name, Priority.ALWAYS);
         HBox.setHgrow(price, Priority.ALWAYS);
         HBox.setHgrow(detail, Priority.ALWAYS);
-       // HBox.setHgrow(state, Priority.ALWAYS);
-        name.setAlignment(Pos.CENTER);
-        price.setAlignment(Pos.CENTER);
-        detail.setAlignment(Pos.CENTER);
-        state.setAlignment(Pos.CENTER);
+        name.getStyleClass().add("label-procedimiento");
+        price.getStyleClass().add("label-procedimiento");
+        detail.getStyleClass().add("label-procedimiento");
+        state.getStyleClass().add("label-procedimiento");
         
-        costProcedure.textProperty().addListener((obs, oldValue, newValue) -> {
-    if (!newValue.matches("\\d*")) {
-        costProcedure.setText(newValue.replaceAll("[^\\d]", ""));
+       ValidadorNumeros.soloNumeros(costProcedure);
+
+       try {
+    String json = Files.readString(Path.of("Jsons/theme.json"));
+    Gson gson = new Gson();
+    Teme t = gson.fromJson(json, Teme.class);
+     UpLine.getStyleClass().add("mi-boton2");
+    if (t.temeDark) {
+       UpLine.getStyleClass().add("mi-rectangulo");
+    } else {
+        
+         UpLine.getStyleClass().add("mi-rectangulooscuro");
     }
-});
-///////////////////////////////////////////////////      CSS
-        UpLine.getStyleClass().add("mi-rectangulo");
-        procedure.setAlignment(Pos.CENTER);
-        procedure.setSpacing(30);
-        procedure.setPadding(new Insets(0,20,0,20));
-        UpLine.setSpacing(5);
-        Titles.setPadding(new Insets(0,20,0,20));
-        Titles.setAlignment(Pos.CENTER);
+
+} catch (IOException e) {
+    UpLine.getStyleClass().add("mi-rectangulo"); // por defecto claro
+}
+        procedure.getStyleClass().add("procedimiento-fila");
+        Titles.getStyleClass().add("procedimiento-fila");
         Titles.getStyleClass().add("mi-Titulos");
         
         
@@ -90,6 +99,7 @@ procedure.setPrefHeight(40);
 procedure.setMinHeight(80);
 UpLine.setMaxHeight(20);
 UpLine.setMaxWidth(Double.MAX_VALUE);
+UpLine.setPadding(new Insets(0,0,5,0));
 Titles.setMaxHeight(Double.MAX_VALUE);
 Titles.setMaxWidth(Double.MAX_VALUE);
 
@@ -111,17 +121,12 @@ detailProcedure.setPrefWidth(150);
       
    stateProcedure.setSelected(true);
 
-/////////////////////////////////////////////////
 
 procedure.getChildren().addAll(nameProcedure,costProcedure,detailProcedure,stateProcedure);
 Titles.getChildren().addAll(name,price,detail,state);
 UpLine.getChildren().addAll(Titles,procedure);
 ProcedureData.add(UpLine);
         rootProcedure.getChildren().add(UpLine);
-
-        
-
-        
 
        UpLine.setOnMouseClicked(e -> {
 
@@ -132,7 +137,7 @@ ProcedureData.add(UpLine);
 
     // Seleccionar nuevo
     selectedProcedure = UpLine;
-    UpLine.getStyleClass().addAll("seleccionado","mi-boton2");
+    UpLine.getStyleClass().addAll("seleccionado");
 });
 
 
@@ -222,7 +227,7 @@ CheckBox stateProcedure = (CheckBox) procedure.getChildren().get(3);
         detailProcedure.setEditable(true);
         stateProcedure.setDisable(false);
         //if( selectedProcedure!=null)
-        procedure.setOpacity(1.0);
+        procedure.getStyleClass().add("procedimiento-editando");
  selectedProcedure.getStyleClass().remove("seleccionado");
         selectedProcedure = null;
         
@@ -247,10 +252,11 @@ public void Save() {
             costProcedure.setEditable(false);
             detailProcedure.setEditable(false);
             stateProcedure.setDisable(true);
-            h.setOpacity(0.8);
-            mostrarMensajeCorrecto("Informacion Guardada");
+            h.getStyleClass().remove("procedimiento-editando");
+            h.getStyleClass().add("procedimiento-guardado");
+              Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
         } else {
-       mostrarMensajeError("Informacion Insuficiente");
+        Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");
             rootProcedure.getChildren().remove(v);
             ProcedureData.remove(i);
         }
@@ -335,34 +341,12 @@ check.setSelected(dp.getState());
             monto.setEditable(false);
             detalleField.setEditable(false);
             check.setDisable(true);
-           h.setOpacity(0.8);
+           h.getStyleClass().add("procedimiento-guardado");
         }
     } catch (IOException e) {
         System.out.println("Error al cargar: " + e.getMessage());
     }
 }
-
-
-    private void mostrarMensajeError(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: red;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-     private void mostrarMensajeCorrecto(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    LblMensaje.setStyle("-fx-text-fill: green;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -371,8 +355,49 @@ check.setSelected(dp.getState());
     buscador.textProperty().addListener((obs, viejo, nuevo) -> {
         buscar(nuevo);
     });
-    
-  
+ // En el Timeline, iteras ProcedureData y cambias el CSS de cada UpLine
+Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+            String json = Files.readString(Path.of("Jsons/theme.json"));
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia el root
+                if (t.temeDark) {
+                    rootProcedure.getStyleClass().remove("mi-panel-fondo2");
+                    rootProcedure.getStyleClass().add("mi-panel-fondo1");
+                    rootMensaje.getStyleClass().remove("mi-panel-fondo2");
+                    rootMensaje.getStyleClass().add("mi-panel-fondo1");
+                } else {
+                    rootProcedure.getStyleClass().remove("mi-panel-fondo1");
+                    rootProcedure.getStyleClass().add("mi-panel-fondo2");
+                      rootMensaje.getStyleClass().remove("mi-panel-fondo1");
+                    rootMensaje.getStyleClass().add("mi-panel-fondo2");
+                }
+
+                // Cambia cada UpLine que esta en ProcedureData
+                for (VBox upLine : ProcedureData) {
+                    if (t.temeDark) {
+                        upLine.getStyleClass().remove("mi-rectangulo");
+                        upLine.getStyleClass().add("mi-rectangulooscuro");
+                    } else {
+                        upLine.getStyleClass().remove("mi-rectangulooscuro");
+                        upLine.getStyleClass().add("mi-rectangulo");
+                    }
+                }
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
 
     
     }

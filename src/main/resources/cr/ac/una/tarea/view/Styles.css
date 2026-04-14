@@ -1,109 +1,137 @@
-.mi-botonAdd {
--fx-background-image: url("../resource/Agregar1.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-pref-width: 80;
-    -fx-pref-height: 30;
-     -fx-max-width: 300;
-    -fx-padding: 0;
-    -fx-background-radius: 50px;
-}
-.mi-botonDelete {
--fx-background-image: url("../resource/Eliminar.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-pref-width: 80;
-    -fx-pref-height: 30;
-     -fx-max-width: 300;
-    -fx-padding: 0;
-    -fx-background-radius: 50px;
-}
-.mi-botonEdit {
--fx-background-image: url("../resource/Modificar.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-pref-width: 80;
-    -fx-pref-height: 30;
-     -fx-max-width: 300;
-    -fx-padding: 0;
-    -fx-background-radius: 50px;
-}
-.mi-botonSave {
--fx-background-image: url("../resource/Guardar.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-        -fx-pref-width: 80;
-    -fx-pref-height: 30;
-     -fx-max-width: 300;
-    -fx-background-radius: 50px;
+/*General*/
+
+.mi-Titulos {
+   /* -fx-background-color: #006699;*/
 }
 
-.mi-botonGo {
--fx-background-image: url("../resource/Avanzar.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-pref-width: 80;
-    -fx-pref-height: 30;
-     -fx-max-width: 300;
-    -fx-padding: 0;
-    -fx-background-radius: 50px;
+.mi-Titulos .label {
+    -fx-text-fill: white;
+}
+.mi-Titulososcuros {
+   /* -fx-background-color: #006699;*/
 }
 
+.mi-Titulososcuros .label {
+    -fx-text-fill: black;
+}
 
-.mi-botonWithoutParameters {
--fx-background-image: url("../resource/SinParametros.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-
+.titulosclar{
+      -fx-text-fill: white;
     
-    -fx-background-radius: 50px;
+}.titulososcu{
+      -fx-text-fill: black;
+    
 }
 
 
 
 
-
-.mi-botonSearch {
--fx-background-image: url("../resource/Buscar.png");
-    -fx-background-size: stretch;   /* estira la imagen */
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-
-    -fx-background-radius: 50px;
+.mensaje-error {
+    -fx-text-fill: red;
 }
+
+.mensaje-correcto {
+    -fx-text-fill: green;
+}#BNext:disabled {
+    -fx-opacity: 0.2;
+}
+.procedimiento-guardado {
+    -fx-opacity: 0.8;
+}
+.procedimiento-editando {
+    -fx-opacity: 1.0;
+}
+
+.procedimiento-fila {
+    -fx-alignment: center;
+    -fx-spacing: 40;
+    -fx-padding: 0 20 0 20;
+}.label-procedimiento {
+    -fx-alignment: center;
+}
+
 .mi-IMagepreferencial{
      -fx-image: url("../resource/PrefetencialImage.png");
 }
 
 
-
-.mi-panel-fondo{
-     -fx-background-color:#006699;
--fx-background-size: cover;
--fx-background-repeat: no-repeat;
--fx-background-position: center;
-
-}
-.mi-panel-fondo1{
-        -fx-background-color:#ffffff;
--fx-background-size: cover;
--fx-background-repeat: no-repeat;
--fx-background-position: center;
-    
+.item-estacion {
+    -fx-spacing: 10;
+    -fx-alignment: CENTER;
+    -fx-padding: 5;
 }
 
 
 
+
+/*Botones*/
+
+.mi-botonAdd {
+-fx-background-image: url("../resource/Agregar1.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+
+.mi-botonDelete {
+-fx-background-image: url("../resource/Eliminar.png");
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+
+.mi-botonEdit {
+-fx-background-image: url("../resource/Modificar.png");
+    -fx-background-size: stretch; 
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+.mi-botonSave {
+-fx-background-image: url("../resource/Guardar.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+
+.mi-botonGo {
+-fx-background-image: url("../resource/Avanzar.png");
+    -fx-background-size: stretch; 
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+
+.mi-botonWithoutParameters {
+-fx-background-image: url("../resource/SinParametros.png");
+    -fx-background-size: stretch; 
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+.mi-BtnReproducir {
+-fx-background-image: url("../resource/Reproducir.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
+
+
+.mi-botonSearch {
+-fx-background-image: url("../resource/Buscar.png");
+    -fx-background-size: stretch; 
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-radius: 50px;
+}
 .mi-botonImage{
     
     -fx-background-image: url("../resource/Imagen.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;   
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-radius: 50px;
@@ -113,26 +141,24 @@
 .mi-botonFoto{
     
     -fx-background-image: url("../resource/Camara.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch; 
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-radius: 50px;
     
 }
 
-
-
 .mi-BtnSalir{
     -fx-background-image: url("../resource/Salir.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;   
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-color:#ffffff;
+ 
 }
 
 .mi-BtnActualizar{
     -fx-background-image: url("../resource/Actualizar1.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;  
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-color:#ffffff;
@@ -140,65 +166,42 @@
 }
 .mi-BtnNext{
     -fx-background-image: url("../resource/siguiente.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;   
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-color:#ffffff;
+   
 
 }
 .mi-BtnRepit{
     -fx-background-image: url("../resource/repetir.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;  
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-color:#ffffff;
+
 
 }
 .mi-BtnEspecific{
     -fx-background-image: url("../resource/Especifico.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;   
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-color:#ffffff;
-
+  
 }
 .mi-BtnPreferencial{
     -fx-background-image: url("../resource/Preferencial.png");
-    -fx-background-size: stretch;   /* estira la imagen */
+    -fx-background-size: stretch;  
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-background-color:#ffffff;
 
 }
-
-
-
-
-
-.mi-boton2:hover {
-    -fx-cursor: hand;
-}
-
-.mi-boton2:pressed {
-    -fx-scale-x: 0.99;
-    -fx-scale-y: 0.99;
-}
-
 
 
 .mi-boton .button {
     /* estilo normal */
 }
 
-.mi-boton .button:hover {
-    -fx-cursor: hand;
-}
 
-.mi-boton .button:pressed {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 0.95;
-    -fx-scale-y: 0.95;
-}
+/*Paneles*/
 
 .tab-pane .tab:hover {
     -fx-cursor: hand;
@@ -209,22 +212,63 @@
     -fx-scale-y: 0.97;
 }
 
-.mi-botonSave:pressed,.mi-botonAdd:pressed,.mi-botonDelete:pressed,.mi-botonEdit:pressed,.mi-botonGo:pressed, .mi-BtnSalir:pressed{
-    -fx-opacity: 0.6;
-    -fx-cursor: hand;
-    -fx-scale-x: 0.95;
-    -fx-scale-y: 0.95;
+.mi-panel-fondo{
+     -fx-background-color:#006699;
+-fx-background-size: cover;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+
 }
-.mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover, .mi-BtnSalir:hover {
-    -fx-cursor: hand;
-}
-.mi-Label{
+.mi-panel-fondo1{
+ -fx-background-color:#ffffff;
+-fx-background-size: cover;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
     
-    -fx-border-color: #66ccff;
-    -fx-border-width: 5;
+}
+.mi-panel-fondo2{
+ -fx-background-color:#000000;
+-fx-background-size: cover;
+-fx-background-repeat: no-repeat;
+-fx-background-position: center;
+    
 }
 
+.tab-pane {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.tab-pane .tab-header-background {
+    -fx-background-color: #006699;
+}
+.tab-pane .headers-region {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.tab {
+    -fx-background-color: #3399ff;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-border-radius: 40;
+}
+.tab .tab-label {
+    -fx-text-fill: #ffffff;
+}
+.tab:selected {
+    -fx-border-color: #00ffcc;
+    -fx-border-width: 6;
+}
 
+/* SOLO CAMBIA EL FONDO DE ATRAS */
+.tab-pane-oscuro .tab-header-background {
+    -fx-background-color: #33ccff;
+}
+.mi-rectangulo1{
+      -fx-background-color:#006699;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
 .mi-rectangulo{
     -fx-border-color: #66ccff;
     -fx-border-width: 5;
@@ -234,61 +278,46 @@
     -fx-background-position: center;
 }
 
-
-
-.mi-Titulos {
-    -fx-background-color: #006699;
+.mi-rectangulooscuro{
+    -fx-border-color: #006699;
+    -fx-border-width: 5;
+      -fx-background-color:#66ccff;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+#BNext {
+    -fx-opacity: 1.0;
+}
+.mi-boton2:hover {
+    -fx-cursor: hand;
 }
 
-.mi-Titulos .label {
-    -fx-text-fill: white;
+.mi-boton2:pressed {
+    -fx-scale-x: 0.99;
+    -fx-scale-y: 0.99;
 }
-.mi-label1 {
-    -fx-text-fill: white;
+.mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover, .mi-BtnSalir:hover ,.mi-botonWithoutParameters:hover,.mi-botonSearch:hover,.mi-BtnNext:hover,.mi-BtnRepit:hover,.mi-BtnEspecific:hover,.mi-BtnPreferencial:hover{
+    -fx-cursor: hand;
 }
+.mi-botonSave:pressed,.mi-botonAdd:pressed,.mi-botonDelete:pressed,.mi-botonEdit:pressed,.mi-botonGo:pressed, .mi-BtnSalir:pressed,.mi-botonWithoutParameters:pressed,.mi-botonSearch:pressed,.mi-BtnNext:pressed,.mi-BtnRepit:pressed,.mi-BtnEspecific:pressed,.mi-BtnPreferencial:pressed{
+    -fx-opacity: 0.6;
+    -fx-cursor: hand;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+
 .seleccionado {
     -fx-border-color: #00ffcc;
     -fx-border-width: 7;
 }
-.tab-pane {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+.mi-Scantidad{
+      -fx-background-color:#66ff00;
 }
-.tab-pane .tab-header-background, .tab, .tab:selected{
-    -fx-border-radius: 40;
-     -fx-background-color: #006699;
-    -fx-background-size: stretch;   
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-text-fill: white;
+.mi-Mcantidad{
+      -fx-background-color:#ffff00;
 }
-.tab-pane .headers-region {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-.tab{
-    -fx-background-color: #3399ff;
-    -fx-text-fill: #ffffff;
-      -fx-font-size:15px;
-}
-.tab-pane .tab .tab-label {
-    -fx-text-fill: #ffffff;
-}
-
-
-.tab:selected{   
-    -fx-border-color: #00ffcc;
-    -fx-border-width: 6;          
-             }
-             .headers-region {
-    -fx-background-color: red;
-}
-
-.tab-header-background {
-    -fx-background-color: yellow;
-}.mi-rectangulo1{
-      -fx-background-color:#006699;
-      -fx-background-size: stretch;   
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
+.mi-Bcantidad{
+      -fx-background-color:#ff3333;
 }

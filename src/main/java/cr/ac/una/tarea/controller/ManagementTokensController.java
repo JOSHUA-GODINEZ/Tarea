@@ -60,6 +60,14 @@ private FichasProyection fichaActual = new FichasProyection();
       
       
       Boolean pref = null;
+    @FXML
+    private Label LblScursal;
+    @FXML
+    private Label LblEstacion;
+    @FXML
+    private Label LblSelec;
+    @FXML
+    private Label usuariosPendientes;
      // private final Path archivoFichas = Path.of("Jsons/Fichas.json");
     public void cargar() {
     try {
@@ -156,13 +164,28 @@ public void cargarTramites() {
 
         // Agregar al rootTramits si coincide con TramitesData
         rootTramits.getChildren().clear();
+         int contador = 0; // 👈 contador de trámites cargados
         for (String tramiteEstacion : tramitesEstacion) {
             for (TramiteData td : tramites) {
                 if (td.tramite.equals(tramiteEstacion) && td.Sucursal.equals(LSucursal.getText())) {
                     HBox h = new HBox();
                     Label lblTramite = new Label(td.tramite);
                     lblFicha = new Label(td.ficha);
-              
+              lblTramite.sceneProperty().addListener((obs, oldScene, newScene) -> {
+    if (newScene != null) {
+        lblTramite.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
+    }
+});
+
+lblFicha.sceneProperty().addListener((obs, oldScene, newScene) -> {
+    if (newScene != null) {
+        lblFicha.styleProperty().bind(
+            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        );
+    }
+});
             
           
               ImageView PreferIMag = new ImageView();
@@ -174,7 +197,7 @@ public void cargarTramites() {
             else{ h.getChildren().addAll(lblTramite, lblFicha);}
                     h.setSpacing(10);
                     h.setAlignment(Pos.CENTER);
-                    h.setPadding(new Insets(5));
+                   // h.setPadding(new Insets(5));
                   //  h.setStyle("-fx-border-color: blue;");
                   h.getStyleClass().addAll("mi-rectangulo","mi-Titulos","mi-boton");
             h.setOnMouseClicked(ev -> {
@@ -185,11 +208,19 @@ public void cargarTramites() {
     selectedTramit = h;
 });
 rootTramits.getChildren().add(h);
-                    
+                  contador++;   
                 }
             }
         }
-        
+     usuariosPendientes.setText(String.valueOf(contador));
+
+usuariosPendientes.getStyleClass().clear();
+if (contador < 3)
+    usuariosPendientes.getStyleClass().add("mi-Scantidad");
+else if (contador < 6)
+    usuariosPendientes.getStyleClass().add("mi-Mcantidad");
+else
+    usuariosPendientes.getStyleClass().add("mi-Bcantidad");
     } catch (IOException e) {
         System.out.println("Error al cargar: " + e.getMessage());
     }
@@ -215,7 +246,10 @@ private void onActionNext(ActionEvent event) {
         HBox hTramite = (HBox) rootTramits.getChildren().get(0);
         Label lblTramite = (Label) hTramite.getChildren().get(0);
         Label lblFicha = (Label) hTramite.getChildren().get(1);
-        
+         int actual = Integer.parseInt(usuariosPendientes.getText());
+if (actual > 0) {
+    usuariosPendientes.setText(String.valueOf(actual - 1));
+}
         try {
             Gson gson = new Gson();
             TramiteData[] tramites = gson.fromJson(Files.readString(Paths.get("Jsons/prueba.json")), TramiteData[].class);
@@ -248,7 +282,7 @@ private void onActionNext(ActionEvent event) {
                         IMFoto.setFitHeight(100);
                         IMFoto.setFitWidth(100);       
                         hUsuario.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto);
-                     //   hUsuario.setStyle("-fx-border-color: blue;");
+                    
                     
                         encontrado = true;
                         
@@ -340,13 +374,29 @@ Files.writeString(Paths.get("Jsons/signal.json"),
 timeline.setCycleCount(Timeline.INDEFINITE); // 🔥 esto falta
 timeline.play();
                
-                        fichaActual.estacion = new String[4];
-                        fichaActual.ficha = new String[4];
-                        fichaActual.Preferencial = new Boolean[4];
-                        }
+  fichaActual.estacion = new String[4];
+   fichaActual.ficha = new String[4];
+  fichaActual.Preferencial = new Boolean[4];
                         
-                        @FXML
-                        
+               LblScursal.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            LblScursal.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.12fpx;")
+            );
+            LblEstacion.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LSucursal.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+            LEstacion.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+            );
+        
+        }
+    });              
+   }
+    @FXML                     
     private void onActionRepit(ActionEvent event) {
          
     }

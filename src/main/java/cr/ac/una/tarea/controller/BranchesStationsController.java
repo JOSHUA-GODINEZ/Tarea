@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
 import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.SucursalData;
+import cr.ac.una.tarea.model.Teme;
+import cr.ac.una.tarea.util.Alertas;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +16,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -72,176 +76,203 @@ private String rutaAudio = null;
     private Label LblTramite;
     @FXML
     private Label LblStation;
-
+private Boolean temaAnterior = null;
+    @FXML
+    private HBox rootMensaje;
 
     ///////////////// ACTIONS
-    @FXML
-      private void onActionAddBranch(ActionEvent event) {
-        TextField branchName = new TextField();
-        TextArea branchInformation = new TextArea();
-        Accordion accordion = new Accordion();
-        TitledPane pane = new TitledPane();
-        VBox buttonContainer = new VBox();
-        VBox branch = new VBox();
-        Button addStationBtn = new Button();
-        
-       branchInformation.setMaxSize(Double.MAX_VALUE, 50);
-        addStationBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        VBox.setVgrow(addStationBtn, Priority.ALWAYS);
-       // branch.setStyle("-fx-border-color: blue;");
-        pane.setText("Estaciones");
-        addStationBtn.getStyleClass().add("mi-botonAdd");
-        buttonContainer.getChildren().add(addStationBtn);
-        buttonContainer.setSpacing(10);
-        buttonContainer.getStyleClass().add("mi-rectangulo");
-        buttonContainer.setAlignment(Pos.CENTER);
-        buttonContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        pane.setContent(buttonContainer);     
-        accordion.getPanes().add(pane);
-        //accordion.getStyleClass().add("mi-rectangulo");
-        branch.getChildren().add(branchName);
-        branch.getChildren().add(branchInformation);
-        branch.getChildren().add(accordion);
-        branch.setPadding(new Insets(30, 20, 30, 20));
-        branch.getStyleClass().add("mi-rectangulo");
-        rootStation.getChildren().add(new Label(""));
-        rootBranches.getChildren().add(branch);
-        branches.add(branch);
+@FXML
+private void onActionAddBranch(ActionEvent event) {
+    TextField branchName = new TextField();
+    TextArea branchInformation = new TextArea();
+    Accordion accordion = new Accordion();
+    TitledPane pane = new TitledPane();
+    VBox buttonContainer = new VBox();
+    VBox branch = new VBox();
+    Button addStationBtn = new Button();
 
-        ///////////////// ADD STATION
-        addStationBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                TextField stationName = new TextField();
-                HBox stationRow = new HBox();
-                CheckBox preferentialCheck = new CheckBox();
-                VBox stationContent = new VBox();
-                ImageView PreferIMag = new ImageView();
-                 String[] ruta = {""};
-                stations.add(stationRow);
-                stationContents.add(stationContent);
+    // ✅ Contador de estaciones POR SUCURSAL (array para poder usarlo dentro del lambda)
+    int[] stationCounter = {0};
+
+    branchName.setPromptText("Nombre Sucursal");
+    branchInformation.setPromptText("Informacion Sucursal");
+    branchInformation.setMaxSize(Double.MAX_VALUE, 50);
+    addStationBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+    VBox.setVgrow(addStationBtn, Priority.ALWAYS);
+    pane.setText("Estaciones");
+    addStationBtn.getStyleClass().add("mi-botonAdd");
+    buttonContainer.getChildren().add(addStationBtn);
+    buttonContainer.setSpacing(10);
+    buttonContainer.getStyleClass().addAll("mi-rectangulo");
+    buttonContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+    pane.setContent(buttonContainer);
+    accordion.getPanes().add(pane);
+    branch.getChildren().add(branchName);
+    branch.getChildren().add(branchInformation);
+    branch.getChildren().add(accordion);
+    branch.setPadding(new Insets(30, 20, 30, 20));
+    branch.getStyleClass().add("mi-rectangulo");
+    rootStation.getChildren().add(new Label(""));
+    rootBranches.getChildren().add(branch);
+    branches.add(branch);
+
+    ///////////////// ADD STATION
+    addStationBtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+            TextField stationName = new TextField();
+            HBox stationRow = new HBox();
+            CheckBox preferentialCheck = new CheckBox();
+            VBox stationContent = new VBox();
+            ImageView PreferIMag = new ImageView();
+            String[] ruta = {""};
+            stations.add(stationRow);
+            stationContents.add(stationContent);
+
+           
+            stationCounter[0]++;
+            int audioIndex = ((stationCounter[0] - 1) % 5) + 1; 
+String audioFileName = "caja" + audioIndex + ".wav";
+java.net.URL audioUrl = getClass().getResource("/cr/ac/una/tarea/resource/sonidos/" + audioFileName);
+
+if (audioUrl != null) {
+    stationRow.setUserData(audioUrl.toExternalForm());
+    System.out.println("Audio asignado: " + audioFileName);
+} else {
+    System.out.println("No se encontró: " + audioFileName);
+}
+
             PreferIMag.setFitHeight(40);
             PreferIMag.setFitWidth(40);
-           
+            stationName.setPromptText("Nombre Estación");
             PreferIMag.getStyleClass().add("mi-IMagepreferencial");
-                stationRow.getChildren().addAll(stationName, preferentialCheck, PreferIMag);
-                stationRow.setSpacing(10);
-                stationRow.setAlignment(Pos.CENTER);
-                
-                stationRow.getStyleClass().addAll("mi-rectangulo","mi-boton2");
-                stationRow.setMinHeight(70);
-               
-                stationRow.setOnMouseClicked(station -> {
-                    if (selectedStation != null) {
-         selectedStation.getStyleClass().remove("seleccionado");
-    }
-                    stationRow.getStyleClass().add("seleccionado");
-                    selectedStation = stationRow;
-                    currentStationContent = stationContent;
-                    loadProcedures();
-                     
-                  
-                 
-                    ///////////////// PREVIEW
-                    VBox preview = new VBox();
-                    Button audio = new Button();
-                    Button playAudio = new Button();
-                    Button deleteAudio = new Button();
-                    HBox audios = new HBox();
-                   Label nameLabel = new Label(stationName.getText());
- Scene scene = rootStation.getScene();
-    if (scene != null) {
-        nameLabel.styleProperty().bind(
-            scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
-        );
-      
-    }
-                         
-                   // stationContent.setStyle("-fx-border-color: blue;");
-                   stationContent.setSpacing(10);
-                    stationContent.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    VBox.setVgrow(stationContent, Priority.ALWAYS);
-                    stationContent.setAlignment(Pos.TOP_CENTER);
-                    preview.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    VBox.setVgrow(preview, Priority.ALWAYS);
+            stationRow.getChildren().addAll(stationName, preferentialCheck, PreferIMag);
+            stationRow.setSpacing(10);
+            stationRow.getStyleClass().addAll("mi-rectangulo", "mi-boton2", "label-procedimiento");
+            stationRow.setMinHeight(70);
 
-                   
-                    preview.setSpacing(10);
-                    preview.setAlignment(Pos.CENTER);
-                 //   preview.setStyle("-fx-border-color: blue;");
-                    preview.setMinHeight(70);
-                   // preview.getStyleClass().add("mi-panel-fondo");
-                   
-                   
-                   
-                   
-                   
-                   
-                  Label rutaLabel = new Label("Sin audio");
-                      if (stationRow.getUserData() != null) {
-        rutaLabel.setText(new File(stationRow.getUserData().toString()).getName());
-    } else {
-        rutaLabel.setText("Sin audio");
-    }
-                 audio.setOnMouseClicked(clickAudio -> {
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Seleccionar audio");
-    fileChooser.getExtensionFilters().add(
-        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
-    );
-    Stage stage = (Stage) stationRow.getScene().getWindow();
-    File archivo = fileChooser.showOpenDialog(stage);
-    if (archivo != null) {
-       stationRow.setUserData(archivo.getAbsolutePath());
-         rutaLabel.setText(archivo.getName());
-    }
-   
-});
+            stationRow.setOnMouseClicked(station -> {
+                if (selectedStation != null) {
+                    selectedStation.getStyleClass().remove("seleccionado");
+                }
+                stationRow.getStyleClass().add("seleccionado");
+                selectedStation = stationRow;
+                currentStationContent = stationContent;
+                loadProcedures();
 
-              playAudio.setOnMouseClicked(clickPlay -> {
+                ///////////////// PREVIEW
+                VBox preview = new VBox();
+                Button audio = new Button();
+                Button playAudio = new Button();
+                Button deleteAudio = new Button();
+                Label selecAudio = new Label("Seleccione un audio");
+                HBox audios = new HBox();
+                VBox conteinerAudios = new VBox();
+                Label nameLabel = new Label(stationName.getText());
+                nameLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                HBox.setHgrow(nameLabel, Priority.ALWAYS);
+                nameLabel.getStyleClass().addAll("label-procedimiento");
+                selecAudio.getStyleClass().add("label-procedimiento");
+                Scene scene = rootStation.getScene();
+                if (scene != null) {
+                    nameLabel.styleProperty().bind(
+                        scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                }
+
+                stationContent.setSpacing(10);
+                stationContent.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                VBox.setVgrow(stationContent, Priority.ALWAYS);
+                stationContent.setAlignment(Pos.TOP_CENTER);
+                preview.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                VBox.setVgrow(preview, Priority.ALWAYS);
+                preview.setSpacing(10);
+                preview.setMinHeight(70);
+                preview.getStyleClass().add("label-procedimiento");
+
+                audios.getStyleClass().add("label-procedimiento");
+                audio.getStyleClass().add("mi-botonAdd");
+                deleteAudio.getStyleClass().add("mi-botonDelete");
+                playAudio.getStyleClass().add("mi-BtnReproducir");
+                audio.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                HBox.setHgrow(audio, Priority.ALWAYS);
+                deleteAudio.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                HBox.setHgrow(deleteAudio, Priority.ALWAYS);
+                playAudio.setMaxSize(40, Double.MAX_VALUE);
+                HBox.setHgrow(playAudio, Priority.ALWAYS);
+
+                Label rutaLabel = new Label("Sin audio");
+                rutaLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                HBox.setHgrow(rutaLabel, Priority.ALWAYS);
+                rutaLabel.getStyleClass().add("label-procedimiento");
+
+                // ✅ Mostrar el nombre del audio asignado automáticamente
+                if (stationRow.getUserData() != null) {
+                    rutaLabel.setText(new File(stationRow.getUserData().toString()).getName());
+                } else {
+                    rutaLabel.setText("Sin audio");
+                }
+
+                audio.setOnMouseClicked(clickAudio -> {
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Seleccionar audio");
+                    fileChooser.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
+                    );
+                    Stage stage = (Stage) stationRow.getScene().getWindow();
+                    File archivo = fileChooser.showOpenDialog(stage);
+                    if (archivo != null) {
+                        stationRow.setUserData(archivo.getAbsolutePath());
+                        rutaLabel.setText(archivo.getName());
+                    }
+                });
+
+           playAudio.setOnMouseClicked(clickPlay -> {
     String rutaAudio = stationRow.getUserData() != null ? stationRow.getUserData().toString() : "";
-    
     if (rutaAudio.isEmpty()) {
         System.out.println("No has seleccionado un audio");
         return;
     }
-    
-    String ruta1 = new File(rutaAudio).toURI().toString();
-    javafx.scene.media.Media media = new javafx.scene.media.Media(ruta1);
+    // ✅ Ya no necesitas .toURI(), la ruta ya viene lista
+    javafx.scene.media.Media media = new javafx.scene.media.Media(rutaAudio);
     javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
     player.setOnReady(() -> player.play());
 });
 
-              deleteAudio.setOnMouseClicked(clickDelete -> {
-    stationRow.setUserData(null);
-    rutaLabel.setText("Sin audio");// ✅ elimina la ruta
-    System.out.println("Audio eliminado");
-});
- 
-                
-                
-         audios.getChildren().addAll(audio,rutaLabel,playAudio ,deleteAudio); // ✅ ambos botones, sintaxis correcta
-       preview.getChildren().addAll( audios ,nameLabel, stationContent); // ✅ audios incluido
-    rootStation.getChildren().clear();
-          rootStation.getChildren().add(preview);
+                deleteAudio.setOnMouseClicked(clickDelete -> {
+                    stationRow.setUserData(null);
+                    rutaLabel.setText("Sin audio");
+                    System.out.println("Audio eliminado");
                 });
 
-                buttonContainer.getChildren().add(stationRow);
-                stationRow.sceneProperty().addListener((obs, oldScene, newScene) -> {
-    if (newScene != null) {
-        stationName.styleProperty().bind(
-            newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
-        );
-     /*   nameLabel.styleProperty().bind(
-            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
-        );
-        rutaLabel.styleProperty().bind(
-            newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
-        );*/
-    }
-});
-            }
-        });
+                audios.getChildren().addAll(audio, rutaLabel, playAudio, deleteAudio);
+                preview.getChildren().addAll(selecAudio, audios, nameLabel, stationContent);
+                rootStation.getChildren().clear();
+                rootStation.getChildren().add(preview);
+                Scene scene1 = rootStation.getScene();
+                if (scene1 != null) {
+                    selecAudio.styleProperty().bind(
+                        scene1.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                }
+            });
+
+            buttonContainer.getChildren().add(stationRow);
+            stationRow.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    stationName.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
+                    );
+                }
+            });
+        }
+    });
+
+
+    
+
+            
+      
 
         branch.setOnMouseClicked(e -> {
             selectedBranch = branch;
@@ -253,27 +284,27 @@ Scene scene = rootBranches.getScene();
 
 if (scene != null) {
     branchName.styleProperty().bind(
-        scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
     );
     branchInformation.styleProperty().bind(
-        scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+        scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
     );
 } else {
     rootBranches.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             branchName.styleProperty().bind(
-                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
             );
             branchInformation.styleProperty().bind(
-                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
             );
         }
     });
 }
-       
-            
+      
+}   
         
-    }
+    
 
     @FXML
     private void onActionDelete(ActionEvent event) {
@@ -314,11 +345,11 @@ if (scene != null) {
 
     TextField branchName = (TextField) selectedBranch.getChildren().get(0);
     branchName.setEditable(true);
-    branchName.setOpacity(1);
+    branchName.getStyleClass().add("procedimiento-editando");
     
         TextArea branchInformation = (TextArea) selectedBranch.getChildren().get(1);
     branchInformation.setEditable(true);
-    branchInformation.setOpacity(1);
+    branchInformation.getStyleClass().add("procedimiento-editando");
     
 
     Accordion accordion = (Accordion) selectedBranch.getChildren().get(2);
@@ -333,12 +364,12 @@ if (scene != null) {
 
                 if (child instanceof TextField) {
                     ((TextField) child).setEditable(true);
-                    child.setOpacity(1);
+                    child.getStyleClass().add("procedimiento-editando");
                 }
 
                 if (child instanceof CheckBox) {
                     ((CheckBox) child).setDisable(false);
-                    child.setOpacity(1);
+                    child.getStyleClass().add("procedimiento-editando");
                 }
             }
         }
@@ -362,11 +393,13 @@ if (scene != null) {
     if (!branchName.getText().isBlank() && !branchInformation.getText().isBlank() ) {
 
         branchName.setEditable(false);
-        branchName.setOpacity(0.8);
-       
-        branchInformation.setEditable(false);
-        branchInformation.setOpacity(0.8);
+          branchName.getStyleClass().remove("procedimiento-editando");
+        branchName.getStyleClass().add("procedimiento-guardado");
         
+        branchInformation.setEditable(false);
+        branchInformation.getStyleClass().remove("procedimiento-editando");
+        branchInformation.getStyleClass().add("procedimiento-guardado");
+
         buttonContainer.getChildren().removeIf(n ->
             (n instanceof HBox hb) &&
             (hb.getChildren().get(0) instanceof TextField ta) &&
@@ -383,21 +416,23 @@ if (scene != null) {
             if (child instanceof TextField) {
                 TextField tf = (TextField) child;
                 tf.setEditable(false);
-                tf.setOpacity(0.8); // opcional
+                tf.getStyleClass().remove("procedimiento-editando");
+                tf.getStyleClass().add("procedimiento-guardado");
             }
 
             if (child instanceof CheckBox) {
                 CheckBox cb = (CheckBox) child;
                 cb.setDisable(true);
-                cb.setOpacity(0.8); // opcional visual
+                cb.getStyleClass().remove("procedimiento-editando");
+                cb.getStyleClass().add("procedimiento-guardado");
             }
         }
     }
 }
-        mostrarMensajeCorrecto("Informacion Guardada");
+        Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
 
     } else {
-        mostrarMensajeError("Informacion Insuficiente");
+        Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");
         rootBranches.getChildren().remove(branch);
         branches.remove(i);
     }
@@ -428,7 +463,12 @@ if (scene != null) {
                     ed.nombre = stationName.getText();
                     ed.preferencial = preferentialCheck.isSelected();
                     ed.tramites = new ArrayList<>();
-                     ed.rutaAudio = h.getUserData() != null ? h.getUserData().toString() : "";
+                   // ✅ Quita el "file:/" del inicio si existe
+String rutaAudio = h.getUserData() != null ? h.getUserData().toString() : "";
+if (rutaAudio.startsWith("file:/")) {
+    rutaAudio = rutaAudio.replace("file:/", "");
+}
+ed.rutaAudio = rutaAudio;
                     for (Node lbl : stationContent.getChildren()) {
                         if (lbl instanceof Label l) {
                             ed.tramites.add(l.getText());
@@ -446,10 +486,6 @@ if (scene != null) {
         selectedBranch = null;
     }
 
-    @FXML
-    private void onActionRefresh(ActionEvent event) {
-        loadProcedures();
-    }
 
     ///////////////// SEARCH
     private void search(String text) {
@@ -507,9 +543,9 @@ if (scene != null) {
 }
 
                branchName.setEditable(false);
-                branchName.setOpacity(0.8);
+                branchName .getStyleClass().add("procedimiento-guardado");
                 branchInfo.setEditable(false);
-                branchInfo.setOpacity(0.8);
+                branchInfo .getStyleClass().add("procedimiento-guardado");
 
 // recorrer estaciones
 for (Node n : buttonContainer.getChildren()) {
@@ -520,12 +556,12 @@ for (Node n : buttonContainer.getChildren()) {
 
             if (child instanceof TextField) {
                 ((TextField) child).setEditable(false);
-                child.setOpacity(0.8);
+                child .getStyleClass().add("procedimiento-guardado");
             }
 
             if (child instanceof CheckBox) {
                 ((CheckBox) child).setDisable(true);
-                child.setOpacity(0.8);
+                child.getStyleClass().add("procedimiento-guardado");
             }
         }
     }
@@ -562,9 +598,9 @@ for (Node n : buttonContainer.getChildren()) {
     ///////////////// HELPERS
     private Label createLabel(String text) {
         Label label = new Label(text);
-         label.getStyleClass().add("mi-Label");
+         label.getStyleClass().addAll("mi-Label","label-procedimiento");
          label.setPrefSize(Double.MAX_VALUE, 40);
-         label.setAlignment(Pos.CENTER);
+         //label.setAlignment(Pos.CENTER);
           Scene scene = rootProcedures.getScene();
           if (scene != null) {
                 label.styleProperty().bind(
@@ -602,35 +638,10 @@ for (Node n : buttonContainer.getChildren()) {
         return false;
     }
 
-    
-        private void mostrarMensajeError(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
- //   LblMensaje.setStyle("-fx-text-fill: red;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-     private void mostrarMensajeCorrecto(String mensaje) {
-    LblMensaje.setText(mensaje);
-    LblMensaje.setVisible(true);
-    //LblMensaje.setStyle("-fx-text-fill: green;");
-    
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(e -> LblMensaje.setVisible(false));
-    pause.play();
-}
-    
-    
-    
-    
-    
-    
     ///////////////// INITIALIZE
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        loadProcedures();
+       // loadProcedures();
         loadBranches();
 
         rootStation.setOnDragOver(event -> {
@@ -695,7 +706,66 @@ for (Node n : buttonContainer.getChildren()) {
         }
            });
         
-        
+
+// Al final del initialize agrega esto:
+Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+            String json = Files.readString(Path.of("Jsons/theme.json"));
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia los roots
+                rootBranches.getStyleClass().clear();
+                rootProcedures.getStyleClass().clear();
+                rootStation.getStyleClass().clear();
+                rootMensaje.getStyleClass().clear();
+ if (t.temeDark) {
+     rootBranches.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+    rootProcedures.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+    rootStation.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+rootMensaje.getStyleClass().add("mi-panel-fondo1");
+
+} else {
+
+   rootBranches.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+    rootProcedures.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+    rootStation.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+ rootMensaje.getStyleClass().add("mi-panel-fondo2");
+}
+
+                // Cambia cada branch
+                for (VBox branch : branches) {
+                    branch.getStyleClass().clear();
+                    if (t.temeDark) {
+                         branch.getStyleClass().add("mi-rectangulooscuro");
+                    } else {
+                      
+                         branch.getStyleClass().add("mi-rectangulo");
+                    }
+                }
+
+                // Cambia cada station
+                for (HBox station : stations) {
+                    station.getStyleClass().clear();
+                    if (t.temeDark) {
+                        station.getStyleClass().addAll("mi-rectangulo", "mi-boton2", "label-procedimiento");
+                    } else {
+                        station.getStyleClass().addAll("mi-rectangulooscuro", "mi-boton2", "label-procedimiento");
+                    }
+                }
+            }
+loadProcedures();
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
         
     }
 
