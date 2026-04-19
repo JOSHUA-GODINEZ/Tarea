@@ -25,6 +25,8 @@ import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.model.UsuarioData;
 import cr.ac.una.tarea.util.Alertas;
 import cr.ac.una.tarea.util.CamaraUtil;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
 import cr.ac.una.tarea.util.ValidadorNumeros;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,6 +53,8 @@ public class LoginUsersController implements Initializable {
         private Boolean temaAnterior = null;
     @FXML
     private HBox rootMensaje;
+        Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
     @FXML
     private void onActionAdd(ActionEvent event) {
 HBox usersInfo = new HBox();       
@@ -319,9 +323,9 @@ private void onActionSave(ActionEvent event) {
         }
     }
 
-    if( selectedUser!=null)
+    if( selectedUser!=null){
     selectedUser.getStyleClass().remove("seleccionado");
-    selectedUser = null;
+    selectedUser = null;}
 
     try {
         List<UsuarioData> userList = new ArrayList<>();
@@ -351,7 +355,9 @@ private void onActionSave(ActionEvent event) {
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Files.writeString(Paths.get("Jsons/usuarios.json"), gson.toJson(userList));
+         Files.writeString(data.getArchivo("usuarios").toPath(),gson.toJson(userList));
+      
+       
         System.out.println("Datos guardados");
 
     } catch (IOException ex) {
@@ -381,10 +387,11 @@ private void search(String text) {
 private void loadUsers() {
     rootUsers.getChildren().clear();
     try {
-        Path usersFile = Paths.get("Jsons/usuarios.json");
-        if (!Files.exists(usersFile)) return;
-        String json = Files.readString(usersFile);
+         File archivo = data.getArchivo("usuarios");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
+ 
 
         Gson gson = new Gson();
         UsuarioData[] users = gson.fromJson(json, UsuarioData[].class);
@@ -451,7 +458,10 @@ public void initialize(URL url, ResourceBundle rb) {
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
-            String json = Files.readString(Path.of("Jsons/theme.json"));
+         File archivo = data.getArchivo("theme");
+     if (!archivo.exists()) return;
+       String json = Files.readString(archivo.toPath());
+
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
 
@@ -491,4 +501,7 @@ Timeline timeline = new Timeline(
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
 }
+
+  
+
 }

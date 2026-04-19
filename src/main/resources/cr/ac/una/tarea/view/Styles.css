@@ -7,9 +7,7 @@
 .mi-Titulos .label {
     -fx-text-fill: white;
 }
-.mi-Titulososcuros {
-   /* -fx-background-color: #006699;*/
-}
+
 
 .mi-Titulososcuros .label {
     -fx-text-fill: black;
@@ -32,7 +30,10 @@
 
 .mensaje-correcto {
     -fx-text-fill: green;
-}#BNext:disabled {
+}
+
+
+#BNext:disabled {
     -fx-opacity: 0.2;
 }
 .procedimiento-guardado {
@@ -165,7 +166,7 @@
 
 }
 .mi-BtnNext{
-    -fx-background-image: url("../resource/siguiente.png");
+    -fx-background-image: url("../resource/Siguiente.png");
     -fx-background-size: stretch;   
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -194,8 +195,59 @@
     -fx-background-position: center;
 
 }
+.boton-activo {
+    -fx-border-color: #66ff00;
+        -fx-border-width: 3;
+}
+.mi-BtnEnter{
+    -fx-background-image: url("../resource/Enter.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 
+}
+.mi-BtnBackSpace{
+    -fx-background-image: url("../resource/BackSpace.jpg");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 
+}
+.mi-BtnGenerarF{
+    -fx-background-image: url("../resource/GenerarFicha.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+}
+.mi-BtnTemaClaro{
+    -fx-background-image: url("../resource/TemaClaro.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+}
+.mi-BtnTemaOscuro{
+    -fx-background-image: url("../resource/TemaOscuro.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+}
+.mi-BtnSalir2{
+    -fx-background-image: url("../resource/Salir2.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+}
+.mi-BtnInformacion{
+    -fx-background-image: url("../resource/Informacion.png");
+    -fx-background-size: stretch;  
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+}
 .mi-boton .button {
     /* estilo normal */
 }
@@ -250,6 +302,7 @@
     -fx-text-fill: #ffffff;
     -fx-font-size: 15px;
     -fx-border-radius: 40;
+     -fx-background-radius: 40px;
 }
 .tab .tab-label {
     -fx-text-fill: #ffffff;
@@ -262,6 +315,8 @@
 /* SOLO CAMBIA EL FONDO DE ATRAS */
 .tab-pane-oscuro .tab-header-background {
     -fx-background-color: #33ccff;
+      /*  -fx-background-color: #3399ff;*/
+      -fx-background-insets: 0, 0 0 2 0;
 }
 .mi-rectangulo1{
       -fx-background-color:#006699;
@@ -286,6 +341,36 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
 }
+.mi-root HBox {
+    -fx-border-color: #66ccff;
+    -fx-border-width: 5;
+    -fx-background-color: #006699;
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+.mi-rootclaro HBox {
+    -fx-border-color: #006699; 
+    -fx-border-width: 5;
+    -fx-background-color:#66ccff;
+    -fx-background-size: stretch;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+.mi-rectanguloborde{
+    -fx-border-color: #9999ff;
+    -fx-border-width: 5;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+.mi-rectanguloProcedure{
+    -fx-border-color: #33ffcc;
+    -fx-border-width: 5;
+      -fx-background-size: stretch;   
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
 #BNext {
     -fx-opacity: 1.0;
 }
@@ -296,6 +381,10 @@
 .mi-boton2:pressed {
     -fx-scale-x: 0.99;
     -fx-scale-y: 0.99;
+}
+.mi-Kiosco:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
 }
 .mi-botonSave:hover,.mi-botonAdd:hover,.mi-botonDelete:hover,.mi-botonEdit:hover,.mi-botonGo:hover, .mi-BtnSalir:hover ,.mi-botonWithoutParameters:hover,.mi-botonSearch:hover,.mi-BtnNext:hover,.mi-BtnRepit:hover,.mi-BtnEspecific:hover,.mi-BtnPreferencial:hover{
     -fx-cursor: hand;

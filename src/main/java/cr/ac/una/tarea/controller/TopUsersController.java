@@ -5,6 +5,9 @@ import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.SucursalData;
 import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.model.TopUsersData;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -70,17 +73,19 @@ private Boolean temaAnterior = null;
     private VBox rootUsers;
     @FXML
     private VBox rootserch;
-   
+     Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
     
     private void cargarTop(){
      try {
-        Path archivoTop = Paths.get("Jsons/TopUsers.json");
-        
-        if (!Files.exists(archivoTop)) return;
-        if (Files.readString(archivoTop).isBlank()) return;
+            File archivo = data.getArchivo("TopUsers");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
+        if (json.isBlank()) return;
+     
 
         Gson gson = new Gson();
-        TopUsersData[] TopUsers = gson.fromJson(Files.readString(archivoTop), TopUsersData[].class);
+        TopUsersData[] TopUsers =  gson.fromJson(json, TopUsersData[].class);
        Arrays.sort(TopUsers, (a, b) -> b.cantidad - a.cantidad);
        
         rootTop.getChildren().clear();
@@ -171,10 +176,11 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
    
         public void cargar() {
     try {
-        Path archivo = Paths.get("Jsons/BranchesData.json");
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+          File archivo = data.getArchivo("BranchesData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
+     
 
         Gson gson = new Gson();
         SucursalData[] sucursales = gson.fromJson(json, SucursalData[].class);
@@ -263,7 +269,10 @@ timeline.play();
       Timeline timeline1 = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
-            String json = Files.readString(Path.of("Jsons/theme.json"));
+                 File archivo = data.getArchivo("theme");
+     if (!archivo.exists()) return;
+       String json = Files.readString(archivo.toPath());
+
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
 
@@ -272,7 +281,7 @@ timeline.play();
 
                 if (t.temeDark) {
                       rootUsers.getStyleClass().clear();
-                    rootUsers.getStyleClass().add("mi-rectangulooscuro");
+                    rootUsers.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
                     rootserch.getStyleClass().clear();
                     rootserch.getStyleClass().add("mi-rectangulooscuro");
                     LblTutulos.getStyleClass().clear();
@@ -280,7 +289,7 @@ timeline.play();
                    
                 } else {
                    rootUsers.getStyleClass().clear();
-                    rootUsers.getStyleClass().add("mi-rectangulo");
+                    rootUsers.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
                     rootserch.getStyleClass().clear();
                     rootserch.getStyleClass().add("mi-rectangulo");
                     LblTutulos.getStyleClass().clear();
@@ -316,9 +325,9 @@ timeline1.play();
     
 private void cargarGraficos() {
     try {
-        Path archivoTop = Paths.get("Jsons/TopUsers.json");
-        if (!Files.exists(archivoTop)) return;
-        String json = Files.readString(archivoTop);
+          File archivo = data.getArchivo("TopUsers");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
         Gson gson = new Gson();
         TopUsersData[] topUsers = gson.fromJson(json, TopUsersData[].class);

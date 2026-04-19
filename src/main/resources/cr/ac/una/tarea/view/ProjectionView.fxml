@@ -6,7 +6,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -19,13 +18,11 @@
                <font>
                   <Font size="22.0" />
                </font></Label>
-            <Button mnemonicParsing="false" onAction="#onActionActualizar" text="Actualizar" />
-            <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="SOMETIMES" />
-            <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="300.0" prefHeight="111.0" prefWidth="125.0" text="Nombre" HBox.hgrow="ALWAYS">
+            <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="300.0" prefHeight="111.0" prefWidth="125.0" text="Simparametros Generales" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="26.0" />
                </font></Label>
-            <ImageView fx:id="Logo" fitHeight="111.0" fitWidth="167.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
+            <ImageView fx:id="Logo" fitHeight="105.0" fitWidth="167.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </top>
@@ -44,7 +41,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="94.0" prefWidth="832.0" spacing="100.0">
                <children>
-                  <Label fx:id="estacion1" alignment="CENTER" maxHeight="100.0" maxWidth="300.0" prefHeight="62.0" prefWidth="180.0" styleClass="mi-label1" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="estacion1" alignment="CENTER" maxHeight="100.0" maxWidth="300.0" prefHeight="62.0" prefWidth="180.0" styleClass="mi-label1" text="Sin Registro" textFill="WHITE" HBox.hgrow="ALWAYS" />
                   <VBox fx:id="rootFicha1" alignment="TOP_CENTER" prefHeight="94.0" prefWidth="177.0">
                      <children>
                         <HBox alignment="CENTER_RIGHT" maxHeight="30.0" prefHeight="37.0" prefWidth="200.0">
@@ -62,7 +59,7 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="114.0" prefHeight="99.0" prefWidth="832.0" spacing="100.0">
                <children>
-                  <Label fx:id="estacion2" alignment="CENTER" maxWidth="300.0" prefHeight="66.0" prefWidth="161.0" styleClass="mi-label1" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="estacion2" alignment="CENTER" maxWidth="300.0" prefHeight="66.0" prefWidth="161.0" styleClass="mi-label1" text="Sin Registro" textFill="WHITE" HBox.hgrow="ALWAYS" />
                   <VBox fx:id="rootFicha2" alignment="TOP_CENTER" prefHeight="77.0" prefWidth="171.0">
                      <children>
                         <HBox alignment="CENTER_RIGHT" maxHeight="30.0" prefHeight="37.0" prefWidth="200.0">
@@ -77,7 +74,7 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="164.0" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
                <children>
-                  <Label fx:id="estacion3" alignment="CENTER" maxWidth="300.0" prefHeight="67.0" prefWidth="170.0" styleClass="mi-label1" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="estacion3" alignment="CENTER" maxWidth="300.0" prefHeight="67.0" prefWidth="170.0" styleClass="mi-label1" text="Sin Registro" textFill="WHITE" HBox.hgrow="ALWAYS" />
                   <VBox fx:id="rootFicha3" alignment="TOP_CENTER" prefHeight="77.0" prefWidth="171.0">
                      <children>
                         <HBox alignment="CENTER_RIGHT" maxHeight="30.0" prefHeight="37.0" prefWidth="200.0">
@@ -92,7 +89,7 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="214.0" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
                <children>
-                  <Label fx:id="estacion4" alignment="CENTER" maxWidth="300.0" prefHeight="67.0" prefWidth="177.0" styleClass="mi-label1" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="estacion4" alignment="CENTER" maxWidth="300.0" prefHeight="67.0" prefWidth="177.0" styleClass="mi-label1" text="Sin Registro" textFill="WHITE" HBox.hgrow="ALWAYS" />
                   <VBox fx:id="rootFicha4" alignment="TOP_CENTER" prefHeight="77.0" prefWidth="171.0">
                      <children>
                         <HBox alignment="CENTER_RIGHT" maxHeight="30.0" prefHeight="37.0" prefWidth="200.0">

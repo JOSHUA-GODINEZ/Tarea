@@ -10,18 +10,37 @@ import java.util.List;
 
 public class App extends Application {
     private static Scene scene;
-    LoginController l = new LoginController();
 
     @Override
     public void start(Stage stage) throws IOException {
-        List<String> params = getParameters().getRaw();
-        String param = params.isEmpty() ? "login" : params.get(0);
 
-        String vista = switch (param) {
-            case "officials" -> "OfficialsView";
-            case "administrador"  -> "AdministratorView";
-            default          -> l.FullParameters();
-        };
+        List<String> params = getParameters().getRaw();
+        String param = params.isEmpty() ? "LoginView" : params.get(0);
+
+        LoginController l = new LoginController(); // lo dejamos
+
+        String vista;
+
+        switch (param.toLowerCase()) {
+            case "officials":
+                vista = "OfficialsView";
+                break;
+            case "administrador":
+               // vista = "LoginView";
+                vista = l.FullParameters();
+                break;
+                   case "kiosko":
+                vista = "";
+                break;
+                   case "proyeccion":
+                vista = "ProjectionView";
+                break;
+            default:
+                vista = l.FullParameters(); // 👈 importante
+                break;
+        }
+
+        System.out.println("Vista seleccionada: " + vista);
 
         scene = new Scene(loadFXML(vista), 800, 600);
         stage.setScene(scene);

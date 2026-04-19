@@ -5,7 +5,10 @@ import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.model.DataProcedure;
 import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
 import cr.ac.una.tarea.util.ValidadorNumeros;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -40,12 +43,14 @@ public class ProcedureController implements Initializable {
     
     private VBox selectedProcedure = null;
 
-    private final Path archivo = Path.of("Jsons/ProcedureData.json");
+    //private final Path archivo = Path.of("Jsons/ProcedureData.json");
     @FXML
     private Label LblMensaje;
      private Boolean temaAnterior = null;
     @FXML
     private HBox rootMensaje;
+            Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
     @FXML
    public void Add() {
 
@@ -287,7 +292,8 @@ public void Save() {
     lista.add(user);
 }
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    Files.writeString(archivo, gson.toJson(lista));
+     Files.writeString(data.getArchivo("ProcedureData").toPath(),gson.toJson(lista));
+    
     System.out.println("Datos guardados");
 } catch (IOException e) {
     System.out.println("Error al guardar: " + e.getMessage());
@@ -315,9 +321,11 @@ if(campo.getText().toLowerCase().contains(texto.toLowerCase())){
 
 public void cargar() {
     try {
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+         File archivo = data.getArchivo("ProcedureData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
+       
 
         Gson gson = new Gson();
         DataProcedure[] lista = gson.fromJson(json, DataProcedure[].class);
@@ -359,27 +367,31 @@ check.setSelected(dp.getState());
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
-            String json = Files.readString(Path.of("Jsons/theme.json"));
+
+       File archivo = data.getArchivo("theme");
+     if (!archivo.exists()) return;
+       String json = Files.readString(archivo.toPath());
+
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
 
             if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
                 temaAnterior = t.temeDark;
 
-                // Cambia el root
                 if (t.temeDark) {
                     rootProcedure.getStyleClass().remove("mi-panel-fondo2");
                     rootProcedure.getStyleClass().add("mi-panel-fondo1");
+
                     rootMensaje.getStyleClass().remove("mi-panel-fondo2");
                     rootMensaje.getStyleClass().add("mi-panel-fondo1");
                 } else {
                     rootProcedure.getStyleClass().remove("mi-panel-fondo1");
                     rootProcedure.getStyleClass().add("mi-panel-fondo2");
-                      rootMensaje.getStyleClass().remove("mi-panel-fondo1");
+
+                    rootMensaje.getStyleClass().remove("mi-panel-fondo1");
                     rootMensaje.getStyleClass().add("mi-panel-fondo2");
                 }
 
-                // Cambia cada UpLine que esta en ProcedureData
                 for (VBox upLine : ProcedureData) {
                     if (t.temeDark) {
                         upLine.getStyleClass().remove("mi-rectangulo");
@@ -396,9 +408,11 @@ Timeline timeline = new Timeline(
         }
     })
 );
+
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
 
     
     }
+    
 }

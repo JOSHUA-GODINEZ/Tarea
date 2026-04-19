@@ -4,12 +4,17 @@ import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
 import cr.ac.una.tarea.model.Teme;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,14 +48,20 @@ public class AdministratorController implements Initializable {
     private Label LName;
     @FXML
     private HBox rootH;
+    private Boolean temaAnterior = null;
     @FXML
     private TabPane roottab;
+    Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
 
+
+    
     private void cargar() {
     try {
-         Path archivo = Paths.get("Jsons/GenenarlData.json");
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+         
+        File archivo = data.getArchivo("GeneralData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
 
         Gson gson = new Gson();
@@ -112,29 +123,56 @@ public class AdministratorController implements Initializable {
             
              }  
               });
-                       String json = Files.readString(Path.of("Jsons/theme.json"));
+     
+      
+        } catch (IOException e) {
+    
+        }
+           Timeline timeline = new Timeline(
+    new KeyFrame(javafx.util.Duration.seconds(1), e -> {
+        try {
+             File archivo = data.getArchivo("theme");
+if (!archivo.exists()) return;
+String json = Files.readString(archivo.toPath());
+
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
-    if (t.temeDark) {
-                      rootH.getStyleClass().remove("mi-panel-fondo2");
-            rootH.getStyleClass().add("mi-panel-fondo1");
-            roottab.getStyleClass().add("tab-pane");
-              LName.getStyleClass().add("titulososcu");
-        } else {
-          rootH.getStyleClass().remove("mi-panel-fondo1");
-            rootH.getStyleClass().add("mi-panel-fondo2");
 
-            roottab.getStyleClass().remove("tab-pane-oscuro");
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia los roots
+                rootH.getStyleClass().clear();
+                roottab.getStyleClass().clear();
+               LName.getStyleClass().clear();
+ if (t.temeDark) {
+     
+       rootH.getStyleClass().remove("mi-panel-fondo2");
+            rootH.getStyleClass().add("mi-panel-fondo1");
+           roottab.getStyleClass().clear();
+roottab.getStyleClass().add("tab-pane-oscuro");
+           //  roottab.getStyleClass().remove("tab-pane-oscuro");
+              LName.getStyleClass().add("titulososcu");
+} else {
+
+    rootH.getStyleClass().remove("mi-panel-fondo1");
+            rootH.getStyleClass().add("mi-panel-fondo2");
+ roottab.getStyleClass().clear(); // siempre debe estar
+roottab.getStyleClass().add("tab-pane");
+             //roottab.getStyleClass().add("tab-pane");
             LName.getStyleClass().add("titulosclar");
+            }
+            }
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
         }
-           
-            
-            
-        } catch (IOException e) {
-         
-            
-        }
-    }
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
+  
+    }   
+    
 
     @FXML
     private void onActionOption(ActionEvent event) throws IOException {
@@ -158,7 +196,10 @@ roottab.getStyleClass().add("tab-pane");
     Teme t = new Teme();
     t.temeDark = false;
     try {
-        Files.writeString(Path.of("Jsons/theme.json"), new Gson().toJson(t));
+    Files.writeString(
+    data.getArchivo("theme").toPath(),
+    new Gson().toJson(t)
+);
     } catch (IOException e) {
         System.out.println("Error: " + e.getMessage());
     }
@@ -175,10 +216,18 @@ roottab.getStyleClass().add("tab-pane-oscuro");
     Teme t = new Teme();
     t.temeDark = true;
     try {
-        Files.writeString(Path.of("Jsons/theme.json"), new Gson().toJson(t));
+      Files.writeString(
+    data.getArchivo("theme").toPath(),
+    new Gson().toJson(t)
+);
     } catch (IOException e) {
         System.out.println("Error: " + e.getMessage());
     }
 }
-    
+
+    @FXML
+    private void onActionKiosco(ActionEvent event) throws IOException {
+       App.setRoot("KioscoView");
+    }
+
 }

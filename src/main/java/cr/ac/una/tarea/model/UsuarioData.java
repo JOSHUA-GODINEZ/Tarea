@@ -8,4 +8,6 @@ public class UsuarioData {
     public String numero;
     public String fecha;
     public String imagen;
+    
+   
 }

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="747.0" prefWidth="758.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cr.ac.una.tarea.controller.KioscoController">
+   <children>
+      <VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="730.0" prefWidth="690.0" styleClass="mi-rectangulooscuro" VBox.vgrow="ALWAYS">
+         <children>
+            <HBox fx:id="root" alignment="CENTER_RIGHT" maxHeight="100.0" maxWidth="1.7976931348623157E308" minHeight="78.0" prefHeight="78.0" prefWidth="749.0" styleClass="mi-panel-fondo1" VBox.vgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onActionAdmin" text="Admin" />
+                  <Button mnemonicParsing="false" onAction="#onActionIndication" prefHeight="87.0" prefWidth="82.0" styleClass="mi-BtnInformacion" />
+                  <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin Parametros Generales" HBox.hgrow="ALWAYS" />
+                  <ImageView fx:id="Logo" fitHeight="106.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" />
+               </children>
+            </HBox>
+            <Label fx:id="LblMensaje" alignment="CENTER" prefHeight="36.0" prefWidth="493.0">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <VBox fx:id="blockID" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="473.0" prefWidth="749.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Label fx:id="Lnombre" alignment="CENTER" maxHeight="50.0" maxWidth="1.7976931348623157E308" prefHeight="22.0" prefWidth="246.0" text="Introduzca su numero de cedula (opcional)" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="txtId" editable="false" focusTraversable="false" maxHeight="50.0" maxWidth="500.0" pickOnBounds="false" prefHeight="26.0" prefWidth="300.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <GridPane alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="270.0" maxWidth="500.0" minHeight="100.0" prefHeight="129.0" prefWidth="500.0" VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="25.40000419616699" vgrow="ALWAYS" />
+                      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="32.0" vgrow="ALWAYS" />
+                      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.4" vgrow="ALWAYS" />
+                    </rowConstraints>
+                     <children>
+                        <Button alignment="CENTER" contentDisplay="TOP" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction7" text="7" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction8" text="8" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction9" text="9" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction4" text="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction5" text="5" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction6" text="6" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction1" text="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction2" text="2" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction3" text="3" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAction0" prefHeight="7.0" prefWidth="166.0" text="0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <styleClass>
+                              <String fx:value="mi-panel-fondo1" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionEliminar" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
+                           <styleClass>
+                              <String fx:value="mi-BtnBackSpace" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                        <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionAvanzar" GridPane.rowIndex="3">
+                           <styleClass>
+                              <String fx:value="mi-BtnEnter" />
+                              <String fx:value="mi-Kiosco" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                  </GridPane>
+                  <HBox prefHeight="49.0" prefWidth="678.0">
+                     <children>
+                        <Label fx:id="Ltramite" alignment="CENTER_RIGHT" maxHeight="50.0" maxWidth="1.7976931348623157E308" text="Tramite a realizar:" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="LblSelec" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin tramite selecionado" HBox.hgrow="ALWAYS">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" focusTraversable="false" maxHeight="200.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="200.0" pickOnBounds="false" prefHeight="70.0" prefWidth="678.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <HBox fx:id="rootProcedures" alignment="CENTER" maxHeight="1.7976931348623157E308" pickOnBounds="false" prefHeight="100.0" prefWidth="200.0" spacing="20.0" />
+                     </content>
+                     <VBox.margin>
+                        <Insets left="20.0" right="20.0" />
+                     </VBox.margin>
+                  </ScrollPane>
+               </children>
+            </VBox>
+            <HBox fx:id="rootGenerar" alignment="CENTER" maxHeight="150.0" minHeight="100.0" prefHeight="100.0" prefWidth="200.0" styleClass="mi-panel-fondo1" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+               <children>
+                  <Button fx:id="BtnGenerarFicha" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onActionGenerateTicket" prefHeight="52.0" prefWidth="146.0" styleClass="mi-panel-fondo1" text="Generar Ficha" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</VBox>

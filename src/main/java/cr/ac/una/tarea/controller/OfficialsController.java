@@ -3,6 +3,10 @@ package cr.ac.una.tarea.controller;
 import com.google.gson.Gson;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
+import cr.ac.una.tarea.model.Teme;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -21,9 +25,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -39,14 +45,17 @@ public class OfficialsController implements Initializable {
     private Label LName;
     @FXML
     private HBox rootH;
-
+    Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
+private Boolean temaAnterior = null;
+    @FXML
+    private TabPane roottab;
         private void cargar() {
     try {
-         Path archivo = Paths.get("Jsons/GenenarlData.json");
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+       File archivo = data.getArchivo("GeneralData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
-
         Gson gson = new Gson();
         DataParametres user = gson.fromJson(json, DataParametres.class);
 
@@ -63,7 +72,13 @@ public class OfficialsController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
      cargar();
-        
+          LName.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        if (newScene != null) {
+            LName.styleProperty().bind(
+                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.12fpx;")
+            );
+             }
+    }); 
          try {
             FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/ManagementTokensView.fxml"));
             Parent root1 = loader1.load();
@@ -77,6 +92,45 @@ public class OfficialsController implements Initializable {
         } catch (IOException e) {
    
         } 
+         Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+               cargar();
+             File archivo = data.getArchivo("theme");
+if (!archivo.exists()) return;
+String json = Files.readString(archivo.toPath());
+
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia los roots
+                rootH.getStyleClass().clear();
+                roottab.getStyleClass().clear();
+               
+ if (t.temeDark) {
+     
+    rootH.getStyleClass().addAll("mi-panel-fondo1","mi-Titulososcuros");
+    roottab.getStyleClass().add("tab-pane-oscuro");
+ //LName.getStyleClass().add("titulososcu");
+} else {
+
+   rootH.getStyleClass().addAll("mi-panel-fondo2","mi-Titulos");
+    roottab.getStyleClass().add("tab-pane");
+             // LName.getStyleClass().add("titulosclar");
+            }
+            }
+         
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+        
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
   
     }    
 
@@ -89,7 +143,7 @@ public class OfficialsController implements Initializable {
     private void onACtionSalir(ActionEvent event) throws IOException {
         /* Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();*/
-           App.setRoot("AuxiliarProyectionView");
+           App.setRoot("ProjectionView");
     }
     
 }

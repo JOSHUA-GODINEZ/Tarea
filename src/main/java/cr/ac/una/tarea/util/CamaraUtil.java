@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 
 public class CamaraUtil {
-
+private static Propiedades config = new Propiedades();
     public static void tomarFoto(ImageView userFoto) {
         Webcam webcam = Webcam.getDefault();
         if (webcam == null) {
@@ -92,22 +92,34 @@ public class CamaraUtil {
         streamThread.start();
     }
 
-    private static String guardarFoto(Image image) {
-        try {
-            String folderPath = System.getProperty("user.dir") + "/fotos/";
-            File dir = new File(folderPath);
-            if (!dir.exists()) dir.mkdirs();
+private static String guardarFoto(Image image) {
+    try {
+        String basePath = config.getRutaJson();
 
-            String fileName = folderPath + "foto_" +
+        File base = new File(basePath);
+        if (base.isFile()) {
+            base = base.getParentFile();
+        }
+
+        File carpetaFotos = new File(base, "Fotos");
+        if (!carpetaFotos.exists()) {
+            carpetaFotos.mkdirs();
+        }
+
+        String nombre = "foto_" +
                 LocalDateTime.now().format(
-                    DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
+                        DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")
                 ) + ".png";
 
-            File outputFile = new File(fileName);
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
-            return outputFile.toURI().toString();
-        } catch (IOException ex) {
-            return "";
-        }
+        File outputFile = new File(carpetaFotos, nombre);
+
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", outputFile);
+
+        return outputFile.toURI().toString();
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        return "";
     }
+}
 }

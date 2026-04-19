@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
 import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
 import cr.ac.una.tarea.util.ValidadorNumeros;
 import javafx.stage.FileChooser;
 import javafx.scene.control.TextArea;
@@ -49,8 +51,9 @@ public class LoginController {
     @FXML
     private Label LblMensaje;
     
- private final Path archivo = Path.of("Jsons/GenenarlData.json");
-   
+
+    Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
 @FXML
      private void insetLogo(){
          FileChooser fileChooser = new FileChooser();
@@ -119,7 +122,10 @@ public class LoginController {
     user.setImageUrl(ImageLogo.getImage().getUrl());
 }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Files.writeString(archivo, gson.toJson(user));
+       Files.writeString(
+    data.getArchivo("GeneralData").toPath(),
+    gson.toJson(user)
+);
         if (Tname.getText() != null && !Tname.getText().isBlank() &&
         TInfo.getText() != null && !TInfo.getText().isBlank() &&
         TPin.getText() != null && TPin.getText().length() == 4 &&
@@ -127,16 +133,18 @@ public class LoginController {
         ImageLogo.getImage().getUrl() != null &&
         !ImageLogo.getImage().getUrl().contains("Base.png")) {
        Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
-    }else{Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");}
+    }else{Alertas.mostrarMensajeError(LblMensaje, "Información Insuficiente");}
     } catch (IOException e) {
         System.out.println("Error al guardar: " + e.getMessage());
     }
 }
     private void cargar() {
     try {
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+         File archivo = data.getArchivo("GeneralData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
+       
 
         Gson gson = new Gson();
         DataParametres user = gson.fromJson(json, DataParametres.class);
@@ -170,9 +178,14 @@ public class LoginController {
 }
     
      public String FullParameters() throws IOException {
-    if (!Files.exists(archivo)) return "LoginView";
-    String json = Files.readString(archivo);
-    if (json.isBlank()) return "LoginView";
+         File archivo = data.getArchivo("GeneralData");
+
+        if (!Files.exists(archivo.toPath())) return"LoginView";
+
+        String json = Files.readString(archivo.toPath());
+
+        if (json.isBlank()) return"LoginView";
+        
 
     Gson gson = new Gson();
     DataParametres user = gson.fromJson(json, DataParametres.class);
@@ -189,6 +202,7 @@ public class LoginController {
 }
     
         public void initialize() throws IOException {
+           
         cargar();
         verifyData();
       

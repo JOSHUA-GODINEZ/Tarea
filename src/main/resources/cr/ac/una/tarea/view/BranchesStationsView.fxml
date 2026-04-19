@@ -31,7 +31,7 @@
             <Label fx:id="LblMensaje" alignment="CENTER" maxWidth="400.0" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <HBox alignment="CENTER" maxHeight="50.0" maxWidth="1.7976931348623157E308" minHeight="0.0" prefHeight="0.0" prefWidth="878.0" VBox.vgrow="ALWAYS">
+      <HBox fx:id="rootTitulos" alignment="CENTER" maxHeight="50.0" maxWidth="1.7976931348623157E308" minHeight="0.0" prefHeight="0.0" prefWidth="878.0" VBox.vgrow="ALWAYS">
          <children>
             <Label fx:id="LblSyE" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sucursales y Estaciones:" HBox.hgrow="ALWAYS" />
             <Label fx:id="LblTramite" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="109.0" prefWidth="286.0" text="Tramites Disponibles:" HBox.hgrow="ALWAYS" />

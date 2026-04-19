@@ -2,11 +2,15 @@ package cr.ac.una.tarea.controller;
 
 import com.google.gson.Gson;
 import cr.ac.una.tarea.App;
-import cr.ac.una.tarea.model.DataHolder;
+
 import cr.ac.una.tarea.model.DataParametres;
 import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.FichasProyection;
+import cr.ac.una.tarea.model.SignalData;
 import cr.ac.una.tarea.model.SucursalData;
+import cr.ac.una.tarea.model.Teme;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +36,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import javafx.util.Duration;
 
@@ -91,14 +97,19 @@ public class ProjectionController implements Initializable {
 private Timeline timelineFichas;
 private Timeline reloj;
 private boolean reproduciendo = false;
+private boolean reproduciendoAudio = false;
 private static ProjectionController instance;
 private Timeline timeoutAudio;
+private Boolean temaAnterior = null;
+            Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
 private javafx.scene.media.MediaPlayer playerActual = null;
+
       private void cargar() {
     try {
-         Path archivo = Paths.get("Jsons/GenenarlData.json");
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+       File archivo = data.getArchivo("GeneralData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
 
         Gson gson = new Gson();
@@ -117,14 +128,15 @@ private javafx.scene.media.MediaPlayer playerActual = null;
     private void cargarInfo() {
       
     try {
-         Path archivo = Paths.get("Jsons/BranchesData.json");
-        if (!Files.exists(archivo)) return;
-        String json = Files.readString(archivo);
+               File archivo = data.getArchivo("BranchesData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
+
 
         Gson gson = new Gson();
        SucursalData[] sucursales = gson.fromJson(json, SucursalData[].class);
-        String seleccionado = DataHolder.selectedLabel;
+        String seleccionado = config.getSucursal();
 
 for (SucursalData sd : sucursales) {
 
@@ -148,7 +160,11 @@ for (SucursalData sd : sucursales) {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
+File archivo = new File("propiedades.ini");
+System.out.println("Ruta absoluta: " + archivo.getAbsolutePath());
+System.out.println("Existe: " + archivo.exists());
+  System.out.println("Sucursal: "+ config.getSucursal());// ✅ aquí, después de cargar ficha
+   System.out.println("Estacion: "+ config.getEstacion());// ✅ aquí, después de cargar ficha
     instance = this;
     reproduciendo = true; // ✅ bloquea audio al entrar
 
@@ -159,11 +175,20 @@ for (SucursalData sd : sucursales) {
     cargarFicha();
 
     // ✅ inicializa timestamps para ignorar archivos existentes
-    File archivoSenal = new File("Jsons/signal.json");
-    if (archivoSenal.exists()) {
-        ultimaSenal = archivoSenal.lastModified();
+ File archivoSenal = data.getArchivo("signal");
+if (archivoSenal.exists()) {
+    try {
+        
+        String json = Files.readString(archivoSenal.toPath());
+        if (!json.isBlank()) {
+            SignalData signal = new Gson().fromJson(json, SignalData.class);
+            ultimaSenal = signal.timestamp; // 🔥 CORRECTO
+        }
+    } catch (IOException e) {
+        System.out.println("Error inicializando señal: " + e.getMessage());
     }
-    File archivoFichas = new File("Jsons/Fichas.json");
+}
+    File archivoFichas = data.getArchivo("Fichas");
     if (archivoFichas.exists()) {
         ultimaModificacion = archivoFichas.lastModified();
     }
@@ -174,6 +199,9 @@ for (SucursalData sd : sucursales) {
     if (reloj != null) reloj.stop();
     reloj = new Timeline(
         new KeyFrame(Duration.seconds(1), e -> {
+            config.cargar();
+            cargarInfo();
+            cargarFicha();
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             lblFechaHora.setText(LocalDateTime.now().format(formato));
         })
@@ -184,23 +212,29 @@ for (SucursalData sd : sucursales) {
     // monitoreo de fichas y señal
     if (timelineFichas != null) timelineFichas.stop();
 timelineFichas = new Timeline(
-    new KeyFrame(Duration.seconds(1), e -> {
-        File fichas = new File("Jsons/Fichas.json");
-        if (fichas.lastModified() != ultimaModificacion) {
-            ultimaModificacion = fichas.lastModified();
-            Platform.runLater(() -> {
-                cargarFicha();
-                cargarAudios();
-                 System.out.println("Sucursal: "+ DataHolder.selectedLabel);// ✅ aquí, después de cargar ficha
-            });
-        }
-File senal = new File("Jsons/signal.json");
-if (senal.exists() && senal.lastModified() != ultimaSenal) {
-    ultimaSenal = senal.lastModified();
-    Platform.runLater(() -> {
-        detenerAudio(); // ✅ cancela lo que esté sonando
-        reproducirAudiosEnSecuencia(new ArrayList<>(audios), 0); // ✅ empieza de nuevo
-    });
+    new KeyFrame(Duration.seconds(2), e -> {
+       
+File senal = data.getArchivo("signal");
+
+if (senal.exists()) {
+    try {
+
+        String json = Files.readString(senal.toPath());
+
+        if (json.isBlank()) return;
+
+        Gson gson = new Gson();
+        SignalData signal = gson.fromJson(json, SignalData.class);
+
+        if (signal.timestamp == ultimaSenal) return;
+
+        ultimaSenal = signal.timestamp;
+
+        Platform.runLater(() -> procesarSignal(signal));
+
+    } catch (IOException ex) {
+        System.out.println("Error leyendo signal: " + ex.getMessage());
+    }
 }
     })
 );
@@ -233,7 +267,7 @@ if (senal.exists() && senal.lastModified() != ultimaSenal) {
                 newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
             );
             ficha1.styleProperty().bind(
-                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
             );
              estacion2.styleProperty().bind(
                 newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
@@ -259,26 +293,65 @@ if (senal.exists() && senal.lastModified() != ultimaSenal) {
         }
         
     });
-  
+  Timeline timeline = new Timeline(
+    new KeyFrame(Duration.seconds(1), e -> {
+        try {
+            cargar();
+             File archivoTheme = data.getArchivo("theme");
+if (!archivoTheme.exists()) return;
+String json = Files.readString(archivoTheme.toPath());
+
+            Gson gson = new Gson();
+            Teme t = gson.fromJson(json, Teme.class);
+
+            if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
+                temaAnterior = t.temeDark;
+
+                // Cambia los roots
+                root.getStyleClass().clear();
+                container.getStyleClass().clear();
+                rootFichas.getStyleClass().clear();
+               
+ if (t.temeDark) {
+     root.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+    container.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+    rootFichas.getStyleClass().addAll("mi-rectangulooscuro");
+
+
+} else {
+
+   root.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+    rootFichas.getStyleClass().addAll("mi-rectangulo");
+    container.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+ 
+}
+
+            }
+
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    })
+);
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
 }
     
     public void cargarFicha() {
    try {
     Gson gson = new Gson();
-
-    Path archivo = Paths.get("Jsons/Fichas.json");
-
-    if (!Files.exists(archivo)) return;
-
-    String json = Files.readString(archivo);
-    if (json.isBlank()) return;
-
+ File archivo = data.getArchivo("Fichas");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
+        if (json.isBlank()) return;
+   
+ System.out.println("Cargando la dicha:");
     FichasProyection[] lista = gson.fromJson(json, FichasProyection[].class);
 
     for (FichasProyection fichaActual : lista) {
 
         if (fichaActual.Sucursal != null &&
-            fichaActual.Sucursal.equals(DataHolder.selectedLabel)) {
+            fichaActual.Sucursal.equals(config.getSucursal())) {
 
             estacion1.setText(fichaActual.estacion[0] != null ? fichaActual.estacion[0] : "");
             estacion2.setText(fichaActual.estacion[1] != null ? fichaActual.estacion[1] : "");
@@ -325,8 +398,7 @@ if (senal.exists() && senal.lastModified() != ultimaSenal) {
 
     @FXML
     private void BtnSalir(ActionEvent event) throws IOException {
-        /* Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();*/
+     
           App.setRoot("OfficialsView");
     }
 
@@ -335,25 +407,36 @@ if (senal.exists() && senal.lastModified() != ultimaSenal) {
         initialize(null, null);
     }
 private void reproducirAudiosEnSecuencia(List<String> rutas, int index) {
+
+    if (index == 0) {
+        reproduciendoAudio = true; // 🔥 empieza
+    }
+
     if (index >= rutas.size()) {
         playerActual = null;
+        reproduciendoAudio = false; // 🔥 termina
         return;
     }
 
     try {
-        String ruta = new File(rutas.get(index)).toURI().toString();
-        javafx.scene.media.Media media = new javafx.scene.media.Media(ruta);
-        javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
-        playerActual = player; // ✅ guarda referencia
 
-        player.setOnReady(() -> {
-            System.out.println("reproduciendo " + index + ": " + rutas.get(index));
-            player.play();
-        });
+        Media media = crearMedia(rutas.get(index));
+
+        if (media == null) {
+            reproducirAudiosEnSecuencia(rutas, index + 1);
+            return;
+        }
+
+        MediaPlayer player = new MediaPlayer(media);
+        playerActual = player;
+
+        System.out.println("Reproduciendo: " + rutas.get(index));
+
+        player.play();
 
         player.setOnEndOfMedia(() -> {
-            System.out.println("termino " + index);
             player.dispose();
+
             Timeline pausa = new Timeline(
                 new KeyFrame(Duration.millis(300), e ->
                     reproducirAudiosEnSecuencia(rutas, index + 1)
@@ -363,14 +446,14 @@ private void reproducirAudiosEnSecuencia(List<String> rutas, int index) {
         });
 
         player.setOnError(() -> {
-            System.out.println("Error " + index + ": " + player.getError().getMessage());
+            System.out.println("Error: " + player.getError());
             player.dispose();
             reproducirAudiosEnSecuencia(rutas, index + 1);
         });
 
     } catch (Exception e) {
-        System.out.println("Error: " + e.getMessage());
-        playerActual = null;
+        System.out.println("Error general: " + e.getMessage());
+        reproducirAudiosEnSecuencia(rutas, index + 1);
     }
 }
 
@@ -379,10 +462,10 @@ private void detenerAudio() {
         try {
             playerActual.stop();
             playerActual.dispose();
-            playerActual = null;
         } catch (Exception e) {
-            playerActual = null;
+            // ignorar
         }
+        playerActual = null;
     }
 }
 
@@ -398,47 +481,182 @@ public static ProjectionController getInstance() {
 }
 
 private void cargarAudios() {
-   System.out.println("estacion1 texto: " + estacion1.getText());
-List<String> nuevosAudios = new ArrayList<>();
-String estacionActual = estacion1.getText();
-boolean encontrado = false; // ✅ flag
 
-try {
-    Path archivo = Paths.get("Jsons/BranchesData.json");
-    if (!Files.exists(archivo)) return;
-    String json = Files.readString(archivo);
-    if (json.isBlank()) return;
-    Gson gson = new Gson();
-    SucursalData[] sucursales = gson.fromJson(json, SucursalData[].class);
+   audios.clear(); // 🔥 evita acumulación
 
-    for (SucursalData sd : sucursales) {
-        if (!sd.nombre.equals(DataHolder.selectedLabel)) continue;
+    System.out.println("estacion1 texto: " + estacion1.getText());
 
-        for (EstacionData ed : sd.estaciones) {
-            if (ed.nombre.equals(estacionActual)) {
-                encontrado = true; // ✅ encontró
-                if (ed.rutaAudio != null && !ed.rutaAudio.isBlank()) {
-                    // ✅ solo agrega todos si encontró la estación correcta
-                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/Ficha.wav");
-                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/A1.wav");
-                    nuevosAudios.add("C:/Joshua/Tarea/src/main/resources/cr/ac/una/tarea/resource/sonidos/Estacion.wav");
-                    nuevosAudios.add(ed.rutaAudio);
+   
+
+    List<String> nuevosAudios = new ArrayList<>();
+    String estacionActual = estacion1.getText();
+    boolean encontrado = false;
+
+    try {
+        Gson gson = new Gson();
+
+        // 🔹 leer sucursales
+        File archivoBranches = data.getArchivo("BranchesData");
+        if (!archivoBranches.exists()) return;
+
+        String json = Files.readString(archivoBranches.toPath());
+        if (json.isBlank()) return;
+
+        SucursalData[] sucursales = gson.fromJson(json, SucursalData[].class);
+        if (sucursales == null) sucursales = new SucursalData[0];
+
+        // 🔥 leer SIGNAL (aquí viene audioFicha)
+        File archivoSignal = data.getArchivo("signal");
+        String audioFicha = null;
+
+        if (archivoSignal.exists()) {
+            String jsonSignal = Files.readString(archivoSignal.toPath());
+
+            if (!jsonSignal.isBlank()) {
+                SignalData signal = gson.fromJson(jsonSignal, SignalData.class);
+                if (signal != null) {
+                    audioFicha = signal.audioFicha;
                 }
-                break;
             }
         }
+
+        System.out.println("audioFicha desde signal: " + audioFicha);
+
+for (SucursalData sd : sucursales) {
+
+    for (EstacionData ed : sd.estaciones) {
+
+        if (ed.nombre.equals(estacionActual)) {
+
+            encontrado = true;
+
+            agregarAudioSeguro(nuevosAudios, "Ficha.wav");
+
+            if (audioFicha != null && !audioFicha.isBlank()) {
+                agregarAudioSeguro(nuevosAudios, audioFicha);
+            }
+
+            agregarAudioSeguro(nuevosAudios, "Estacion.wav");
+
+            if (ed.rutaAudio != null && !ed.rutaAudio.isBlank()) {
+                agregarAudioSeguro(nuevosAudios, ed.rutaAudio);
+            }
+
+            break; // rompe inner
+        }
     }
-} catch (IOException e) {
-    System.out.println("Error cargando audio: " + e.getMessage());
+
+    if (encontrado) break; // 🔥 rompe outer
 }
 
-if (encontrado) {
-    audios.clear();
-    audios.addAll(nuevosAudios);
-} else {
-    audios.clear(); // ✅ si no encontró, limpia para que no suene nada
-    System.out.println("estacion no encontrada, no se reproducirá audio");
+    } catch (IOException e) {
+        System.out.println("Error cargando audio: " + e.getMessage());
+    }
+
+    if (encontrado) {
+        audios.clear();
+        audios.addAll(nuevosAudios);
+
+        System.out.println("Audios cargados:");
+        for (String a : audios) {
+            System.out.println(a);
+        }
+
+      
+    } else {
+        audios.clear();
+        System.out.println("estacion no encontrada");
+    }
+    System.out.println("LISTA FINAL:");
+for (String a : audios) {
+    System.out.println(a);
 }
+}
+private Media crearMedia(String ruta) {
+
+    try {
+
+        // 🔥 CASO 1: recurso dentro del JAR
+        if (ruta.startsWith("jar:")) {
+            return new Media(ruta);
+        }
+
+        // 🔥 CASO 2: URI tipo file:/ ya lista
+        if (ruta.startsWith("file:/")) {
+            return new Media(ruta);
+        }
+
+        // 🔥 CASO 3: ruta normal del sistema (C:\...)
+        File file = new File(ruta);
+
+        if (!file.exists()) {
+            System.out.println("No existe: " + ruta);
+            return null;
+        }
+
+        return new Media(file.toURI().toString());
+
+    } catch (Exception e) {
+        System.out.println("Error creando media: " + e.getMessage());
+        return null;
+    }
+}
+private void procesarSignal(SignalData signal) {
+
+    System.out.println("Procesando señal...");
+
+    if (!signal.sucursal.equalsIgnoreCase(config.getSucursal())) return;
+
+    // 🔥 CLAVE: evitar repetición
+    if (reproduciendoAudio) {
+        System.out.println("🔁 Ignorado (ya reproduciendo)");
+        return;
+    }
+
+    cargarFicha();
+    cargarAudios();
+
+    reproducirAudiosEnSecuencia(new ArrayList<>(audios), 0);
+}
+private String getAudioPath(String nombre) {
+
+    URL url = getClass().getResource("/cr/ac/una/tarea/resource/sonidos/" + nombre);
+
+    if (url == null) {
+        System.out.println("❌ Audio no encontrado: " + nombre);
+        return null;
+    }
+
+    String ruta = url.toExternalForm();
+    System.out.println("✔ Audio cargado: " + ruta);
+
+    return ruta;
+}
+private void agregarAudioSeguro(List<String> lista, String nombre) {
+
+    if (nombre == null || nombre.isBlank()) return;
+
+    // 🔥 CASO 1: ruta absoluta (C:/..., file:/...)
+    if (nombre.contains(":/") || nombre.startsWith("file:/")) {
+        lista.add(nombre);
+        return;
+    }
+
+    // 🔥 CASO 2: archivo local (ej: Caja1.wav en disco)
+    File posible = new File(nombre);
+    if (posible.exists()) {
+        lista.add(posible.toURI().toString());
+        return;
+    }
+
+    // 🔥 CASO 3: recurso dentro del JAR
+    String ruta = getAudioPath(nombre);
+
+    if (ruta != null) {
+        lista.add(ruta);
+    } else {
+        System.out.println("❌ Audio no encontrado: " + nombre);
+    }
 }
 }
 

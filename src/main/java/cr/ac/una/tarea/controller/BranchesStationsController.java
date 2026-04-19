@@ -7,6 +7,8 @@ import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.SucursalData;
 import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.util.Alertas;
+import cr.ac.una.tarea.util.DataEjecucion;
+import cr.ac.una.tarea.util.Propiedades;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +44,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -66,7 +70,8 @@ private String rutaAudio = null;
     private List<VBox> branches = new ArrayList<>();
     private List<HBox> stations = new ArrayList<>();
     private List<VBox> stationContents = new ArrayList<>();
-    private final Path branchesFile = Path.of("Jsons/BranchesData.json");
+   
+  //  private final Path branchesFile = Path.of("Jsons/BranchesData.json");
     @FXML
     private Label LblMensaje;
     private Button btnAudio;
@@ -79,7 +84,11 @@ private String rutaAudio = null;
 private Boolean temaAnterior = null;
     @FXML
     private HBox rootMensaje;
-
+    private Label nameLabelActual;
+      Propiedades config = new Propiedades();
+DataEjecucion data = new DataEjecucion(config);
+    @FXML
+    private HBox rootTitulos;
     ///////////////// ACTIONS
 @FXML
 private void onActionAddBranch(ActionEvent event) {
@@ -97,13 +106,13 @@ private void onActionAddBranch(ActionEvent event) {
     branchName.setPromptText("Nombre Sucursal");
     branchInformation.setPromptText("Informacion Sucursal");
     branchInformation.setMaxSize(Double.MAX_VALUE, 50);
-    addStationBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+    addStationBtn.setMaxSize(200, Double.MAX_VALUE);
     VBox.setVgrow(addStationBtn, Priority.ALWAYS);
     pane.setText("Estaciones");
     addStationBtn.getStyleClass().add("mi-botonAdd");
     buttonContainer.getChildren().add(addStationBtn);
     buttonContainer.setSpacing(10);
-    buttonContainer.getStyleClass().addAll("mi-rectangulo");
+    buttonContainer.getStyleClass().addAll("mi-rectangulo","label-procedimiento");
     buttonContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
     pane.setContent(buttonContainer);
     accordion.getPanes().add(pane);
@@ -163,12 +172,13 @@ if (audioUrl != null) {
                 ///////////////// PREVIEW
                 VBox preview = new VBox();
                 Button audio = new Button();
-                Button playAudio = new Button();
-                Button deleteAudio = new Button();
-                Label selecAudio = new Label("Seleccione un audio");
+                Button playAudio = new Button();          
+                Label selecAudio = new Label("Seleccione un audio.wav (Opcional)");
                 HBox audios = new HBox();
                 VBox conteinerAudios = new VBox();
                 Label nameLabel = new Label(stationName.getText());
+               nameLabel.getStyleClass().addAll("mi-rectanguloborde");
+             
                 nameLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 HBox.setHgrow(nameLabel, Priority.ALWAYS);
                 nameLabel.getStyleClass().addAll("label-procedimiento");
@@ -192,12 +202,11 @@ if (audioUrl != null) {
 
                 audios.getStyleClass().add("label-procedimiento");
                 audio.getStyleClass().add("mi-botonAdd");
-                deleteAudio.getStyleClass().add("mi-botonDelete");
+               
                 playAudio.getStyleClass().add("mi-BtnReproducir");
                 audio.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 HBox.setHgrow(audio, Priority.ALWAYS);
-                deleteAudio.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                HBox.setHgrow(deleteAudio, Priority.ALWAYS);
+              
                 playAudio.setMaxSize(40, Double.MAX_VALUE);
                 HBox.setHgrow(playAudio, Priority.ALWAYS);
 
@@ -227,25 +236,32 @@ if (audioUrl != null) {
                     }
                 });
 
-           playAudio.setOnMouseClicked(clickPlay -> {
-    String rutaAudio = stationRow.getUserData() != null ? stationRow.getUserData().toString() : "";
+playAudio.setOnMouseClicked(clickPlay -> {
+
+    String rutaAudio = stationRow.getUserData() != null
+            ? stationRow.getUserData().toString()
+            : "";
+
     if (rutaAudio.isEmpty()) {
         System.out.println("No has seleccionado un audio");
         return;
     }
-    // ✅ Ya no necesitas .toURI(), la ruta ya viene lista
-    javafx.scene.media.Media media = new javafx.scene.media.Media(rutaAudio);
-    javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
+
+    Media media;
+    // 🔥 si ya viene como file:/ o jar:, usar directo
+    if (rutaAudio.startsWith("file:/") || rutaAudio.startsWith("jar:")) {
+        media = new Media(rutaAudio);
+    } else {
+        // 🔥 convertir ruta normal (C:\...) a URI
+        File file = new File(rutaAudio);
+        media = new Media(file.toURI().toString());
+    }
+    MediaPlayer player = new MediaPlayer(media);
     player.setOnReady(() -> player.play());
 });
 
-                deleteAudio.setOnMouseClicked(clickDelete -> {
-                    stationRow.setUserData(null);
-                    rutaLabel.setText("Sin audio");
-                    System.out.println("Audio eliminado");
-                });
 
-                audios.getChildren().addAll(audio, rutaLabel, playAudio, deleteAudio);
+                audios.getChildren().addAll(audio, rutaLabel, playAudio);
                 preview.getChildren().addAll(selecAudio, audios, nameLabel, stationContent);
                 rootStation.getChildren().clear();
                 rootStation.getChildren().add(preview);
@@ -275,7 +291,13 @@ if (audioUrl != null) {
       
 
         branch.setOnMouseClicked(e -> {
+              if (selectedBranch != null) {
+                    selectedBranch.getStyleClass().remove("seleccionado");
+                }
+                branch.getStyleClass().add("seleccionado");
+              
             selectedBranch = branch;
+           
         });
         
         
@@ -309,19 +331,7 @@ if (scene != null) {
     @FXML
     private void onActionDelete(ActionEvent event) {
         if (selectedBranch != null) {
-          /*  Accordion accordion = (Accordion) selectedBranch.getChildren().get(1);
-            TitledPane pane = accordion.getPanes().get(0);
-            VBox buttonContainer = (VBox) pane.getContent();
-
-            for (Node n : buttonContainer.getChildren()) {
-                if (n instanceof HBox hb) {
-                    int index = stations.indexOf(hb);
-                    if (index != -1) {
-                        stations.remove(index);
-                        stationContents.remove(index);
-                    }
-                }
-            }*/
+        
             rootBranches.getChildren().remove(selectedBranch);
             branches.remove(selectedBranch);
         }
@@ -334,7 +344,7 @@ if (scene != null) {
             }
             ((Pane) selectedStation.getParent()).getChildren().remove(selectedStation);
         }
-
+ selectedBranch.getStyleClass().remove("seleccionado");
         selectedBranch = null;
         selectedStation = null;
     }
@@ -374,9 +384,22 @@ if (scene != null) {
             }
         }
     }
-
-    selectedBranch = null;
+  selectedBranch.getStyleClass().remove("seleccionado");
 }
+       
+        if (selectedStation != null) {
+        TextField station = (TextField) selectedStation.getChildren().get(0);
+        CheckBox pref = (CheckBox) selectedStation.getChildren().get(1);
+        station.setEditable(true);
+        pref.setDisable(false);
+        station.getStyleClass().add("procedimiento-editando");
+          pref.getStyleClass().add("procedimiento-editando");
+}
+       
+      
+        selectedBranch = null;
+        selectedStation = null;
+       
     }
 
     @FXML
@@ -430,9 +453,13 @@ if (scene != null) {
     }
 }
         Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
-
+        if(selectedBranch != null)
+ selectedBranch.getStyleClass().remove("seleccionado");
+         if(selectedStation != null)
+             selectedStation.getStyleClass().remove("seleccionado");
     } else {
         Alertas.mostrarMensajeError(LblMensaje, "Información Inválida");
+        
         rootBranches.getChildren().remove(branch);
         branches.remove(i);
     }
@@ -481,7 +508,7 @@ ed.rutaAudio = rutaAudio;
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Files.writeString(branchesFile, gson.toJson(branchList));
+          Files.writeString(data.getArchivo("BranchesData").toPath(),gson.toJson(branchList));
         System.out.println("Datos guardados");
         selectedBranch = null;
     }
@@ -500,10 +527,12 @@ ed.rutaAudio = rutaAudio;
     ///////////////// LOAD
     public void loadBranches() {
         try {
-            if (!Files.exists(branchesFile)) return;
-            String json = Files.readString(branchesFile);
-            if (json.isBlank()) return;
-
+              File archivo = data.getArchivo("BranchesData");
+        if (!Files.exists(archivo.toPath())) return;
+        String json = Files.readString(archivo.toPath());
+        if (json.isBlank()) return;
+            
+          
             Gson gson = new Gson();
             SucursalData[] branchArray = gson.fromJson(json, SucursalData[].class);
 
@@ -572,33 +601,34 @@ for (Node n : buttonContainer.getChildren()) {
         }
     }
 
-    public void loadProcedures() {
-        rootProcedures.getChildren().clear();
-        try {
-            Path proceduresFile = Paths.get("Jsons/ProcedureData.json");
-            if (!Files.exists(proceduresFile)) return;
-            String json = Files.readString(proceduresFile);
-            if (json.isBlank()) return;
+public void loadProcedures() {
+    rootProcedures.getChildren().clear();
+    try {
+          File archivo = data.getArchivo("ProcedureData");
+String json = Files.readString(archivo.toPath());
+        if (!archivo.exists()) return;
+        
+        Gson gson = new Gson();
+        DataProcedure[] procedureList = gson.fromJson(json, DataProcedure[].class);
 
-            Gson gson = new Gson();
-            DataProcedure[] procedureList = gson.fromJson(json, DataProcedure[].class);
-
-            for (DataProcedure dp : procedureList) {
-                if (currentStationContent != null && existsInVBox(currentStationContent, dp.getName()) || dp.getState().equals(false) ) {
-                    continue;
-                }
-                
-                rootProcedures.getChildren().add(createLabel(dp.getName()));
+        for (DataProcedure dp : procedureList) {
+            if ((currentStationContent != null && existsInVBox(currentStationContent, dp.getName()))
+                || !dp.getState()) {
+                continue;
             }
-        } catch (IOException e) {
-            System.out.println("Error al cargar procedimientos: " + e.getMessage());
+
+            rootProcedures.getChildren().add(createLabel(dp.getName()));
         }
+
+    } catch (IOException e) {
+        System.out.println("Error al cargar procedimientos: " + e.getMessage());
     }
+}
 
     ///////////////// HELPERS
     private Label createLabel(String text) {
         Label label = new Label(text);
-         label.getStyleClass().addAll("mi-Label","label-procedimiento");
+         label.getStyleClass().addAll("mi-Label","label-procedimiento","mi-rectanguloProcedure");
          label.setPrefSize(Double.MAX_VALUE, 40);
          //label.setAlignment(Pos.CENTER);
           Scene scene = rootProcedures.getScene();
@@ -620,12 +650,16 @@ for (Node n : buttonContainer.getChildren()) {
     event.consume();
 });
 
-        label.setOnDragDone(event -> {
-            if (event.getTransferMode() == TransferMode.MOVE) {
-                ((VBox) label.getParent()).getChildren().remove(label);
-            }
-            event.consume();
-        });
+     label.setOnDragDone(event -> {
+    if (event.getTransferMode() == TransferMode.MOVE) {
+
+        if (label.getParent() instanceof VBox parent) {
+            parent.getChildren().remove(label);
+        }
+
+    }
+    event.consume();
+});
         return label;
     }
 
@@ -711,7 +745,10 @@ for (Node n : buttonContainer.getChildren()) {
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
-            String json = Files.readString(Path.of("Jsons/theme.json"));
+             File archivo = data.getArchivo("theme");
+if (!archivo.exists()) return;
+String json = Files.readString(archivo.toPath());
+
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
 
@@ -723,11 +760,14 @@ Timeline timeline = new Timeline(
                 rootProcedures.getStyleClass().clear();
                 rootStation.getStyleClass().clear();
                 rootMensaje.getStyleClass().clear();
+                rootTitulos.getStyleClass().clear();
  if (t.temeDark) {
      rootBranches.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
     rootProcedures.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
     rootStation.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
 rootMensaje.getStyleClass().add("mi-panel-fondo1");
+rootTitulos.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
+
 
 } else {
 
@@ -735,6 +775,8 @@ rootMensaje.getStyleClass().add("mi-panel-fondo1");
     rootProcedures.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
     rootStation.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
  rootMensaje.getStyleClass().add("mi-panel-fondo2");
+ rootTitulos.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
+
 }
 
                 // Cambia cada branch
@@ -752,9 +794,9 @@ rootMensaje.getStyleClass().add("mi-panel-fondo1");
                 for (HBox station : stations) {
                     station.getStyleClass().clear();
                     if (t.temeDark) {
-                        station.getStyleClass().addAll("mi-rectangulo", "mi-boton2", "label-procedimiento");
+                     station.getStyleClass().addAll("mi-rectangulooscuro", "mi-boton2", "label-procedimiento");
                     } else {
-                        station.getStyleClass().addAll("mi-rectangulooscuro", "mi-boton2", "label-procedimiento");
+                     station.getStyleClass().addAll("mi-rectangulo", "mi-boton2", "label-procedimiento");
                     }
                 }
             }
@@ -796,4 +838,6 @@ timeline.play();
     javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
     player.setOnReady(() -> player.play());
     }
+       
+
 }

@@ -22,7 +22,7 @@
                      <children>
                         <Button mnemonicParsing="false" onAction="#onACtionSalir" prefHeight="56.0" prefWidth="62.0" styleClass="mi-BtnSalir" />
                         <Button mnemonicParsing="false" onAction="#onActionSwitchP" text="Paranetros Generales" />
-                        <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="76.0" prefWidth="239.0" HBox.hgrow="ALWAYS">
+                        <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="76.0" prefWidth="239.0" text="Sin Parametros Generales" HBox.hgrow="ALWAYS">
                            <padding>
                               <Insets left="20.0" />
                            </padding>
@@ -34,7 +34,7 @@
             </AnchorPane>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="410.0" prefWidth="600.0">
                <children>
-                  <TabPane prefHeight="275.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                  <TabPane fx:id="roottab" prefHeight="275.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                      <tabs>
                         <Tab fx:id="tab1" text="Gestion de Fichas" />
                         <Tab fx:id="tab2" text="Registro Usuarios" />
