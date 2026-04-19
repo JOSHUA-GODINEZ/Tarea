@@ -259,21 +259,26 @@ private void onActionNext(ActionEvent event) {
         }
 
         try {
-            File archivoTramites = data.getArchivo("KioscoData");
-            File archivoUsuarios = data.getArchivo("usuarios");
+   File archivoTramites = data.getArchivo("KioscoData");
+File archivoUsuarios = data.getArchivo("usuarios");
 
-            if (!archivoTramites.exists() || !archivoUsuarios.exists()) return;
+if (!archivoTramites.exists()) return;
 
-            String jsonTramites = Files.readString(archivoTramites.toPath());
-            String jsonUsuarios = Files.readString(archivoUsuarios.toPath());
+String jsonTramites = Files.readString(archivoTramites.toPath());
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+// 🔥 si no existe → lista vacía
+String jsonUsuarios = "[]";
+if (archivoUsuarios.exists()) {
+    jsonUsuarios = Files.readString(archivoUsuarios.toPath());
+}
 
-            KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
-            UsuarioData[] usuarios = gson.fromJson(jsonUsuarios, UsuarioData[].class);
+Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-            if (kiosco == null) kiosco = new KioscoData[0];
-            if (usuarios == null) usuarios = new UsuarioData[0];
+KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
+UsuarioData[] usuarios = gson.fromJson(jsonUsuarios, UsuarioData[].class);
+
+if (kiosco == null) kiosco = new KioscoData[0];
+if (usuarios == null) usuarios = new UsuarioData[0];
 
             String idTramite = null;
             KioscoData tdEncontrado = null;
@@ -432,9 +437,9 @@ private void onActionNext(ActionEvent event) {
     new KeyFrame(Duration.seconds(1), e -> {
         Platform.runLater(() -> {
             cargarTramites();
-            config.cargar();
-          LSucursal.setText(config.getSucursal());
-    LEstacion.setText(config.getEstacion());
+            //config.cargar();
+        //  LSucursal.setText(config.getSucursal());
+   // LEstacion.setText(config.getEstacion());
         });
     })
 );

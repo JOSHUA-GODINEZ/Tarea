@@ -1,0 +1,16 @@
+[
+  {
+    "nombre": "Pz",
+    "estaciones": [
+      {
+        "nombre": "caja1",
+        "preferencial": false,
+        "tramites": [
+          "Cedula"
+        ],
+        "rutaAudio": "jar:file:/C:/Joshua/Tarea/Ejecutables/Tarea-1.0-portable.jar!/cr/ac/una/tarea/resource/sonidos/caja1.wav"
+      }
+    ],
+    "BranchInfo": "dasdasda"
+  }
+]
