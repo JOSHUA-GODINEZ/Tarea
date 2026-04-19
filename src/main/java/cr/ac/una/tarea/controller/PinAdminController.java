@@ -122,6 +122,7 @@ DataEjecucion data = new DataEjecucion(config);
 }
     @FXML
     private void onActionAvanzar(ActionEvent event) {
+        mensaje.getStyleClass().clear();
         if(pin.getText().isBlank()) Alertas.mostrarMensajeError(mensaje, "Pin Invalido");
          
         if(pin.getText().equals(PinAdmin)){

@@ -11,9 +11,9 @@ import java.io.*;
 
 public class Propiedades {
 
-    private String sucursal = " ";
-    private String estacion = " ";
-    private String rutaJson = "Jsons";
+private String sucursal = "";
+private String estacion = "";
+private String rutaJson = "";
     public Propiedades() {
         cargar();
     }

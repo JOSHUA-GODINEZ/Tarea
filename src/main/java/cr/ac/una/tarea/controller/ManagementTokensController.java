@@ -677,22 +677,29 @@ private void procesarTramiteSeleccionado(HBox tramite) {
             usuariosPendientes.setText(String.valueOf(actual - 1));
         }
     try {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
- File archivoTramites = data.getArchivo("KioscoData");
-   String jsonTramites = Files.readString(archivoTramites.toPath());
-          KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
+       Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        if (kiosco == null) kiosco = new KioscoData[0];
+    File archivoTramites = data.getArchivo("KioscoData");
+    if (!archivoTramites.exists()) return;
 
-        UsuarioData[] usuarios = gson.fromJson(
-            Files.readString(data.getArchivo("usuarios").toPath()),
-            UsuarioData[].class
-        );
+    String jsonTramites = Files.readString(archivoTramites.toPath());
 
-        if (usuarios == null) usuarios = new UsuarioData[0];
+    KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
+    if (kiosco == null) kiosco = new KioscoData[0];
 
-        String idTramite = null;
-        KioscoData tdEncontrado = null;
+    // 🔥 USUARIOS SEGURO
+    File archivoUsuarios = data.getArchivo("usuarios");
+
+    String jsonUsuarios = "[]";
+    if (archivoUsuarios.exists()) {
+        jsonUsuarios = Files.readString(archivoUsuarios.toPath());
+    }
+
+    UsuarioData[] usuarios = gson.fromJson(jsonUsuarios, UsuarioData[].class);
+    if (usuarios == null) usuarios = new UsuarioData[0];
+
+    String idTramite = null;
+    KioscoData tdEncontrado = null;
 
         // 🔥 BUSCAR TRÁMITE Y ASIGNAR PREF
         for (KioscoData td : kiosco) {
