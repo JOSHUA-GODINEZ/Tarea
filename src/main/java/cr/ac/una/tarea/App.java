@@ -29,8 +29,8 @@ public class App extends Application {
                // vista = "LoginView";
                 vista = l.FullParameters();
                 break;
-                   case "kiosko":
-                vista = "";
+                   case "kiosco":
+                vista = "KioscoView";
                 break;
                    case "proyeccion":
                 vista = "ProjectionView";
