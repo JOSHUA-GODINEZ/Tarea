@@ -4,6 +4,7 @@ import javafx.animation.PauseTransition;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 
+//  Muestra Los mensajes de avisos por 2 segundos en pantalla
 public class Alertas {
 
     public static void mostrarMensajeError(Label label, String mensaje) {

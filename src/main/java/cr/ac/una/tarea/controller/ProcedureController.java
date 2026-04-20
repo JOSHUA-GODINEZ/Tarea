@@ -412,7 +412,12 @@ Timeline timeline = new Timeline(
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
 
-    
-    }
-    
+     LblMensaje.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    LblMensaje.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                }
+     });
+}
 }

@@ -4,18 +4,25 @@ import javafx.scene.control.TextField;
 
 public class ValidadorNumeros {
 
-   public static void soloNumeros(TextField campo) {
+   public static void soloNumeros4Digitos(TextField campo) {
     campo.textProperty().addListener((obs, oldVal, newVal) -> {
 
-        // 🔥 eliminar todo lo que no sea número
         String texto = newVal.replaceAll("[^\\d]", "");
-
-        // 🔥 limitar a 4 caracteres
+        
         if (texto.length() > 4) {
             texto = texto.substring(0, 4);
         }
+        if (!texto.equals(newVal)) {
+            campo.setText(texto);
+        }
+    });
+}
+   
+   public static void soloNumeros(TextField campo) {
+    campo.textProperty().addListener((obs, oldVal, newVal) -> {
 
-        // 🔥 solo actualizar si cambió (evita loops innecesarios)
+        String texto = newVal.replaceAll("[^\\d]", "");
+
         if (!texto.equals(newVal)) {
             campo.setText(texto);
         }

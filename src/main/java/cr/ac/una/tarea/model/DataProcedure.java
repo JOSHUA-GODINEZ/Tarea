@@ -19,9 +19,7 @@ public class DataProcedure {
     public void setState(Boolean state){
     this.state=state;
     }
-    
-  
-    
+
     public String getName(){
     return name;
     }

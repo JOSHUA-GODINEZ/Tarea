@@ -18,7 +18,6 @@ public String getAudio() {
     return audio;
 }
 
-
     public void setTxtId(String txtId) { this.id = txtId; }
     public void setPreference(boolean preference) { this.Preferencial = preference; }
     public void setFecha(String fecha) { this.fecha = fecha; }

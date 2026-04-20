@@ -104,11 +104,14 @@ DataEjecucion data = new DataEjecucion(config);
     @FXML
     private Label LblMensaje;
      private String PinAdmin;
+     private Label selectedProcedure = null;
+    @FXML
+    private VBox root1;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
                       
-               LName.sceneProperty().addListener((obs, oldScene, newScene) -> {
+               root1.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
               LName.styleProperty().bind(
                 newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
@@ -122,11 +125,12 @@ DataEjecucion data = new DataEjecucion(config);
             Ltramite.styleProperty().bind(
                 newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );
+                
             LblSelec.styleProperty().bind(
                 newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );
                 BtnGenerarFicha.styleProperty().bind(
-                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
             );
                   
         
@@ -185,7 +189,10 @@ timelineTheme.play();
 
 @FXML
 private void onActionGenerateTicket(ActionEvent event) {
-
+ if( selectedProcedure!=null){
+    selectedProcedure.getStyleClass().remove("seleccionado");
+    selectedProcedure = null;}
+ 
     String ficha = generateTicketNumber();
     kiosco.setTicketNumber(ficha);
     
@@ -424,20 +431,27 @@ if (temaAnterior != null && temaAnterior) {
     label.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
 }
     label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-    label.setMinSize(150, 0);
+    label.setMinSize(200, 0);
 
     Scene scene = rootProcedures.getScene();
     if (scene != null) {
         label.styleProperty().bind(
-            scene.widthProperty().multiply(0.04).asString("-fx-font-size: %.12fpx;")
+            scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.12fpx;")
         );
     }
 
     // 🔥 EVENTO CLICK
     label.setOnMouseClicked(e -> {
+         if (selectedProcedure != null) {
+        selectedProcedure.getStyleClass().remove("seleccionado");
+    }
+
+
+    selectedProcedure = label;
+    label.getStyleClass().addAll("seleccionado");
         String nombre = dp.getName();
 
-        // actualizar label visual
+
         LblSelec.setText(nombre);
 
      //   label.getStyleClass().add("seleccionado");

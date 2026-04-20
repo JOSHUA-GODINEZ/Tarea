@@ -38,6 +38,7 @@ import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import static jdk.jfr.FlightRecorder.addListener;
 
 public class LoginUsersController implements Initializable {
     @FXML
@@ -500,8 +501,19 @@ Timeline timeline = new Timeline(
 );
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
+
+
+
+
+    LblMensaje.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    LblMensaje.styleProperty().bind(
+                        newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
+                    );
+                }
+     });
 }
 
-  
+
 
 }

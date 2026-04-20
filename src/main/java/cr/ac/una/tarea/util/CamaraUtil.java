@@ -21,6 +21,8 @@ import javax.imageio.ImageIO;
 
 public class CamaraUtil {
 private static Propiedades config = new Propiedades();
+
+// crea la ventana y sus botnes para tomar la foto
     public static void tomarFoto(ImageView userFoto) {
         Webcam webcam = Webcam.getDefault();
         if (webcam == null) {
@@ -47,6 +49,8 @@ private static Propiedades config = new Propiedades();
         cameraStage.setTitle("Tomar foto");
         cameraStage.setScene(new Scene(cameraRoot, 500, 430));
 
+        
+        // Captura la imagen de la webcam
         Thread streamThread = new Thread(() -> {
             while (cameraStage.isShowing()) {
                 try {
@@ -55,7 +59,7 @@ private static Propiedades config = new Propiedades();
                         Image fxImage = SwingFXUtils.toFXImage(frame, null);
                         Platform.runLater(() -> preview.setImage(fxImage));
                     }
-                    Thread.sleep(66);
+                    Thread.sleep(33);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                     break;
@@ -92,6 +96,7 @@ private static Propiedades config = new Propiedades();
         streamThread.start();
     }
 
+    //Guarda la foto con un nombre diferente(fecha y hora actual) en la carpeta de del .ini
 private static String guardarFoto(Image image) {
     try {
         String basePath = config.getRutaJson();

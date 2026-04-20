@@ -3,11 +3,6 @@ package cr.ac.una.tarea.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-
-import java.io.*;
-
-import java.io.*;
 
 public class Propiedades {
 
@@ -18,6 +13,7 @@ private String rutaJson = "";
         cargar();
     }
 
+    // Carga del archivo .ini a variables string
     public void cargar() {
 
         BufferedReader br = null;

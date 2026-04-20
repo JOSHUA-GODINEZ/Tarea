@@ -206,7 +206,7 @@ DataEjecucion data = new DataEjecucion(config);
         cargar();
         verifyData();
       
-     ValidadorNumeros.soloNumeros(TPin);
+     ValidadorNumeros.soloNumeros4Digitos(TPin);
         
         
         

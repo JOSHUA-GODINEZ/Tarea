@@ -1,14 +1,11 @@
-
 package cr.ac.una.tarea.util;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class DataEjecucion {
 
     private File carpeta;
-
+//Crear (si no existe) y guardar la ruta donde se guardan los archivos Json
     public DataEjecucion(Propiedades config) {
 
         File ruta = new File(config.getRutaJson());
@@ -22,8 +19,6 @@ public class DataEjecucion {
         if (!carpeta.exists()) {
             carpeta.mkdirs();
         }
-
-        System.out.println("Carpeta JSON: " + carpeta.getAbsolutePath());
     }
 
     public File getArchivo(String nombre) {

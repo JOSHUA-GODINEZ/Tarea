@@ -39,7 +39,7 @@ DataEjecucion data = new DataEjecucion(config);
     private HBox root;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        ValidadorNumeros.soloNumeros(pin); 
+        ValidadorNumeros.soloNumeros4Digitos(pin); 
         cargar();
        
     }    

@@ -1,8 +1,6 @@
 package cr.ac.una.tarea.model;
 
 public class DataParametres {
-
-
     private String name;
     private String pin;
     private String info;

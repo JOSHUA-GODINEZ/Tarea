@@ -17,7 +17,7 @@ public class App extends Application {
         List<String> params = getParameters().getRaw();
         String param = params.isEmpty() ? "LoginView" : params.get(0);
 
-        LoginController l = new LoginController(); // lo dejamos
+        LoginController l = new LoginController();
 
         String vista;
 
@@ -26,8 +26,7 @@ public class App extends Application {
                 vista = "OfficialsView";
                 break;
             case "administrador":
-               // vista = "LoginView";
-                vista = l.FullParameters();
+                vista = l.FullParameters(); // Si los parametros estan llenos no lo abre
                 break;
                    case "kiosco":
                 vista = "KioscoView";
