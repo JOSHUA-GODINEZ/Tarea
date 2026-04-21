@@ -20,7 +20,6 @@
          <children>
             <HBox fx:id="root" alignment="CENTER_RIGHT" maxHeight="100.0" maxWidth="1.7976931348623157E308" minHeight="78.0" prefHeight="78.0" prefWidth="749.0" styleClass="mi-panel-fondo1" VBox.vgrow="ALWAYS">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onActionAdmin" text="Admin" />
                   <Button mnemonicParsing="false" onAction="#onActionIndication" prefHeight="87.0" prefWidth="82.0" styleClass="mi-BtnInformacion" />
                   <Label fx:id="LName" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Sin Parametros Generales" HBox.hgrow="ALWAYS" />
                   <ImageView fx:id="Logo" fitHeight="106.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" />

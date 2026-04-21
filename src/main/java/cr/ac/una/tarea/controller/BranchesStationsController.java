@@ -13,13 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -51,8 +48,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class BranchesStationsController implements Initializable {
-
-    ///////////////// FXML
     @FXML
     private VBox rootBranches;
     @FXML
@@ -63,18 +58,16 @@ public class BranchesStationsController implements Initializable {
     private VBox rootStation;
 private String rutaAudio = null;
 
-    ///////////////// VARIABLES
     private VBox selectedBranch = null;
     private HBox selectedStation = null;
     private VBox currentStationContent = null;
     private List<VBox> branches = new ArrayList<>();
     private List<HBox> stations = new ArrayList<>();
     private List<VBox> stationContents = new ArrayList<>();
-   
-  //  private final Path branchesFile = Path.of("Jsons/BranchesData.json");
+
     @FXML
     private Label LblMensaje;
-    private Button btnAudio;
+
     @FXML
     private Label LblSyE;
     @FXML
@@ -84,14 +77,15 @@ private String rutaAudio = null;
 private Boolean temaAnterior = null;
     @FXML
     private HBox rootMensaje;
-    private Label nameLabelActual;
-      Propiedades config = new Propiedades();
-DataEjecucion data = new DataEjecucion(config);
-    @FXML
+        @FXML
     private HBox rootTitulos;
-    ///////////////// ACTIONS
+      Propiedades config = new Propiedades();
+       DataEjecucion data = new DataEjecucion(config);
+       private Button btnAudio;
+
 @FXML
 private void onActionAddBranch(ActionEvent event) {
+     // Crea las Sucursales
     TextField branchName = new TextField();
     TextArea branchInformation = new TextArea();
     Accordion accordion = new Accordion();
@@ -99,8 +93,6 @@ private void onActionAddBranch(ActionEvent event) {
     VBox buttonContainer = new VBox();
     VBox branch = new VBox();
     Button addStationBtn = new Button();
-
-    // ✅ Contador de estaciones POR SUCURSAL (array para poder usarlo dentro del lambda)
     int[] stationCounter = {0};
 
     branchName.setPromptText("Nombre Sucursal");
@@ -125,7 +117,7 @@ private void onActionAddBranch(ActionEvent event) {
     rootBranches.getChildren().add(branch);
     branches.add(branch);
 
-    ///////////////// ADD STATION
+    // Grega las estaciones
     addStationBtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent e) {
@@ -138,7 +130,7 @@ private void onActionAddBranch(ActionEvent event) {
             stations.add(stationRow);
             stationContents.add(stationContent);
 
-           
+           // Agrega los adudios predeterminados por estacion(son 5)
             stationCounter[0]++;
             int audioIndex = ((stationCounter[0] - 1) % 5) + 1; 
 String audioFileName = "caja" + audioIndex + ".wav";
@@ -146,11 +138,8 @@ java.net.URL audioUrl = getClass().getResource("/cr/ac/una/tarea/resource/sonido
 
 if (audioUrl != null) {
     stationRow.setUserData(audioUrl.toExternalForm());
-    System.out.println("Audio asignado: " + audioFileName);
-} else {
-    System.out.println("No se encontró: " + audioFileName);
+   
 }
-
             PreferIMag.setFitHeight(40);
             PreferIMag.setFitWidth(40);
             stationName.setPromptText("Nombre Estación");
@@ -160,6 +149,7 @@ if (audioUrl != null) {
             stationRow.getStyleClass().addAll("mi-rectangulo", "mi-boton2", "label-procedimiento");
             stationRow.setMinHeight(70);
 
+            // Se mustra los tramites y audios que tiene la estacion
             stationRow.setOnMouseClicked(station -> {
                 if (selectedStation != null) {
                     selectedStation.getStyleClass().remove("seleccionado");
@@ -169,13 +159,12 @@ if (audioUrl != null) {
                 currentStationContent = stationContent;
                 loadProcedures();
 
-                ///////////////// PREVIEW
+
                 VBox preview = new VBox();
                 Button audio = new Button();
                 Button playAudio = new Button();          
                 Label selecAudio = new Label("Seleccione un audio.wav (Opcional)");
                 HBox audios = new HBox();
-                VBox conteinerAudios = new VBox();
                 Label nameLabel = new Label(stationName.getText());
                nameLabel.getStyleClass().addAll("mi-rectanguloborde");
              
@@ -221,13 +210,10 @@ if (audioUrl != null) {
                 } else {
                     rutaLabel.setText("Sin audio");
                 }
-
+               // Agrega audio wav
                 audio.setOnMouseClicked(clickAudio -> {
                     FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Seleccionar audio");
-                    fileChooser.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
-                    );
+   fileChooser.setTitle("Seleccionar audio");fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac"));
                     Stage stage = (Stage) stationRow.getScene().getWindow();
                     File archivo = fileChooser.showOpenDialog(stage);
                     if (archivo != null) {
@@ -236,31 +222,33 @@ if (audioUrl != null) {
                     }
                 });
 
-playAudio.setOnMouseClicked(clickPlay -> {
+                
+              playAudio.setOnMouseClicked(clickPlay -> {
+                   String rutaAudio;
 
-    String rutaAudio = stationRow.getUserData() != null
-            ? stationRow.getUserData().toString()
-            : "";
+              if (stationRow.getUserData() != null) {
+                 rutaAudio = stationRow.getUserData().toString();
+                 } else {
+                    rutaAudio = "";
+                      }
 
-    if (rutaAudio.isEmpty()) {
-        System.out.println("No has seleccionado un audio");
+    if (rutaAudio.isEmpty()) {   
         return;
     }
 
     Media media;
-    // 🔥 si ya viene como file:/ o jar:, usar directo
+    // Lo reproduce si es predeterminado o seleccionado
     if (rutaAudio.startsWith("file:/") || rutaAudio.startsWith("jar:")) {
         media = new Media(rutaAudio);
     } else {
-        // 🔥 convertir ruta normal (C:\...) a URI
         File file = new File(rutaAudio);
-        media = new Media(file.toURI().toString());
+media = new Media(file.toURI().toString());
     }
     MediaPlayer player = new MediaPlayer(media);
     player.setOnReady(() -> player.play());
 });
 
-
+            // Agrega los objetos a los roots
                 audios.getChildren().addAll(audio, rutaLabel, playAudio);
                 preview.getChildren().addAll(selecAudio, audios, nameLabel, stationContent);
                 rootStation.getChildren().clear();
@@ -272,7 +260,6 @@ playAudio.setOnMouseClicked(clickPlay -> {
                     );
                 }
             });
-
             buttonContainer.getChildren().add(stationRow);
             stationRow.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
@@ -283,36 +270,27 @@ playAudio.setOnMouseClicked(clickPlay -> {
             });
         }
     });
-
-
-    
-
-            
-      
-
+         // Seleciona Sucursal
         branch.setOnMouseClicked(e -> {
               if (selectedBranch != null) {
                     selectedBranch.getStyleClass().remove("seleccionado");
                 }
                 branch.getStyleClass().add("seleccionado");
-              
             selectedBranch = branch;
-           
         });
         
         
-        // ✅ después de crear branchName y branchInformation
-Scene scene = rootBranches.getScene();
-
-if (scene != null) {
-    branchName.styleProperty().bind(
-        scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
-    );
-    branchInformation.styleProperty().bind(
-        scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
-    );
-} else {
-    rootBranches.sceneProperty().addListener((obs, oldScene, newScene) -> {
+               // Cambia el tamaño del texto segun el tamaño de la ventana
+          Scene scene = rootBranches.getScene();
+              if (scene != null) {
+          branchName.styleProperty().bind(
+            scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
+             );
+             branchInformation.styleProperty().bind(
+              scene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
+           );
+             } else {
+             rootBranches.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             branchName.styleProperty().bind(
                 newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
@@ -325,17 +303,16 @@ if (scene != null) {
 }
       
 }   
-        
-    
 
     @FXML
     private void onActionDelete(ActionEvent event) {
+        // Elimina toda la sucursal selecionada
         if (selectedBranch != null) {
         
             rootBranches.getChildren().remove(selectedBranch);
             branches.remove(selectedBranch);
         }
-
+          // elimina la station selecionada 
         if (selectedStation != null) {
             int index = stations.indexOf(selectedStation);
             if (index != -1) {
@@ -351,8 +328,8 @@ if (scene != null) {
 
     @FXML
     private void onActionEdit(ActionEvent event) {
-       if (selectedBranch != null) {
-
+     //Permite editar la sucursal selecionada
+        if (selectedBranch != null) {
     TextField branchName = (TextField) selectedBranch.getChildren().get(0);
     branchName.setEditable(true);
     branchName.getStyleClass().add("procedimiento-editando");
@@ -366,27 +343,32 @@ if (scene != null) {
     TitledPane pane = accordion.getPanes().get(0);
     VBox buttonContainer = (VBox) pane.getContent();
 
-    for (Node n : buttonContainer.getChildren()) {
-        if (n instanceof HBox) {
-            HBox hb = (HBox) n;
+// Recorre todos los nodos hijos dentro del contenedor principal
+for (Node n : buttonContainer.getChildren()) {
+    // instanceof sirve para comprobar el tipo de objeto en tiempo de ejecución
+    if (n instanceof HBox) {
+       HBox hb = (HBox) n;
+        for (Node child : hb.getChildren()) {
 
-            for (Node child : hb.getChildren()) {
+            if (child instanceof TextField) {
+                // Convierte el Node a TextField para poder usar sus métodos
+                ((TextField) child).setEditable(true); // permite editar el texto
 
-                if (child instanceof TextField) {
-                    ((TextField) child).setEditable(true);
-                    child.getStyleClass().add("procedimiento-editando");
-                }
+                child.getStyleClass().add("procedimiento-editando");
+            }
 
-                if (child instanceof CheckBox) {
-                    ((CheckBox) child).setDisable(false);
-                    child.getStyleClass().add("procedimiento-editando");
-                }
+            if (child instanceof CheckBox) {
+                // Convierte el Node a CheckBox
+                ((CheckBox) child).setDisable(false); // lo habilita (false = activo)
+
+                child.getStyleClass().add("procedimiento-editando");
             }
         }
     }
+}
   selectedBranch.getStyleClass().remove("seleccionado");
 }
-       
+       // Permite editar la Estacion selecionada
         if (selectedStation != null) {
         TextField station = (TextField) selectedStation.getChildren().get(0);
         CheckBox pref = (CheckBox) selectedStation.getChildren().get(1);
@@ -395,8 +377,7 @@ if (scene != null) {
         station.getStyleClass().add("procedimiento-editando");
           pref.getStyleClass().add("procedimiento-editando");
 }
-       
-      
+
         selectedBranch = null;
         selectedStation = null;
        
@@ -404,7 +385,7 @@ if (scene != null) {
 
     @FXML
     private void onActionSave(ActionEvent event) throws IOException {
-        ///////////////// VALIDATE AND DISABLE
+        // Primero desactiva todos los objetos para no poder ser midificados
       for (int i = branches.size() - 1; i >= 0; i--) {
     VBox branch = branches.get(i);
     TextField branchName = (TextField) branch.getChildren().get(0);
@@ -424,21 +405,23 @@ if (scene != null) {
         branchInformation.getStyleClass().add("procedimiento-guardado");
 
         buttonContainer.getChildren().removeIf(n ->
-            (n instanceof HBox hb) &&
-            (hb.getChildren().get(0) instanceof TextField ta) &&
-            ta.getText().isBlank()
-        );
+              
+         // El instanceof verifica sean hbox y texfield 
+      (n instanceof HBox hb) && (hb.getChildren().get(0) instanceof TextField ta) && ta.getText().isBlank());
 
-        // 🔥 Aquí reemplazas el disable
+  //Igual que en modificar solo que desabilita
+        // Recorre todos los nodos hijos dentro del contenedor principal
         for (Node n : buttonContainer.getChildren()) {
-    if (n instanceof HBox) {
+            // instanceof sirve para comprobar el tipo de objeto en tiempo de ejecución
+          if (n instanceof HBox) {
         HBox hb = (HBox) n;
 
         for (Node child : hb.getChildren()) {
 
             if (child instanceof TextField) {
+                 // Convierte el Node a TextField para poder usar sus métodos
                 TextField tf = (TextField) child;
-                tf.setEditable(false);
+                tf.setEditable(false); // Desactiva editar el texto
                 tf.getStyleClass().remove("procedimiento-editando");
                 tf.getStyleClass().add("procedimiento-guardado");
             }
@@ -452,6 +435,7 @@ if (scene != null) {
         }
     }
 }
+        // Alertas de informacion
         Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
         if(selectedBranch != null)
  selectedBranch.getStyleClass().remove("seleccionado");
@@ -465,7 +449,7 @@ if (scene != null) {
     }
 }
 
-        ///////////////// SAVE TO JSON
+        // Guarda en el json 
         List<SucursalData> branchList = new ArrayList<>();
         for (VBox branch : branches) {
             TextField branchName = (TextField) branch.getChildren().get(0);
@@ -480,6 +464,7 @@ if (scene != null) {
             sd.estaciones = new ArrayList<>();
 
             for (Node n : buttonContainer.getChildren()) {
+              // verifica que sea hbox
                 if (n instanceof HBox h) {
                     TextField stationName = (TextField) h.getChildren().get(0);
                     CheckBox preferentialCheck = (CheckBox) h.getChildren().get(1);
@@ -490,12 +475,12 @@ if (scene != null) {
                     ed.nombre = stationName.getText();
                     ed.preferencial = preferentialCheck.isSelected();
                     ed.tramites = new ArrayList<>();
-                   // ✅ Quita el "file:/" del inicio si existe
-String rutaAudio = h.getUserData() != null ? h.getUserData().toString() : "";
-if (rutaAudio.startsWith("file:/")) {
-    rutaAudio = rutaAudio.replace("file:/", "");
-}
-ed.rutaAudio = rutaAudio;
+                 
+                   String rutaAudio = h.getUserData() != null ? h.getUserData().toString() : "";
+                if (rutaAudio.startsWith("file:/")) {
+                            rutaAudio = rutaAudio.replace("file:/", "");
+                          }
+                          ed.rutaAudio = rutaAudio;
                     for (Node lbl : stationContent.getChildren()) {
                         if (lbl instanceof Label l) {
                             ed.tramites.add(l.getText());
@@ -514,7 +499,7 @@ ed.rutaAudio = rutaAudio;
     }
 
 
-    ///////////////// SEARCH
+    // Busca por nombre de la sucursal
     private void search(String text) {
         for (VBox branch : branches) {
             TextField branchName = (TextField) branch.getChildren().get(0);
@@ -524,7 +509,7 @@ ed.rutaAudio = rutaAudio;
         }
     }
 
-    ///////////////// LOAD
+    // Carga del json las sucursales y estaciones 
     public void loadBranches() {
         try {
               File archivo = data.getArchivo("BranchesData");
@@ -550,45 +535,41 @@ ed.rutaAudio = rutaAudio;
                 Button addStationBtn = (Button) buttonContainer.getChildren().get(0);
 
            for (EstacionData ed : sd.estaciones) {
-    addStationBtn.fire();
-    HBox stationRow = (HBox) buttonContainer.getChildren().get(buttonContainer.getChildren().size() - 1);
-    TextField stationName = (TextField) stationRow.getChildren().get(0);
-    CheckBox preferentialCheck = (CheckBox) stationRow.getChildren().get(1);
-    stationName.setText(ed.nombre);
-    preferentialCheck.setSelected(ed.preferencial);
+                  addStationBtn.fire();
+                  HBox stationRow = (HBox) buttonContainer.getChildren().get(buttonContainer.getChildren().size() - 1);
+                  TextField stationName = (TextField) stationRow.getChildren().get(0);
+                  CheckBox preferentialCheck = (CheckBox) stationRow.getChildren().get(1);
+                   stationName.setText(ed.nombre);
+                   preferentialCheck.setSelected(ed.preferencial);
     
-    // ✅ cargar ruta de audio
-    if (ed.rutaAudio != null && !ed.rutaAudio.isEmpty()) {
-        stationRow.setUserData(ed.rutaAudio);           // ✅ guarda la ruta en el HBox
-        // actualizar el label — buscar rutaLabel en el preview no es fácil,
-        // el label se actualizará cuando el usuario haga click en la estación
-    }
-    
+                    //Guarda la ruta en su respectiva estacion
+             if (ed.rutaAudio != null && !ed.rutaAudio.isEmpty()) {
+        stationRow.setUserData(ed.rutaAudio);         
+             }  
     int index = stations.indexOf(stationRow);
     VBox stationContent = stationContents.get(index);
     for (String procedure : ed.tramites) {
         stationContent.getChildren().add(createLabel(procedure));
     }
 }
-
+                  // Desactiva los objetos
                branchName.setEditable(false);
                 branchName .getStyleClass().add("procedimiento-guardado");
                 branchInfo.setEditable(false);
                 branchInfo .getStyleClass().add("procedimiento-guardado");
+ // Igual que al modificar el instanceof se asegura de que sean del tipo
+         for (Node n : buttonContainer.getChildren()) {
+            if (n instanceof HBox) {
+                 HBox hb = (HBox) n;
 
-// recorrer estaciones
-for (Node n : buttonContainer.getChildren()) {
-    if (n instanceof HBox) {
-        HBox hb = (HBox) n;
+            for (Node child : hb.getChildren()) {
 
-        for (Node child : hb.getChildren()) {
-
-            if (child instanceof TextField) {
+              if (child instanceof TextField) {
                 ((TextField) child).setEditable(false);
                 child .getStyleClass().add("procedimiento-guardado");
             }
 
-            if (child instanceof CheckBox) {
+               if (child instanceof CheckBox) {
                 ((CheckBox) child).setDisable(true);
                 child.getStyleClass().add("procedimiento-guardado");
             }
@@ -597,10 +578,10 @@ for (Node n : buttonContainer.getChildren()) {
 }
             }
         } catch (IOException e) {
-            System.out.println("Error al cargar: " + e.getMessage());
         }
     }
 
+    // Carga los tramites 
 public void loadProcedures() {
     rootProcedures.getChildren().clear();
     try {
@@ -612,31 +593,29 @@ String json = Files.readString(archivo.toPath());
         DataProcedure[] procedureList = gson.fromJson(json, DataProcedure[].class);
 
         for (DataProcedure dp : procedureList) {
-            if ((currentStationContent != null && existsInVBox(currentStationContent, dp.getName()))
-                || !dp.getState()) {
+            if ((currentStationContent != null && existsInVBox(currentStationContent, dp.getName())) || !dp.getState()) {
                 continue;
             }
 
             rootProcedures.getChildren().add(createLabel(dp.getName()));
         }
 
-    } catch (IOException e) {
-        System.out.println("Error al cargar procedimientos: " + e.getMessage());
+    } catch (IOException e) {   
     }
 }
 
-    ///////////////// HELPERS
+    // Crea el Label con el nombre del tramite 
     private Label createLabel(String text) {
         Label label = new Label(text);
          label.getStyleClass().addAll("mi-Label","label-procedimiento","mi-rectanguloProcedure");
          label.setPrefSize(Double.MAX_VALUE, 40);
-         //label.setAlignment(Pos.CENTER);
-          Scene scene = rootProcedures.getScene();
+         // Tamaño de texto segun tamaño de la ventana
+         Scene scene = rootProcedures.getScene();
           if (scene != null) {
-                label.styleProperty().bind(
-                    scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
-                );
+           label.styleProperty().bind(scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;"));
             }
+          
+          // Detecta cuando lo agarran
       label.setOnDragDetected(event -> {
     Dragboard db = label.startDragAndDrop(TransferMode.MOVE);
 
@@ -644,12 +623,13 @@ String json = Files.readString(archivo.toPath());
     content.putString(label.getText());
     db.setContent(content);
 
-    // 🔥 Esto muestra el label mientras lo arrastras
+    // Muestra el label mientras se arrastra
     db.setDragView(label.snapshot(null, null));
 
     event.consume();
 });
-
+         
+      //Detecta con termina el agarrar
      label.setOnDragDone(event -> {
     if (event.getTransferMode() == TransferMode.MOVE) {
 
@@ -662,7 +642,8 @@ String json = Files.readString(archivo.toPath());
 });
         return label;
     }
-
+ 
+    // Comprueba que en los tramites no exita tambien en las estacion(Evita duplicados)
     private boolean existsInVBox(VBox vbox, String text) {
         for (Node node : vbox.getChildren()) {
             if (node instanceof Label lbl && lbl.getText().equals(text)) {
@@ -672,12 +653,11 @@ String json = Files.readString(archivo.toPath());
         return false;
     }
 
-    ///////////////// INITIALIZE
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-       // loadProcedures();
         loadBranches();
 
+        // Drag and drop que permite devolver los labels
         rootStation.setOnDragOver(event -> {
             if (event.getGestureSource() != rootStation && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.MOVE);
@@ -721,7 +701,7 @@ String json = Files.readString(archivo.toPath());
         });
         
         
-        
+        // Cambia el tamaño del texto segun el tamaño de la ventana
          LblStation.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             LblMensaje.styleProperty().bind(
@@ -741,7 +721,7 @@ String json = Files.readString(archivo.toPath());
            });
         
 
-// Al final del initialize agrega esto:
+// Cambia el tema segun el archivo(verifica cada segundo)
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
@@ -778,8 +758,6 @@ rootTitulos.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
  rootTitulos.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
 
 }
-
-                // Cambia cada branch
                 for (VBox branch : branches) {
                     branch.getStyleClass().clear();
                     if (t.temeDark) {
@@ -789,8 +767,6 @@ rootTitulos.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
                          branch.getStyleClass().add("mi-rectangulo");
                     }
                 }
-
-                // Cambia cada station
                 for (HBox station : stations) {
                     station.getStyleClass().clear();
                     if (t.temeDark) {
@@ -800,9 +776,9 @@ rootTitulos.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
                     }
                 }
             }
-loadProcedures();
+           //CArga los tramites cada segundo 
+           loadProcedures();
         } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
         }
     })
 );
@@ -810,34 +786,5 @@ timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
         
     }
-
-    private void onActionAudio(ActionEvent event) {
-          FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Seleccionar audio");
-    fileChooser.getExtensionFilters().add(
-        new FileChooser.ExtensionFilter("Audio", "*.mp3", "*.wav", "*.aac")
-    );
-    
-    Stage stage = (Stage) btnAudio.getScene().getWindow();
-    File archivo = fileChooser.showOpenDialog(stage);
-    
-    if (archivo != null) {
-        rutaAudio = archivo.getAbsolutePath(); 
-        System.out.println("Seleccionaste: " + rutaAudio);
-    }
-    }
-
-    private void onActionReproducir(ActionEvent event) {
-        if (rutaAudio == null) {
-        System.out.println("No has seleccionado un audio");
-        return;
-    }
-    
-    String ruta = new File(rutaAudio).toURI().toString();
-    javafx.scene.media.Media media = new javafx.scene.media.Media(ruta);
-    javafx.scene.media.MediaPlayer player = new javafx.scene.media.MediaPlayer(media);
-    player.setOnReady(() -> player.play());
-    }
-       
 
 }

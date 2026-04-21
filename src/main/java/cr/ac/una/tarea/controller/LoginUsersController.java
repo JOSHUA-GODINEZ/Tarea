@@ -9,7 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -30,15 +29,11 @@ import cr.ac.una.tarea.util.Propiedades;
 import cr.ac.una.tarea.util.ValidadorNumeros;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
-import static jdk.jfr.FlightRecorder.addListener;
 
 public class LoginUsersController implements Initializable {
     @FXML
@@ -56,8 +51,10 @@ public class LoginUsersController implements Initializable {
     private HBox rootMensaje;
         Propiedades config = new Propiedades();
 DataEjecucion data = new DataEjecucion(config);
+
     @FXML
     private void onActionAdd(ActionEvent event) {
+        // Crea los usuarios
 HBox usersInfo = new HBox();       
 TextField name = new TextField();
 TextField id = new TextField();
@@ -152,9 +149,8 @@ upLine.setOnMouseClicked(e -> {
     selectedUser = upLine;
     upLine.getStyleClass().add("seleccionado");
 });
-
-    Scene scene = rootUsers.getScene();
-        
+// Cambia el tamaño del texto
+    Scene scene = rootUsers.getScene();  
         if (scene != null) {
             name.styleProperty().bind(
                 scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
@@ -184,7 +180,6 @@ upLine.setOnMouseClicked(e -> {
                 scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );
         } else {
-            // ✅ si se llama desde cargar() antes de que exista la escena
             rootUsers.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                       name.styleProperty().bind(
@@ -218,15 +213,7 @@ upLine.setOnMouseClicked(e -> {
         }
             });
         }
-
-
-
-
-
-
-
-
-
+// Agrega la imagen
     image.setOnMouseClicked(e -> {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Selecciona una imagen");
@@ -239,7 +226,7 @@ upLine.setOnMouseClicked(e -> {
         userFoto.setImage(selectedImage);
     }
 });
-
+// Agrega la foto
 foto.setOnMouseClicked(e -> CamaraUtil.tomarFoto(userFoto));
 }
 
@@ -310,7 +297,7 @@ private void onActionSave(ActionEvent event) {
             dateOfBirth.setEditable(false);
             userPhoto.setDisable(true);
 
-            // Deshabilitar los botones igual que los demás campos
+            // Deshabilita los botones igual que los demas campos
             btnImage.setDisable(true);
             btnFot.setDisable(true);
 
@@ -327,7 +314,7 @@ private void onActionSave(ActionEvent event) {
     if( selectedUser!=null){
     selectedUser.getStyleClass().remove("seleccionado");
     selectedUser = null;}
-
+// guarda en el json
     try {
         List<UsuarioData> userList = new ArrayList<>();
 
@@ -364,7 +351,6 @@ private void onActionSave(ActionEvent event) {
     } catch (IOException ex) {
         System.out.println("Error al guardar: " + ex.getMessage());
     }
-  //  initialize(null,null);
 }
 
 private void search(String text) {
@@ -384,7 +370,7 @@ private void search(String text) {
         }
     }
 }
-
+//Carga usuarios del archivo 
 private void loadUsers() {
     rootUsers.getChildren().clear();
     try {
@@ -392,8 +378,6 @@ private void loadUsers() {
         if (!Files.exists(archivo.toPath())) return;
         String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
- 
-
         Gson gson = new Gson();
         UsuarioData[] users = gson.fromJson(json, UsuarioData[].class);
 
@@ -408,8 +392,8 @@ private void loadUsers() {
             DatePicker dateOfBirth = (DatePicker) row.getChildren().get(3);
             ImageView userPhoto = (ImageView) row.getChildren().get(4);
          VBox contain = (VBox) row.getChildren().get(5);
-        // Obtener los botones - ajusta los índices según tu estructura
-        Button btnImage = (Button) contain.getChildren().get(0); // índice del botón image
+        
+        Button btnImage = (Button) contain.getChildren().get(0); 
         Button btnFot = (Button) contain.getChildren().get(1);    
             
             name.setText(ud.nombre);
@@ -420,6 +404,7 @@ private void loadUsers() {
                     : null);
 
             if (ud.imagen != null && !ud.imagen.isBlank()) {
+                //Guarda la imagen con un file
                 try {
                     String imagePath = ud.imagen;
                     if (imagePath.startsWith("file:/") && !imagePath.startsWith("file:///")) {
@@ -432,7 +417,6 @@ private void loadUsers() {
                     System.out.println("Error al cargar imagen: " + ex.getMessage());
                 }
             }
-
             name.setEditable(false);
             id.setEditable(false);
             numberPhone.setEditable(false);
@@ -443,9 +427,8 @@ private void loadUsers() {
              row.getStyleClass().remove("procedimiento-editando");
             row.getStyleClass().add("procedimiento-guardado");
         }
-
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
+
     }
 }
 @Override
@@ -455,21 +438,19 @@ public void initialize(URL url, ResourceBundle rb) {
         search(newVal);
     });
  
-
+    // Carga el tema cada segundo
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
          File archivo = data.getArchivo("theme");
      if (!archivo.exists()) return;
        String json = Files.readString(archivo.toPath());
-
             Gson gson = new Gson();
             Teme t = gson.fromJson(json, Teme.class);
 
             if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
                 temaAnterior = t.temeDark;
 
-                // Cambia el root
                 if (t.temeDark) {
                     rootUsers.getStyleClass().remove("mi-panel-fondo2");
                     rootUsers.getStyleClass().add("mi-panel-fondo1");
@@ -482,7 +463,6 @@ Timeline timeline = new Timeline(
                     rootMensaje.getStyleClass().add("mi-panel-fondo2");
                 }
 
-                // Cambia cada UpLine que esta en ProcedureData
                 for (VBox upLine : usersData) {
                     if (t.temeDark) {
                         upLine.getStyleClass().remove("mi-rectangulo");
@@ -493,9 +473,8 @@ Timeline timeline = new Timeline(
                     }
                 }
             }
-
         } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+           
         }
     })
 );
@@ -504,7 +483,7 @@ timeline.play();
 
 
 
-
+         // Cambia el tamaño del texto
     LblMensaje.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                     LblMensaje.styleProperty().bind(
@@ -513,7 +492,4 @@ timeline.play();
                 }
      });
 }
-
-
-
 }

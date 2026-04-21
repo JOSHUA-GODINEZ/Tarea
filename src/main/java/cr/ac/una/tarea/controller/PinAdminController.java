@@ -40,11 +40,10 @@ DataEjecucion data = new DataEjecucion(config);
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ValidadorNumeros.soloNumeros4Digitos(pin); 
-        cargar();
-       
+        cargar();  
     }    
 
-     @FXML
+     @FXML // Botones del teclado
     private void onAction7(ActionEvent event) {
         pin.appendText("7");
     }
@@ -101,6 +100,7 @@ DataEjecucion data = new DataEjecucion(config);
         pin.setText(txt.substring(0, txt.length() - 1));
     }
     }
+    // Carga los parametros generales
      private void cargar() {
     try {
        File archivo = data.getArchivo("GeneralData");
@@ -117,18 +117,16 @@ DataEjecucion data = new DataEjecucion(config);
                Logo.fitWidthProperty().bind(root.widthProperty());
          Logo.fitHeightProperty().bind(root.heightProperty());
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
     }
 }
-    @FXML
+    @FXML // Si es correcto el pin, pone preferencial la ficha
     private void onActionAvanzar(ActionEvent event) {
         mensaje.getStyleClass().clear();
-        if(pin.getText().isBlank()) Alertas.mostrarMensajeError(mensaje, "Pin Invalido");
-         
+        if(pin.getText().isBlank()) Alertas.mostrarMensajeError(mensaje, "Pin Invalido");         
         if(pin.getText().equals(PinAdmin)){
-    kiosco.setPreference(true);
-    Alertas.mostrarMensajeCorrecto(mensaje, "Pin correcto");
-    pin.setText("");
+            kiosco.setPreference(true);
+            Alertas.mostrarMensajeCorrecto(mensaje, "Pin correcto");
+           pin.setText("");
     }else{ Alertas.mostrarMensajeError(mensaje, "Pin Invalido");}
     }
 

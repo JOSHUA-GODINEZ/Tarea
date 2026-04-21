@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +29,6 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -56,8 +52,6 @@ private EstacionData estacionSeleccionada = null;
     private DatePicker FDesde;
     @FXML
     private DatePicker FHasta;
-    @FXML
-    private VBox rootGrafics;
 @FXML
 private BarChart<String, Number> GraficLines;
 @FXML
@@ -76,19 +70,20 @@ private Boolean temaAnterior = null;
      Propiedades config = new Propiedades();
 DataEjecucion data = new DataEjecucion(config);
     
+   //Carga los usuarios del archivo
     private void cargarTop(){
      try {
             File archivo = data.getArchivo("TopUsers");
         if (!Files.exists(archivo.toPath())) return;
         String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
-     
 
         Gson gson = new Gson();
         TopUsersData[] TopUsers =  gson.fromJson(json, TopUsersData[].class);
-       Arrays.sort(TopUsers, (a, b) -> b.cantidad - a.cantidad);
+       Arrays.sort(TopUsers, (a, b) -> b.cantidad - a.cantidad);// Los ordena segun la variable cantidad de mayor a menor
        
         rootTop.getChildren().clear();
+        // Carga los usuarios segun la fecha del tramite
           for (TopUsersData tu : TopUsers) {
  if (tu.fechaTramite != null && !tu.fechaTramite.isBlank()) {
     LocalDate fechaTramite = LocalDate.parse(tu.fechaTramite);
@@ -102,12 +97,15 @@ DataEjecucion data = new DataEjecucion(config);
         continue;
     }
 }
+ 
+ //Carga los usuarios por sucursal y estacion
  if (!LSucursal.getText().equals("Sin Sucursal") && !tu.sucursal.equals(LSucursal.getText())) {
     continue;
 }
 if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion.getText())) {
     continue;
 }
+// crea el usuarios
     HBox h = new HBox();
     Label lblNombre = new Label(tu.nombre);
     Label lblCedula = new Label(tu.cedula);
@@ -124,8 +122,8 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     h.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
    
     rootTop.getChildren().add(h);
-        Scene scene = rootTop.getScene();
-        
+       //cambia el tamaño del texto
+    Scene scene = rootTop.getScene();    
         if (scene != null) {
             lblNombre.styleProperty().bind(
                 scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
@@ -144,7 +142,6 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
             );
              
         } else {
-            // ✅ si se llama desde cargar() antes de que exista la escena
             rootTop.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                         lblNombre.styleProperty().bind(
@@ -165,22 +162,17 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
                 }
             });
         }
-}
-        
+}   
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
     }
-  
     }
-    
-   
-        public void cargar() {
+          //Carga las sucursales y estaciones 
+    public void cargar() {
     try {
           File archivo = data.getArchivo("BranchesData");
         if (!Files.exists(archivo.toPath())) return;
         String json = Files.readString(archivo.toPath());
-        if (json.isBlank()) return;
-     
+        if (json.isBlank()) return;     
 
         Gson gson = new Gson();
         SucursalData[] sucursales = gson.fromJson(json, SucursalData[].class);
@@ -198,7 +190,6 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
         cargarTop();
     }
 });
-             
             VBox vEstaciones = new VBox();
             vEstaciones.setSpacing(5);
             vEstaciones.getStyleClass().add("mi-rectangulo");
@@ -209,10 +200,6 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
                 check.setSelected(ed.preferencial);
                 check.setDisable(true);
                 hEst.getChildren().addAll(lblNombre, check);
-              //  hEst.setSpacing(10);
-               // hEst.setAlignment(Pos.CENTER_LEFT);
-              // // hEst.setStyle("-fx-border-color: blue;");
-              //  hEst.setPadding(new Insets(5));
                hEst.getStyleClass().add("item-estacion");
                 hEst.setOnMouseClicked(ev -> {
                     sucursalSeleccionada = sd;
@@ -225,16 +212,11 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
 
                 vEstaciones.getChildren().add(hEst);
             }
-
             pane.setContent(vEstaciones);
             acc.getPanes().add(pane);
-            
-            
             rootEsciones.getChildren().add(acc);
-          
         }
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
     }
 }
     
@@ -245,7 +227,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
     
     cargar();
     cargarGraficos();
-    
+          // Cambia el tamaño del texto
         LblTUser.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             LblTUser.styleProperty().bind(
@@ -256,6 +238,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
             );
                 }
         });
+        // Carga los usuarios por segundo
         Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
    cargarTop();
@@ -265,7 +248,7 @@ if (!LEstacion.getText().equals("Sin Estacion") && !tu.estacion.equals(LEstacion
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
 
-
+  // carga el tema por segundo
       Timeline timeline1 = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
@@ -306,7 +289,7 @@ timeline1.setCycleCount(Timeline.INDEFINITE);
 timeline1.play();
     }    
 
-    @FXML
+    @FXML // Desactiva los parametros de busqueda
     private void onActionSinParametros(ActionEvent event) {
         LSucursal.setText("Sin Sucursal");
         LEstacion.setText("Sin Estacion");
@@ -315,15 +298,13 @@ timeline1.play();
         cargarTop();
     }
 
-    @FXML
+    @FXML  //Busca al poner las fechas
     private void onActionBuscar(ActionEvent event) {
         cargarTop();
     }
-    
-    
-    
-    
+
 private void cargarGraficos() {
+    // Carga usuarios
     try {
           File archivo = data.getArchivo("TopUsers");
         if (!Files.exists(archivo.toPath())) return;
@@ -336,7 +317,7 @@ private void cargarGraficos() {
         List<Integer> sucursalCounts = new ArrayList<>();
         List<String> estacionNames = new ArrayList<>();
         List<Integer> estacionCounts = new ArrayList<>();
-
+           // Asigna las sucursales y estaciones
         for (TopUsersData tu : topUsers) {
             int idxSuc = sucursalNames.indexOf(tu.sucursal);
             if (idxSuc == -1) {
@@ -354,7 +335,7 @@ private void cargarGraficos() {
                 estacionCounts.set(idxEst, estacionCounts.get(idxEst) + tu.cantidad);
             }
         }
-
+//  Agrega datos al codigo de barras
      GraficLines.setTitle("Atenciones por Sucursal");
      ((CategoryAxis) GraficLines.getXAxis()).setLabel("Sucursal");
      ((NumberAxis) GraficLines.getYAxis()).setLabel("Cantidad");
@@ -366,7 +347,7 @@ private void cargarGraficos() {
           GraficLines.getData().add(series);
          GraficLines.setLegendVisible(false);
 
-        // Cargar PieChart
+        // Cargar datos al grafico de pie
         GraficPie.setTitle("Atenciones por Estacion");
         GraficPie.getData().clear();
         for (int i = 0; i < estacionNames.size(); i++) {

@@ -14,7 +14,6 @@
         <javafx.version>25</javafx.version>
     </properties>
 
-    <!-- ================= DEPENDENCIAS ================= -->
     <dependencies>
 <dependency>
     <groupId>com.itextpdf</groupId>
@@ -73,11 +72,9 @@
 
     </dependencies>
 
-    <!-- ================= BUILD ================= -->
     <build>
        <plugins>
 
-    <!-- ================= JAVA COMPILER ================= -->
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -87,7 +84,6 @@
         </configuration>
     </plugin>
 
-    <!-- ================= JAVAFX MAVEN PLUGIN ================= -->
     <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
@@ -98,7 +94,6 @@
         </configuration>
     </plugin>
 
-    <!-- ================= SHADE (JAR PORTABLE) ================= -->
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -113,21 +108,20 @@
 
                 <configuration>
 
-                    <finalName>${project.artifactId}-${project.version}-portable</finalName>
+                    <finalName>${project.artifactId}-${project.version}-Ejecutable</finalName>
 
                     <transformers>
 
-                        <!-- Main class -->
+                      
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>cr.ac.una.tarea.Main</mainClass>
                         </transformer>
 
-                        <!-- Required for Java services (JavaFX, MaterialFX, etc.) -->
+                     
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 
                     </transformers>
 
-                    <!-- Evita conflictos de archivos duplicados -->
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
@@ -147,7 +141,6 @@
         </executions>
     </plugin>
 
-    <!-- ================= JAR MANIFEST (fallback) ================= -->
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

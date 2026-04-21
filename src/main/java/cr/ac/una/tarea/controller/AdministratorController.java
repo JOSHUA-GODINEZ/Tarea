@@ -1,6 +1,5 @@
 package cr.ac.una.tarea.controller;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
 import cr.ac.una.tarea.model.Teme;
@@ -10,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -21,7 +18,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -31,13 +27,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class AdministratorController implements Initializable {
-
     @FXML
     private Tab tab1;
-
     @FXML
     private Tab tab2;
-    
     @FXML
     private Tab tab3;
     @FXML
@@ -50,15 +43,14 @@ public class AdministratorController implements Initializable {
     private HBox rootH;
     private Boolean temaAnterior = null;
     @FXML
+  
     private TabPane roottab;
     Propiedades config = new Propiedades();
-DataEjecucion data = new DataEjecucion(config);
+    DataEjecucion data = new DataEjecucion(config);
 
-
-    
+    // Carga los parametros generales
     private void cargar() {
-    try {
-         
+    try {   
         File archivo = data.getArchivo("GeneralData");
         if (!Files.exists(archivo.toPath())) return;
         String json = Files.readString(archivo.toPath());
@@ -85,6 +77,7 @@ DataEjecucion data = new DataEjecucion(config);
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargar();
+       // En los 4 tab carga 4 vistas
         try {
             FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/ProcedureView.fxml"));
             Parent root1 = loader1.load();
@@ -102,32 +95,20 @@ DataEjecucion data = new DataEjecucion(config);
             Parent root4 = loader4.load();
             tab4.setContent(root4);
 
-            
+            // Bindea el tamaño del texto segun el tamaño de la ventana
               LName.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
-            LName.styleProperty().bind(
-                newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;")
-            );
-             tab1.styleProperty().bind(
-                newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
-            );
-              tab2.styleProperty().bind(
-                newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
-            );
-               tab3.styleProperty().bind(
-                newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;")
-            );
-                tab4.styleProperty().bind(
-                newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;")
-            );
-            
-             }  
+            LName.styleProperty().bind(newScene.widthProperty().multiply(0.03).asString("-fx-font-size: %.2fpx;"));
+             
+               tab1.styleProperty().bind(newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;"));
+               tab2.styleProperty().bind(newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;"));
+               tab3.styleProperty().bind(newScene.widthProperty().multiply(0.015).asString("-fx-font-size: %.2fpx;"));
+                tab4.styleProperty().bind(newScene.widthProperty().multiply(0.013).asString("-fx-font-size: %.2fpx;"));
+              }  
               });
-     
-      
         } catch (IOException e) {
-    
         }
+        //Cada segundo revisa si hubo cambio de tema
            Timeline timeline = new Timeline(
     new KeyFrame(javafx.util.Duration.seconds(1), e -> {
         try {
@@ -141,50 +122,38 @@ String json = Files.readString(archivo.toPath());
             if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
                 temaAnterior = t.temeDark;
 
-                // Cambia los roots
+                
                 rootH.getStyleClass().clear();
                 roottab.getStyleClass().clear();
                LName.getStyleClass().clear();
  if (t.temeDark) {
      
-       rootH.getStyleClass().remove("mi-panel-fondo2");
+           rootH.getStyleClass().remove("mi-panel-fondo2");
             rootH.getStyleClass().add("mi-panel-fondo1");
-           roottab.getStyleClass().clear();
-roottab.getStyleClass().add("tab-pane-oscuro");
-           //  roottab.getStyleClass().remove("tab-pane-oscuro");
+             roottab.getStyleClass().add("tab-pane-oscuro");
               LName.getStyleClass().add("titulososcu");
 } else {
-
-    rootH.getStyleClass().remove("mi-panel-fondo1");
+           rootH.getStyleClass().remove("mi-panel-fondo1");
             rootH.getStyleClass().add("mi-panel-fondo2");
- roottab.getStyleClass().clear(); // siempre debe estar
-roottab.getStyleClass().add("tab-pane");
-             //roottab.getStyleClass().add("tab-pane");
-            LName.getStyleClass().add("titulosclar");
+             roottab.getStyleClass().add("tab-pane");
+              LName.getStyleClass().add("titulosclar");
             }
             }
         } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+            
         }
     })
 );
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
-  
     }   
-    
-
-    @FXML
-    private void onActionOption(ActionEvent event) throws IOException {
-        App.setRoot("OfficialsView");
-    }
 
     @FXML
     private void onActionAuxs(ActionEvent event) throws IOException {
         App.setRoot("LoginView");
     }
 
- @FXML
+ @FXML //Cambia el CSS al modo claro
 private void onActionClaro(ActionEvent event) {
    rootH.getStyleClass().clear();
     rootH.getStyleClass().add("mi-panel-fondo2");
@@ -196,16 +165,12 @@ roottab.getStyleClass().add("tab-pane");
     Teme t = new Teme();
     t.temeDark = false;
     try {
-    Files.writeString(
-    data.getArchivo("theme").toPath(),
-    new Gson().toJson(t)
-);
-    } catch (IOException e) {
-        System.out.println("Error: " + e.getMessage());
+    Files.writeString(data.getArchivo("theme").toPath(),new Gson().toJson(t));
+    } catch (IOException e) {    
     }
 }
 
-@FXML
+@FXML  //Cambia el CSS al modo oscuto
 private void onActionOscuro(ActionEvent event) {
        rootH.getStyleClass().clear();
     rootH.getStyleClass().add("mi-panel-fondo1");
@@ -216,18 +181,8 @@ roottab.getStyleClass().add("tab-pane-oscuro");
     Teme t = new Teme();
     t.temeDark = true;
     try {
-      Files.writeString(
-    data.getArchivo("theme").toPath(),
-    new Gson().toJson(t)
-);
-    } catch (IOException e) {
-        System.out.println("Error: " + e.getMessage());
+      Files.writeString(data.getArchivo("theme").toPath(),new Gson().toJson(t));
+    } catch (IOException e) {  
     }
 }
-
-    @FXML
-    private void onActionKiosco(ActionEvent event) throws IOException {
-       App.setRoot("KioscoView");
-    }
-
 }

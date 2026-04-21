@@ -11,10 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import cr.ac.una.tarea.App;
 import cr.ac.una.tarea.model.DataParametres;
@@ -25,11 +22,7 @@ import cr.ac.una.tarea.model.UsuarioData;
 import cr.ac.una.tarea.util.Alertas;
 import cr.ac.una.tarea.util.DataEjecucion;
 import cr.ac.una.tarea.util.Propiedades;
-import cr.ac.una.tarea.util.ValidadorNumeros;
-import io.github.palexdev.materialfx.utils.SwingFXUtils;
 import java.awt.Desktop;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -47,44 +40,24 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.PasswordField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javax.imageio.ImageIO;
-
 
 public class KioscoController implements Initializable {
+    @FXML private VBox blockID;
+    @FXML private TextField txtId;
 
-private VBox blockStart;
-@FXML private VBox blockID;
-private VBox blockProcedure;
-private VBox blockConfirm;
-private VBox blockSucursal;
 
-@FXML private TextField txtId;
-private DatePicker birthDate;
-
-private String Id;
-private String typeProcedure;
-private String sucursal;
-private LocalDate dateofBirth;
-private boolean preference = false;
-private int contador;
-  PasswordField pin = new PasswordField();
     @FXML
     private HBox root;
      KioscoData kiosco = new KioscoData();
     @FXML
     private ImageView Logo;
 
-           Propiedades config = new Propiedades();
+ Propiedades config = new Propiedades();
 DataEjecucion data = new DataEjecucion(config);
     @FXML
     private Label LName;
@@ -103,14 +76,14 @@ DataEjecucion data = new DataEjecucion(config);
     private HBox rootGenerar;
     @FXML
     private Label LblMensaje;
-     private String PinAdmin;
-     private Label selectedProcedure = null;
     @FXML
     private VBox root1;
+    private Label selectedProcedure = null;
+    String PinAdmin;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-                      
+                      // Cambiar el tamaño del texto segune el tamaño de la ventana
                root1.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
               LName.styleProperty().bind(
@@ -136,6 +109,7 @@ DataEjecucion data = new DataEjecucion(config);
         
         }
     }); 
+               // Carga cada segundo los tramites, parametros y el tema
        Timeline timelineTheme = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
@@ -192,41 +166,30 @@ private void onActionGenerateTicket(ActionEvent event) {
  if( selectedProcedure!=null){
     selectedProcedure.getStyleClass().remove("seleccionado");
     selectedProcedure = null;}
- 
     String ficha = generateTicketNumber();
     kiosco.setTicketNumber(ficha);
-    
-    // 🔥 guardar en archivo
     guardarKiosco(kiosco);
-
-    // 🔥 generar PDF
    generarPDF(ficha);
       BtnGenerarFicha.setDisable(true);
       txtId.setText("");
       LblSelec.setText("Sin tramite selecionado");
-      
-    // 🔥 limpiar datos en memoria (CLAVE)
     kiosco = new KioscoData();
 }
 
-
-
 private void generarPDF(String numero) {
     try {
-
+        //En la ruta del .ini crea y guarda el pdf 
         String basePath = config.getRutaJson();
-
         File carpeta = new File(basePath, "FichasPdfs");
         if (!carpeta.exists()) {
             carpeta.mkdirs();
         }
-
         File archivoPDF = new File(carpeta, "ficha_" + numero + ".pdf");
 
         Document doc = new Document();
         PdfWriter.getInstance(doc, new FileOutputStream(archivoPDF));
         doc.open();
-
+           // Crea el documentro y le da posiciones a las imagenes y la ficha
         String url = Logo.getImage().getUrl();
         com.itextpdf.text.Image logo = com.itextpdf.text.Image.getInstance(url);
 
@@ -235,12 +198,9 @@ private void generarPDF(String numero) {
         doc.add(logo);
 
         if (kiosco.Preferencial) {
-            String urlPref = getClass()
-                    .getResource("/cr/ac/una/tarea/resource/PrefetencialImage.png")
-                    .toExternalForm();
+            String urlPref = getClass().getResource("/cr/ac/una/tarea/resource/PrefetencialImage.png").toExternalForm();
 
-            com.itextpdf.text.Image logoPref =
-                    com.itextpdf.text.Image.getInstance(urlPref);
+            com.itextpdf.text.Image logoPref = com.itextpdf.text.Image.getInstance(urlPref);
 
             logoPref.scaleToFit(100, 100);
             logoPref.setAbsolutePosition(450, 750);
@@ -269,16 +229,15 @@ private void generarPDF(String numero) {
   
    
  private String generateTicketNumber() {
-
+//Guarda en un archivo la sucursal y su ultima ficha
     try {
         File archivo = data.getArchivo("TicketCounter");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         JsonObject json;
-
-        // 🔹 leer archivo
+  
         if (archivo.exists()) {
-            String contenido = Files.readString(archivo.toPath());
+          String contenido = Files.readString(archivo.toPath());
 
             if (!contenido.isBlank()) {
                 json = gson.fromJson(contenido, JsonObject.class);
@@ -288,20 +247,21 @@ private void generarPDF(String numero) {
         } else {
             json = new JsonObject();
         }
-
         String sucursal = config.getSucursal();
-
-        // 🔹 obtener último valor
-        String ultimo = json.has(sucursal)
-                ? json.get(sucursal).getAsString()
-                : "A-1";
+        // Al ultimo le genera el siguiente
+       String ultimo;
+         if (json.has(sucursal)) {
+         ultimo = json.get(sucursal).getAsString();
+         } else {
+            ultimo = "A-1";
+              }
 
         char letra = ultimo.charAt(0);
         int numero = Integer.parseInt(ultimo.substring(1));
 
-        // 🔥 siguiente
+        // 
         numero++;
-
+// Genera un letra entre A y B, tambien un mero entre 0 y 9
         if (numero > 9) {
             numero = 0;
             letra++;
@@ -313,24 +273,23 @@ private void generarPDF(String numero) {
 
         String nuevo = letra + String.valueOf(numero);
 
-        // 🔥 guardar en JSON
+  
         json.addProperty(sucursal, nuevo);
 
         Files.writeString(archivo.toPath(), gson.toJson(json));
 
-        // 🔥 guardar audio
+      //Le accicna su respectivo audio a la ficha
         kiosco.setAudio(nuevo + ".wav");
 
         return nuevo;
 
     } catch (Exception e) {
+       // Si no existe imprime A0
         e.printStackTrace();
         return "A0";
     }
 }
-    
-
-    @FXML
+    @FXML  // Botones del GranePane
     private void onAction7(ActionEvent event) {
         txtId.appendText("7");
     }
@@ -388,7 +347,7 @@ private void generarPDF(String numero) {
     }
     }
     
-    
+    // Carga los parametros generales a la vista
      private void cargar() {
     try {
        File archivo = data.getArchivo("GeneralData");
@@ -409,7 +368,7 @@ private void generarPDF(String numero) {
     }
 }
     
-    
+    //Carga los tramites disponibles
     public void loadProcedures() {
     rootProcedures.getChildren().clear();
     try {
@@ -425,6 +384,7 @@ String json = Files.readString(archivo.toPath());
     Label label = new Label(dp.getName());
    label.getStyleClass().addAll("mi-Label","label-procedimiento","mi-boton2");
 
+   // Cambia el CSS del tema
 if (temaAnterior != null && temaAnterior) {
     label.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
 } else {
@@ -433,28 +393,20 @@ if (temaAnterior != null && temaAnterior) {
     label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
     label.setMinSize(200, 0);
 
+    // Cambia de Tamaño el texto sugun el tamaño de la ventana
     Scene scene = rootProcedures.getScene();
     if (scene != null) {
-        label.styleProperty().bind(
-            scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.12fpx;")
-        );
+        label.styleProperty().bind(scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.12fpx;"));
     }
 
-    // 🔥 EVENTO CLICK
     label.setOnMouseClicked(e -> {
          if (selectedProcedure != null) {
         selectedProcedure.getStyleClass().remove("seleccionado");
     }
-
-
     selectedProcedure = label;
     label.getStyleClass().addAll("seleccionado");
         String nombre = dp.getName();
-
-
         LblSelec.setText(nombre);
-
-     //   label.getStyleClass().add("seleccionado");
         // guardar en kiosco
         kiosco.setTramite(nombre);
           BtnGenerarFicha.setDisable(false);
@@ -465,7 +417,6 @@ if (temaAnterior != null && temaAnterior) {
 }
 
     } catch (IOException e) {
-        System.out.println("Error al cargar procedimientos: " + e.getMessage());
     }
 }
 
@@ -489,7 +440,7 @@ private void onActionAvanzar(ActionEvent event) {
         String cedula = txtId.getText();
         UsuarioData encontrado = null;
 
-        // 🔍 buscar usuario
+        // Buscar el usuario
         for (UsuarioData u : usuarios) {
             if (cedula.equals(u.cedula)) {
                 encontrado = u;
@@ -500,50 +451,31 @@ private void onActionAvanzar(ActionEvent event) {
 
         if (encontrado == null) {
             Alertas.mostrarMensajeError(LblMensaje, "No se encuentra en el sistema");
-            System.out.println("Usuario no encontrado");
             return;
         }
 
-        // 📅 calcular edad
+        // Calcular edad(preferencial)
         LocalDate fechaNacimiento = LocalDate.parse(encontrado.fecha);
         int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
-
         boolean esPreferencial = edad >= 65;
-
-        // 🔥 CREAR Y GUARDAR EN KIOSCO
-   
 
         kiosco.setTxtId(cedula);
         kiosco.setPreference(esPreferencial);
-       
 
-        // opcional si ya tienes estos datos:
-        // kiosco.setTramite(...);
-        // kiosco.setSucursal(...);
-
-        System.out.println("Guardado:");
-        System.out.println("Cedula: " + cedula);
-        System.out.println("Preferencial: " + esPreferencial);
 
     } catch (Exception e) {
         e.printStackTrace();
     }
 }
 
-    @FXML
-    private void onActionAdmin(ActionEvent event) throws IOException {
-         App.setRoot("AdministratorView");
-    }
-
+ // Guarda los datos del kiosco en e archivo
 private void guardarKiosco(KioscoData kiosco) {
-
     try {
         File archivo = data.getArchivo("KioscoData");
 
          Gson gson = new GsonBuilder().setPrettyPrinting().create();
         List<KioscoData> lista = new ArrayList<>();
 
-        // 🔹 cargar existentes
         if (archivo.exists()) {
             String json = Files.readString(archivo.toPath());
 
@@ -559,40 +491,29 @@ private void guardarKiosco(KioscoData kiosco) {
        if(kiosco.Preferencial==null){kiosco.Preferencial=false;}
       
         lista.add(kiosco);
-       
-        // 🔹 guardar
+
         String nuevoJson = gson.toJson(lista);
         Files.writeString(archivo.toPath(), nuevoJson);
-
-        System.out.println("Kiosco guardado correctamente");
-
     } catch (Exception e) {
         e.printStackTrace();
     }
 }
 
-@FXML
+@FXML          // muestra y bloquea la vista del pin
 private void onActionIndication(ActionEvent event) {
     try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/PinAdminView.fxml"));
         Parent root = loader.load();
         PinAdminController controller = loader.getController();
 
-// 🔥 pasar la MISMA instancia
      controller.setKiosco(kiosco);
-        // 🔥 Obtener la ventana actual (owner)
         Stage owner = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
-
-        stage.initOwner(owner); // 👈 clave
-        stage.initModality(Modality.WINDOW_MODAL); // 👈 modal
-
+        stage.initOwner(owner); 
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.setTitle("Pin Administrativo");
-      //  stage.setResizable(false);
-
-        stage.showAndWait(); // 👈 bloquea hasta cerrar
+        stage.showAndWait();
 
     } catch (IOException e) {
         e.printStackTrace();

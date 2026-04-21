@@ -18,7 +18,6 @@ import javafx.scene.control.Button;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -50,21 +49,15 @@ public class LoginController {
     private VBox root;
     @FXML
     private Label LblMensaje;
-    
-
     Propiedades config = new Propiedades();
 DataEjecucion data = new DataEjecucion(config);
-@FXML
+
+@FXML       // Inseta la image del logo
      private void insetLogo(){
          FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Selecciona una imagen");
- FileChooser.ExtensionFilter filtro =
-            new FileChooser.ExtensionFilter(
-                    "Imágenes", "*.png", "*.jpg", "*.jpeg"
-            );
+ FileChooser.ExtensionFilter filtro = new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg" );
     fileChooser.getExtensionFilters().add(filtro);
-
-    // Ventana actual
     File archivo1 = fileChooser.showOpenDialog(ImageLogo.getScene().getWindow());
 
     if (archivo1 != null) {
@@ -84,12 +77,13 @@ DataEjecucion data = new DataEjecucion(config);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
-    @FXML
+    @FXML 
    private void Save() {
+       
     TPin.getParent().requestFocus();
     Tname.getParent().requestFocus();
     TInfo.getParent().requestFocus();
-
+    // comprueba los datos
    if (Tname.getText() != null && !Tname.getText().isBlank() && 
     TInfo.getText() != null && !TInfo.getText().isBlank() && 
     TPin.getText() != null && TPin.getText().length() == 4 && 
@@ -98,7 +92,7 @@ DataEjecucion data = new DataEjecucion(config);
     BNext.getStyleClass().add("BNext");
 } 
     verifyData();
-
+// Guarda en el archivo json
     try {
         DataParametres user = new DataParametres();
         user.setName(Tname.getText());
@@ -122,10 +116,7 @@ DataEjecucion data = new DataEjecucion(config);
     user.setImageUrl(ImageLogo.getImage().getUrl());
 }
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-       Files.writeString(
-    data.getArchivo("GeneralData").toPath(),
-    gson.toJson(user)
-);
+       Files.writeString(data.getArchivo("GeneralData").toPath(),gson.toJson(user));
         if (Tname.getText() != null && !Tname.getText().isBlank() &&
         TInfo.getText() != null && !TInfo.getText().isBlank() &&
         TPin.getText() != null && TPin.getText().length() == 4 &&
@@ -135,7 +126,7 @@ DataEjecucion data = new DataEjecucion(config);
        Alertas.mostrarMensajeCorrecto(LblMensaje, "Información Correcta");
     }else{Alertas.mostrarMensajeError(LblMensaje, "Información Insuficiente");}
     } catch (IOException e) {
-        System.out.println("Error al guardar: " + e.getMessage());
+      
     }
 }
     private void cargar() {
@@ -145,7 +136,6 @@ DataEjecucion data = new DataEjecucion(config);
         String json = Files.readString(archivo.toPath());
         if (json.isBlank()) return;
        
-
         Gson gson = new Gson();
         DataParametres user = gson.fromJson(json, DataParametres.class);
 
@@ -160,6 +150,7 @@ DataEjecucion data = new DataEjecucion(config);
         System.out.println("Error al cargar: " + e.getMessage());
     }
 }
+    //Verifica que ningun dato este vacio
     private void verifyData() {
     if (Tname.getText() != null && !Tname.getText().isBlank() &&
         TInfo.getText() != null && !TInfo.getText().isBlank() &&
@@ -176,7 +167,7 @@ DataEjecucion data = new DataEjecucion(config);
         
     }
 }
-    
+    // Si los datos estan llenos abre la vista de administrador
      public String FullParameters() throws IOException {
          File archivo = data.getArchivo("GeneralData");
 
@@ -209,7 +200,7 @@ DataEjecucion data = new DataEjecucion(config);
      ValidadorNumeros.soloNumeros4Digitos(TPin);
         
         
-        
+        // Cambia el tamaño del text segun el tamaño de la ventana
           Title.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             Title.styleProperty().bind(

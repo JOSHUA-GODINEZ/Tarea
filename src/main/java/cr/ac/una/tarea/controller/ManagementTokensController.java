@@ -3,7 +3,6 @@ package cr.ac.una.tarea.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import cr.ac.una.tarea.model.EstacionData;
 import cr.ac.una.tarea.model.FichasProyection;
 import cr.ac.una.tarea.model.KioscoData;
@@ -11,7 +10,6 @@ import cr.ac.una.tarea.model.SignalData;
 import cr.ac.una.tarea.model.SucursalData;
 import cr.ac.una.tarea.model.Teme;
 import cr.ac.una.tarea.model.TopUsersData;
-import cr.ac.una.tarea.model.TramiteData;
 import cr.ac.una.tarea.model.UsuarioData;
 import cr.ac.una.tarea.util.DataEjecucion;
 import cr.ac.una.tarea.util.Propiedades;
@@ -20,7 +18,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,11 +31,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -48,7 +42,7 @@ public class ManagementTokensController implements Initializable {
 
     private SucursalData sucursalSeleccionada = null;
 private EstacionData estacionSeleccionada = null;
-  FichasProyection ficha =new FichasProyection();
+//  FichasProyection ficha =new FichasProyection();
 private FichasProyection fichaActual = new FichasProyection();
     @FXML
     private Label LSucursal;
@@ -91,8 +85,8 @@ private boolean modoEspecifico = false;
     private Label LAtendiendo;
     @FXML
     private Label LClientes;
+    // Carga del .ini la sucursal y la estacion
 public void cargar() {
-
     String sucursal = config.getSucursal();
     String estacion = config.getEstacion();
 
@@ -100,22 +94,14 @@ public void cargar() {
     LSucursal.setText(sucursal);
     LEstacion.setText(estacion);
 
-    // Si quieres crear algo visual simple
+ 
     HBox hEst = new HBox();
     Label lblNombre = new Label(estacion);
-
     hEst.getChildren().add(lblNombre);
     hEst.setSpacing(10);
     hEst.setAlignment(Pos.CENTER_LEFT);
     hEst.setPadding(new Insets(5));
-
     hEst.getStyleClass().addAll("mi-rectangulo","mi-Titulos","mi-boton","seleccionado");
-
-
-    System.out.println("Sucursal: " + sucursal + " Estacion: " + estacion);
-
-    // cargar trámites directamente
-  // cargarTramites();
 }
 
     
@@ -123,8 +109,7 @@ public void cargar() {
     
 public void cargarTramites() {
     try {
-
-            
+        // Carga las sucursales y estacion
      File archivoBranches = data.getArchivo("BranchesData");
         File archivoTramites = data.getArchivo("KioscoData");
 
@@ -142,7 +127,6 @@ public void cargarTramites() {
     KioscoData[].class
 );
 
-// 🔥 SOLUCIÓN
 if (kiosco == null) {
     kiosco = new KioscoData[0];
 }
@@ -163,7 +147,7 @@ if (kiosco == null) {
 
         // Agregar al rootTramits si coincide con TramitesData
         rootTramits.getChildren().clear();
-         int contador = 0; // 👈 contador de trámites cargados
+         int contador = 0; // contador de trámites cargados
         for (String tramiteEstacion : tramitesEstacion) {
             for (KioscoData td : kiosco) {
                 if (td.tramite.equals(tramiteEstacion) && td.Sucursal.equals(LSucursal.getText())) {
@@ -171,7 +155,8 @@ if (kiosco == null) {
                     Label lblTramite = new Label(td.tramite);
                     lblFicha = new Label(td.ficha);
               lblTramite.sceneProperty().addListener((obs, oldScene, newScene) -> {
-    if (newScene != null) {
+    //  Cambio de tamaño del texto
+                  if (newScene != null) {
         lblTramite.styleProperty().bind(
             newScene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
         );
@@ -186,7 +171,7 @@ lblFicha.sceneProperty().addListener((obs, oldScene, newScene) -> {
     }
 });
             
-          
+          //carga imagen preferencia 
               ImageView PreferIMag = new ImageView();
                   PreferIMag.setFitHeight(30);
             PreferIMag.setFitWidth(30);
@@ -196,18 +181,14 @@ lblFicha.sceneProperty().addListener((obs, oldScene, newScene) -> {
             else{ h.getChildren().addAll(lblTramite, lblFicha);}
                     h.setSpacing(10);
                     h.setAlignment(Pos.CENTER);
-                   // h.setPadding(new Insets(5));
-                  //  h.setStyle("-fx-border-color: blue;");
                   h.getStyleClass().addAll("mi-rectangulo","mi-Titulos","mi-boton");
-h.setOnMouseClicked(ev -> {
-
+     h.setOnMouseClicked(ev -> {
     if (selectedTramit != null) {
         selectedTramit.getStyleClass().remove("seleccionado");
     }
-
     h.getStyleClass().add("seleccionado");
     selectedTramit = h;
-
+   
     if (modoEspecifico) {
         modoEspecifico = false;
         btnEspecifico.getStyleClass().remove("boton-activo");
@@ -216,77 +197,70 @@ h.setOnMouseClicked(ev -> {
 
         procesarTramiteSeleccionado(tramiteSeleccionado);
     }
-});
+     });
 
-
-
-rootTramits.getChildren().add(h);
+            rootTramits.getChildren().add(h);
                   contador++;   
                 }
             }
         }
+        //Cambia el color segun la espera
      usuariosPendientes.setText(String.valueOf(contador));
 
-usuariosPendientes.getStyleClass().clear();
-if (contador < 3)
-    usuariosPendientes.getStyleClass().add("mi-Scantidad");
-else if (contador < 6)
+    usuariosPendientes.getStyleClass().clear();
+     if (contador < 3)
+      usuariosPendientes.getStyleClass().add("mi-Scantidad");
+     else if (contador < 6)
     usuariosPendientes.getStyleClass().add("mi-Mcantidad");
 else
     usuariosPendientes.getStyleClass().add("mi-Bcantidad");
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
     }
 }
     
 
    
   @FXML
-
 private void onActionNext(ActionEvent event) {
-
     rootAtencion.getChildren().clear();
 
-    if (!rootTramits.getChildren().isEmpty()) {
-
+      if (!rootTramits.getChildren().isEmpty()) {
         HBox hTramite = (HBox) rootTramits.getChildren().get(0);
-        Label lblTramite = (Label) hTramite.getChildren().get(0);
-        Label lblFicha = (Label) hTramite.getChildren().get(1);
-
+         // Quita 1 de espera
         int actual = Integer.parseInt(usuariosPendientes.getText());
         if (actual > 0) {
             usuariosPendientes.setText(String.valueOf(actual - 1));
         }
 
         try {
-   File archivoTramites = data.getArchivo("KioscoData");
-File archivoUsuarios = data.getArchivo("usuarios");
+     File archivoTramites = data.getArchivo("KioscoData");
+      File archivoUsuarios = data.getArchivo("usuarios");
 
-if (!archivoTramites.exists()) return;
+     if (!archivoTramites.exists()) return;
 
-String jsonTramites = Files.readString(archivoTramites.toPath());
+     String jsonTramites = Files.readString(archivoTramites.toPath());
 
-// 🔥 si no existe → lista vacía
-String jsonUsuarios = "[]";
-if (archivoUsuarios.exists()) {
+        String jsonUsuarios = "[]";
+      if (archivoUsuarios.exists()) {
     jsonUsuarios = Files.readString(archivoUsuarios.toPath());
-}
+       }
 
-Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
-UsuarioData[] usuarios = gson.fromJson(jsonUsuarios, UsuarioData[].class);
+       KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
+         UsuarioData[] usuarios = gson.fromJson(jsonUsuarios, UsuarioData[].class);
 
-if (kiosco == null) kiosco = new KioscoData[0];
-if (usuarios == null) usuarios = new UsuarioData[0];
+       if (kiosco == null) kiosco = new KioscoData[0];
+       
+       if (usuarios == null) usuarios = new UsuarioData[0];
 
             String idTramite = null;
             KioscoData tdEncontrado = null;
             boolean pref = false;
 
-            // 🔍 BUSCAR
+            //busca la ficha
             for (KioscoData td : kiosco) {
-                if (lblFicha.getText().equals(td.ficha)) { // 🔥 solo ficha
+                if (lblFicha.getText().equals(td.ficha)) { 
                     idTramite = td.id;
                     tdEncontrado = td;
                     pref = td.Preferencial;
@@ -294,35 +268,26 @@ if (usuarios == null) usuarios = new UsuarioData[0];
                 }
             }
 
-            // 🔥 CAPTURAR AUDIO ANTES DE BORRAR
+            //captura el audio antes de borrarlo de espera
             String audioFicha = null;
             if (tdEncontrado != null) {
                 audioFicha = tdEncontrado.audio; // 🔥 aquí guardas el audio
             }
 
-            // 🔥 ELIMINAR DEL JSON
+            // elimina del json de espera
             List<KioscoData> lista = new ArrayList<>(Arrays.asList(kiosco));
 
-            lista.removeIf(td ->
-                lblFicha.getText().equals(td.ficha)
-            );
+            lista.removeIf(td ->lblFicha.getText().equals(td.ficha));
 
-            Files.writeString(
-                archivoTramites.toPath(),
-                gson.toJson(lista)
-            );
+            Files.writeString( archivoTramites.toPath(),gson.toJson(lista) );
 
-            // 🔹 UI USUARIO
+            // crea informacion del usuario
             HBox hUsuario = new HBox();
-
             if (idTramite != null) {
-
                 boolean encontrado = false;
-
                 for (UsuarioData ud : usuarios) {
-
+                   // si encuentra el usuario mustra su informacion
                     if (ud.cedula.equals(idTramite)) {
-
                         Label lblNombre = new Label(ud.nombre);
                         Label lblCedula = new Label(ud.cedula);
                         Label lblNumero = new Label(ud.numero);
@@ -332,13 +297,10 @@ if (usuarios == null) usuarios = new UsuarioData[0];
                         IMFoto.setFitHeight(100);
                         IMFoto.setFitWidth(100);
 
-                        hUsuario.getChildren().addAll(
-                            lblNombre, lblCedula, lblNumero, lblFecha, IMFoto
-                        );
-
+                        hUsuario.getChildren().addAll(lblNombre, lblCedula, lblNumero, lblFecha, IMFoto);
                         encontrado = true;
 
-                        // 🔹 TOP USERS
+                        // Lo agrega al TopUsuarios
                         List<TopUsersData> topUsers = new ArrayList<>();
                         File archivoTop = data.getArchivo("TopUsers");
 
@@ -352,7 +314,7 @@ if (usuarios == null) usuarios = new UsuarioData[0];
                         }
 
                         boolean yaExiste = false;
-
+                         // si ya existe la variable cantidad suma 1
                         for (TopUsersData tu : topUsers) {
                             if (tu.cedula.equals(ud.cedula)) {
                                 tu.cantidad++;
@@ -360,7 +322,7 @@ if (usuarios == null) usuarios = new UsuarioData[0];
                                 break;
                             }
                         }
-
+                    // si no existe crea en el archivo los datos del usuario
                         if (!yaExiste) {
                             TopUsersData nuevo = new TopUsersData();
                             nuevo.nombre = ud.nombre;
@@ -370,44 +332,35 @@ if (usuarios == null) usuarios = new UsuarioData[0];
                             nuevo.imagen = ud.imagen;
                             nuevo.sucursal = LSucursal.getText();
                             nuevo.estacion = LEstacion.getText();
-                            nuevo.fechaTramite = tdEncontrado != null ? tdEncontrado.fecha : "";
+                          if (tdEncontrado != null) nuevo.fechaTramite = tdEncontrado.fecha; else nuevo.fechaTramite = "";
                             nuevo.cantidad = 1;
                             topUsers.add(nuevo);
                         }
-
                         Files.writeString(archivoTop.toPath(), gson.toJson(topUsers));
-
                         break;
                     }
                 }
 
-                if (!encontrado) {
-                    hUsuario.getChildren().add(new Label("Persona desconocida"));
-                }
-
+                if (!encontrado) {hUsuario.getChildren().add(new Label("Persona desconocida"));}
             } else {
                 hUsuario.getChildren().add(new Label("Persona desconocida"));
             }
 
-            // 🔥 PROYECCIÓN
+          
             guardarFicha(lblFicha.getText(), pref);
 
-            // 🔥 SIGNAL (AQUÍ VA EL AUDIO)
+            // manda la señal a proyeccion
             SignalData signal = new SignalData();
             signal.sucursal = LSucursal.getText();
             signal.estacion = LEstacion.getText();
             signal.audio = LEstacion.getText() + ".wav";
-            signal.audioFicha = audioFicha; // 🔥 NUEVO
+            signal.audioFicha = audioFicha;
             signal.timestamp = System.currentTimeMillis();
 
             Gson gsonSignal = new Gson();
 
-            Files.writeString(
-                data.getArchivo("signal").toPath(),
-                gsonSignal.toJson(signal)
-            );
+            Files.writeString(data.getArchivo("signal").toPath(),gsonSignal.toJson(signal));
 
-            // 🔹 UI FINAL
             hUsuario.setSpacing(10);
             hUsuario.setAlignment(Pos.CENTER_LEFT);
             hUsuario.setPadding(new Insets(5));
@@ -422,24 +375,15 @@ if (usuarios == null) usuarios = new UsuarioData[0];
         }
     }
 }
-   
-    
-    
 
-    
-    
      @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargar();
-        
-        
+
         Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         Platform.runLater(() -> {
             cargarTramites();
-            //config.cargar();
-        //  LSucursal.setText(config.getSucursal());
-   // LEstacion.setText(config.getEstacion());
         });
     })
 );
@@ -449,7 +393,8 @@ timeline.play();
   fichaActual.estacion = new String[4];
    fichaActual.ficha = new String[4];
   fichaActual.Preferencial = new Boolean[4];
-                        
+                     
+  //Cambia de tamaño el teto
                LblScursal.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             LblScursal.styleProperty().bind(
@@ -481,6 +426,7 @@ timeline.play();
        Timeline timelineTheme = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
+            //Carga el tema
              File archivoTheme = data.getArchivo("theme");
 if (!archivoTheme.exists()) return;
 String json = Files.readString(archivoTheme.toPath());
@@ -491,7 +437,6 @@ String json = Files.readString(archivoTheme.toPath());
             if (temaAnterior == null || !temaAnterior.equals(t.temeDark)) {
                 temaAnterior = t.temeDark;
 
-                // Cambia los roots
                 rootTop.getStyleClass().clear();
                 rootBotones.getStyleClass().clear();
                 rootAtendiendo.getStyleClass().clear();
@@ -502,76 +447,56 @@ String json = Files.readString(archivoTheme.toPath());
                
  if (t.temeDark) {
      rootTop.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
-  //  rootBotones.getStyleClass().addAll("mi-panel-fondo1","mi-Titulososcuros");
     LbLLlamar.getStyleClass().addAll("mi-panel-fondo1","titulososcu");
     rootAtendiendo.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
     rootAtencion.getStyleClass().addAll("mi-panel-fondo1","mi-Titulososcuros","mi-rootclaro");
     rootEspera.getStyleClass().addAll("mi-rectangulooscuro","mi-Titulososcuros");
     rootTramits.getStyleClass().addAll("mi-Titulososcuros","mi-panel-fondo1","mi-rootclaro");
 } else {
-
    rootTop.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
-    //rootBotones.getStyleClass().addAll("mi-panel-fondo2","mi-Titulos");
     LbLLlamar.getStyleClass().addAll("mi-panel-fondo2","titulosclar");
     rootAtendiendo.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
     rootAtencion.getStyleClass().addAll("mi-panel-fondo2","mi-Titulos","mi-root");
      rootEspera.getStyleClass().addAll("mi-rectangulo","mi-Titulos");
       rootTramits.getStyleClass().addAll("mi-panel-fondo2","mi-Titulos","mi-root");
 }     
-
             }
-
-        } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+        } catch (IOException ex) {           
         }
     })
 );
 timelineTheme.setCycleCount(Timeline.INDEFINITE);
 timelineTheme.play();
    }
+    
 @FXML
 private void onActionRepit(ActionEvent event) throws IOException {
-
     Path archivo = data.getArchivo("signal").toPath();
-
     if (!Files.exists(archivo)) return;
-
     Gson gson = new Gson();
-
     String json = Files.readString(archivo);
-
     if (json.isBlank()) return;
-
+    
     SignalData signal = gson.fromJson(json, SignalData.class);
-
-    // 🔥 solo actualizas timestamp para que se dispare otra vez
-    signal.timestamp = System.currentTimeMillis();
-
+    signal.timestamp = System.currentTimeMillis();//Solo actualiza para volver a cargar los mismo audios
     Files.writeString(archivo, gson.toJson(signal));
 }
-
-
-
-
-
-
 
 @FXML 
     private void onActionEspecific(ActionEvent event) {
         btnEspecifico.getStyleClass().add("boton-activo");
-    modoEspecifico = true;
+        modoEspecifico = true;//Activa el modo para tocar un tramite
 }
 
 @FXML
 private void onActionPreferential(ActionEvent event) {
 
     for (Node n : rootTramits.getChildren()) {
+        // se hacegura de que es hbox
         if (n instanceof HBox h) {
-
             if (h.getChildren().size() > 2 &&
                 h.getChildren().get(2) instanceof ImageView) {
 
-                // 🔥 procesar directamente
                 procesarTramiteSeleccionado(h);
                 break;
             }
@@ -579,16 +504,13 @@ private void onActionPreferential(ActionEvent event) {
     }
 }
 public void guardarFicha(String ficha, boolean pref) {
-
     try {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        
         Path archivo = data.getArchivo("Fichas").toPath();
 
       
 
-        // 🔹 mover en memoria (fichaActual)
+        // mueve las fichas
         for (int i = fichaActual.estacion.length - 1; i > 0; i--) {
             fichaActual.estacion[i] = fichaActual.estacion[i - 1];
         }
@@ -603,15 +525,11 @@ public void guardarFicha(String ficha, boolean pref) {
             fichaActual.Preferencial[i] = fichaActual.Preferencial[i - 1];
         }
       fichaActual.Preferencial[0] = pref;
-
         fichaActual.Sucursal = LSucursal.getText();
-
-        // 🔥 guardar en memoria global
-       // DataHolder.fichaActual = fichaActual;
 
         List<FichasProyection> lista = new ArrayList<>();
 
-        // 🔹 leer archivo
+        
         if (Files.exists(archivo)) {
             String json = Files.readString(archivo);
 
@@ -620,22 +538,20 @@ public void guardarFicha(String ficha, boolean pref) {
                 lista.addAll(Arrays.asList(existentes));
             }
         }
-
         boolean encontrada = false;
 
-        // 🔥 buscar si la sucursal ya existe
+        // busca si la sucursal ya existe
         for (FichasProyection f : lista) {
-
             if (f.Sucursal != null && f.Sucursal.equals(fichaActual.Sucursal)) {
 
-                // 🔥 mover datos dentro de ESA sucursal
+                // mueve los datos dentro de esa sucursal
                 for (int i = f.estacion.length - 1; i > 0; i--) {
                     f.estacion[i] = f.estacion[i - 1];
                     f.ficha[i] = f.ficha[i - 1];
                     f.Preferencial[i] = f.Preferencial[i - 1];
                 }
 
-                // 🔥 insertar nuevo en posición 0
+                //  inserta nuevo en posición 0
                 f.estacion[0] = fichaActual.estacion[0];
                 f.ficha[0] = fichaActual.ficha[0];
                 f.Preferencial[0] = fichaActual.Preferencial[0];
@@ -645,7 +561,7 @@ public void guardarFicha(String ficha, boolean pref) {
             }
         }
 
-        // 🔥 si NO existe la sucursal
+        // si NO existe la sucursal
         if (!encontrada) {
 
             FichasProyection nueva = new FichasProyection();
@@ -657,28 +573,22 @@ public void guardarFicha(String ficha, boolean pref) {
             lista.add(nueva);
         }
 
-        // 🔥 guardar JSON
         Files.writeString(archivo, gson.toJson(lista));
 
-        System.out.println("Guardado correctamente");
 
     } catch (IOException e) {
-        System.out.println("Error: " + e.getMessage());
     }
 }
 private void procesarTramiteSeleccionado(HBox tramite) {
-
     if (tramite == null) return;
-
     Label lblTramite = (Label) tramite.getChildren().get(0);
-    Label lblFicha = (Label) tramite.getChildren().get(1);
+   //Quita 1 de espera
    int actual = Integer.parseInt(usuariosPendientes.getText());
         if (actual > 0) {
             usuariosPendientes.setText(String.valueOf(actual - 1));
         }
     try {
        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
     File archivoTramites = data.getArchivo("KioscoData");
     if (!archivoTramites.exists()) return;
 
@@ -687,7 +597,7 @@ private void procesarTramiteSeleccionado(HBox tramite) {
     KioscoData[] kiosco = gson.fromJson(jsonTramites, KioscoData[].class);
     if (kiosco == null) kiosco = new KioscoData[0];
 
-    // 🔥 USUARIOS SEGURO
+  
     File archivoUsuarios = data.getArchivo("usuarios");
 
     String jsonUsuarios = "[]";
@@ -701,39 +611,36 @@ private void procesarTramiteSeleccionado(HBox tramite) {
     String idTramite = null;
     KioscoData tdEncontrado = null;
 
-        // 🔥 BUSCAR TRÁMITE Y ASIGNAR PREF
+        // Busca tramite y asigna preferencial
         for (KioscoData td : kiosco) {
             if (td.tramite.equals(lblTramite.getText()) &&
                 td.ficha.equals(lblFicha.getText())) {
 
                 idTramite = td.id;
                 tdEncontrado = td;
-                pref = td.Preferencial; // 🔥 IMPORTANTE
+                pref = td.Preferencial;
                 break;
             }
         }
-  // 🔥 CAPTURAR AUDIO ANTES DE BORRAR
+  // Captuara audio antes de borrar
             String audioFicha = null;
             if (tdEncontrado != null) {
-                audioFicha = tdEncontrado.audio; // 🔥 aquí guardas el audio
+                audioFicha = tdEncontrado.audio;
             }
 
-            // 🔥 ELIMINAR DEL JSON
+            // Elimina del json
             List<KioscoData> lista = new ArrayList<>(Arrays.asList(kiosco));
 
             lista.removeIf(td ->
                 lblFicha.getText().equals(td.ficha)
             );
 
-            Files.writeString(
-                archivoTramites.toPath(),
-                gson.toJson(lista)
-            );
+            Files.writeString(archivoTramites.toPath(),gson.toJson(lista));
 
-            // 🔹 UI USUARIO
+
             HBox hUsuario = new HBox();
     
-
+           //Guarda y muestra usuario si existe
         if (idTramite != null) {
             boolean encontrado = false;
 
@@ -766,29 +673,26 @@ private void procesarTramiteSeleccionado(HBox tramite) {
             hUsuario.getChildren().add(new Label("Persona desconocida"));
         }
 
-        // 🔥 ESTILOS
+
         hUsuario.setSpacing(10);
         hUsuario.setAlignment(Pos.CENTER_LEFT);
         hUsuario.setPadding(new Insets(5));
         hUsuario.getStyleClass().addAll("mi-rectangulo", "mi-Titulos");
 
-        // 🔥 MOVER EN UI
         rootTramits.getChildren().remove(tramite);
         rootAtencion.getChildren().clear();
         rootAtencion.getChildren().addAll(hUsuario, tramite);
 
         tramite.getStyleClass().remove("seleccionado");
-        selectedTramit = null; // opcional
+        selectedTramit = null; 
 
-        // 🔥 GUARDAR FICHA (YA FUNCIONA)
         guardarFicha(lblFicha.getText(), pref);
-
-        // 🔥 SEÑAL (audio)
+//Manda señal
         SignalData signal = new SignalData();
         signal.sucursal = LSucursal.getText();
         signal.estacion = LEstacion.getText();
         signal.audio = LEstacion.getText() + ".wav";
-        signal.audioFicha = audioFicha; // 🔥 NUEVO
+        signal.audioFicha = audioFicha; 
         signal.timestamp = System.currentTimeMillis();
 
         Files.writeString(
@@ -800,6 +704,4 @@ private void procesarTramiteSeleccionado(HBox tramite) {
         System.out.println("Error: " + e.getMessage());
     }
 }
-
-
 }

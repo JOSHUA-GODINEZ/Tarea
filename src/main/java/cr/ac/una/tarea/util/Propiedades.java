@@ -22,9 +22,6 @@ private String rutaJson = "";
             // Carpeta donde se ejecuta el .jar
             File archivo = new File(System.getProperty("user.dir"), "propiedades.ini");
 
-            System.out.println("INI: " + archivo.getAbsolutePath());
-            System.out.println("Existe: " + archivo.exists());
-
             if (!archivo.exists()) {
                 return;
             }

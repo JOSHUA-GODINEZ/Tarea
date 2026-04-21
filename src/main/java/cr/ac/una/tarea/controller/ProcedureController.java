@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -53,8 +52,7 @@ public class ProcedureController implements Initializable {
 DataEjecucion data = new DataEjecucion(config);
     @FXML
    public void Add() {
-
-
+   // Agrega los tramites
         HBox procedure = new HBox();
         TextField nameProcedure = new TextField();
         TextField costProcedure = new TextField();
@@ -84,7 +82,8 @@ DataEjecucion data = new DataEjecucion(config);
     Gson gson = new Gson();
     Teme t = gson.fromJson(json, Teme.class);
      UpLine.getStyleClass().add("mi-boton2");
-    if (t.temeDark) {
+   //Cambia el tema
+     if (t.temeDark) {
        UpLine.getStyleClass().add("mi-rectangulo");
     } else {
         
@@ -123,32 +122,23 @@ stateProcedure.setMaxWidth(50);
 nameProcedure.setPrefWidth(150);
 costProcedure.setPrefWidth(150);
 detailProcedure.setPrefWidth(150);
-      
-   stateProcedure.setSelected(true);
-
-
+stateProcedure.setSelected(true);
 procedure.getChildren().addAll(nameProcedure,costProcedure,detailProcedure,stateProcedure);
 Titles.getChildren().addAll(name,price,detail,state);
 UpLine.getChildren().addAll(Titles,procedure);
 ProcedureData.add(UpLine);
-        rootProcedure.getChildren().add(UpLine);
+rootProcedure.getChildren().add(UpLine);
 
        UpLine.setOnMouseClicked(e -> {
 
-    // Quitar selección anterior
     if (selectedProcedure != null) {
         selectedProcedure.getStyleClass().remove("seleccionado");
     }
-
-    // Seleccionar nuevo
     selectedProcedure = UpLine;
     UpLine.getStyleClass().addAll("seleccionado");
 });
-
-
- //   }
+       // Cambia el tamaño de la fuente
     Scene scene = rootProcedure.getScene();
-        
         if (scene != null) {
             name.styleProperty().bind(
                 scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
@@ -175,7 +165,6 @@ ProcedureData.add(UpLine);
                 scene.widthProperty().multiply(0.02).asString("-fx-font-size: %.2fpx;")
             );  
         } else {
-            // ✅ si se llama desde cargar() antes de que exista la escena
             rootProcedure.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                     name.styleProperty().bind(
@@ -231,26 +220,21 @@ CheckBox stateProcedure = (CheckBox) procedure.getChildren().get(3);
         costProcedure.setEditable(true);
         detailProcedure.setEditable(true);
         stateProcedure.setDisable(false);
-        //if( selectedProcedure!=null)
         procedure.getStyleClass().add("procedimiento-editando");
  selectedProcedure.getStyleClass().remove("seleccionado");
         selectedProcedure = null;
-        
     }
 }
 @FXML
 public void Save() {
-
+    //Desactiva los ojetos
     for (int i = ProcedureData.size() - 1; i >= 0; i--) {
-
         VBox v = ProcedureData.get(i);
     HBox h = (HBox) v.getChildren().get(1);
-
     TextField nameProcedure = (TextField) h.getChildren().get(0);
     TextField costProcedure = (TextField) h.getChildren().get(1);
     TextArea detailProcedure = (TextArea) h.getChildren().get(2);
     CheckBox stateProcedure = (CheckBox) h.getChildren().get(3);
-
         if (!nameProcedure.getText().isBlank()) {
 
             nameProcedure.setEditable(false);
@@ -266,16 +250,13 @@ public void Save() {
             ProcedureData.remove(i);
         }
     }
-    if( selectedProcedure!=null)
+    if( selectedProcedure!=null){
     selectedProcedure.getStyleClass().remove("seleccionado");
-    
-    selectedProcedure = null;
-     
-
+    selectedProcedure = null;}
+//Guarda en el Json
   try {
     List<DataProcedure> lista = new ArrayList<>();
    for (VBox v : ProcedureData) {
-
     HBox h = (HBox) v.getChildren().get(1);
 
     TextField nameProcedure = (TextField) h.getChildren().get(0);
@@ -318,7 +299,7 @@ if(campo.getText().toLowerCase().contains(texto.toLowerCase())){
 }
     }
 }
-
+// Carga los tramites del archivo json
 public void cargar() {
     try {
          File archivo = data.getArchivo("ProcedureData");
@@ -333,17 +314,17 @@ public void cargar() {
         for (DataProcedure dp : lista) {
             Add();
             VBox v = ProcedureData.get(ProcedureData.size() - 1);
-HBox h = (HBox) v.getChildren().get(1);
+        HBox h = (HBox) v.getChildren().get(1);
 
-TextField nombreField = (TextField) h.getChildren().get(0);
-TextField monto = (TextField) h.getChildren().get(1);
-TextArea detalleField = (TextArea) h.getChildren().get(2);
-CheckBox check = (CheckBox) h.getChildren().get(3);
+         TextField nombreField = (TextField) h.getChildren().get(0);
+         TextField monto = (TextField) h.getChildren().get(1);
+         TextArea detalleField = (TextArea) h.getChildren().get(2);
+         CheckBox check = (CheckBox) h.getChildren().get(3);
 
-nombreField.setText(dp.getName());
-monto.setText(dp.getPrice());
-detalleField.setText(dp.getDetail());
-check.setSelected(dp.getState());
+         nombreField.setText(dp.getName());
+           monto.setText(dp.getPrice());
+         detalleField.setText(dp.getDetail());
+          check.setSelected(dp.getState());
 
             nombreField.setEditable(false);
             monto.setEditable(false);
@@ -352,7 +333,7 @@ check.setSelected(dp.getState());
            h.getStyleClass().add("procedimiento-guardado");
         }
     } catch (IOException e) {
-        System.out.println("Error al cargar: " + e.getMessage());
+        
     }
 }
 
@@ -363,7 +344,7 @@ check.setSelected(dp.getState());
     buscador.textProperty().addListener((obs, viejo, nuevo) -> {
         buscar(nuevo);
     });
- // En el Timeline, iteras ProcedureData y cambias el CSS de cada UpLine
+ // cambia el tema
 Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
@@ -411,7 +392,8 @@ Timeline timeline = new Timeline(
 
 timeline.setCycleCount(Timeline.INDEFINITE);
 timeline.play();
-
+             
+//cambia el tama;o del texto
      LblMensaje.sceneProperty().addListener((obs, oldScene, newScene) -> {
                 if (newScene != null) {
                     LblMensaje.styleProperty().bind(

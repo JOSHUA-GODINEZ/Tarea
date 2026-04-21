@@ -10,10 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ResourceBundle;
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -22,14 +19,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -50,6 +45,7 @@ DataEjecucion data = new DataEjecucion(config);
 private Boolean temaAnterior = null;
     @FXML
     private TabPane roottab;
+    //Carga los Parametros Generales 
         private void cargar() {
     try {
        File archivo = data.getArchivo("GeneralData");
@@ -72,6 +68,7 @@ private Boolean temaAnterior = null;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
      cargar();
+     //Cambia el tamaño del texto segun el tamaño de la ventana
           LName.sceneProperty().addListener((obs, oldScene, newScene) -> {
         if (newScene != null) {
             LName.styleProperty().bind(
@@ -79,6 +76,7 @@ private Boolean temaAnterior = null;
             );
              }
     }); 
+          //Carga las vistas en los tabs
          try {
             FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/cr/ac/una/tarea/view/ManagementTokensView.fxml"));
             Parent root1 = loader1.load();
@@ -92,6 +90,7 @@ private Boolean temaAnterior = null;
         } catch (IOException e) {
    
         } 
+         // cada segundo carga El CSS y los parametros generales
          Timeline timeline = new Timeline(
     new KeyFrame(Duration.seconds(1), e -> {
         try {
@@ -135,15 +134,9 @@ timeline.play();
     }    
 
     @FXML
-    private void onActionSwitchP(ActionEvent event) throws IOException {
-         App.setRoot("AdministratorView");
-    }
-
-    @FXML
     private void onACtionSalir(ActionEvent event) throws IOException {
-        /* Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();*/
-           App.setRoot("ProjectionView");
+         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
     }
     
 }
